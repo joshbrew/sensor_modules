@@ -11,7 +11,6 @@ connect.onclick = () => {
                 '0002cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
                     [key:string]:number[]
                 })=>{
-
                     console.log(data)
                 }, //ads131m08 (main)
                 '0003cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
@@ -32,14 +31,11 @@ connect.onclick = () => {
                     mpu_dietemp:number,
                     timestamp:number
                 })=>{
-
                     console.log(data)
                 }, //mpu6050
                 '0005cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
-
-                })=>{
+                    [key:string]:number[] })=>{
                     console.log(data)
-
                 }, //extra ads131 (if plugged in)
                 '0006cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
                     temp:number[],
@@ -47,7 +43,7 @@ connect.onclick = () => {
                     humidity:number[], //if using BME, not available on BMP
                     altitude:number[]
                 })=>{
-                    
+
                     console.log(data)
                 } //bme280
             }
