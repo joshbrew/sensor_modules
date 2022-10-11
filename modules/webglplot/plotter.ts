@@ -28,9 +28,12 @@ export default function newPlot(
         plotter.deinitPlot(options._id);   
     }
 
+    //let draw = (options, canvas, context) => {}
+
     options.init = init;
     options.update = update;
     options.clear = clear;
+    //options.draw = draw;
 
     if(options.worker) {
 
