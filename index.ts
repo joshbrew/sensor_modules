@@ -69,8 +69,7 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
     }
 });
 
-let plot = plotterInstance.create()
-console.log("Plot: ", plot);
+// console.log("Plot: ", plot);
 
 let anim = () => {
 

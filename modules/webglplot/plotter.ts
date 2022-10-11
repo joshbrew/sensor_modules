@@ -35,7 +35,6 @@ export function create() {
     options.update = update;
     options.clear = clear;
 
-    console.log('options', options)
     if(options.worker) {
 
         if(options.worker === true) options.worker = new Worker(canvasworker);
@@ -52,5 +51,6 @@ export function create() {
 }
 
 export default function (...args) {
-   if (this.plot) this.plot.update(...args);
+    if (!this.plot) this.create()
+    this.plot.update(...args);
 }
