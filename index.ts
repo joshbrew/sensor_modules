@@ -80,7 +80,14 @@ let anim = () => {
     const arr5 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(1)*(Date.now()/1000+(i/sampleCt))); })
     const arr6 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(3)*(Date.now()/1000+(i/sampleCt))); })
 
-    plotterInstance.default([arr1, arr2, arr3, arr4, arr5, arr6])
+    plotterInstance.default({
+        // 0:arr1,
+        // 1:arr2,
+        // 2:arr3,
+        // 3:arr4,
+        // 4:arr5,
+        5:arr6
+    })
     // plotterInstance.default({
     //     '0':{
     //         values:arr1,
