@@ -71,6 +71,7 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
 
 // console.log("Plot: ", plot);
 
+let count = 0
 let anim = () => {
 
     const arr1 = new Array(sampleCt).fill(0).map((v,i)=>{ return Math.sin(2*Math.PI*(5)*(Date.now()/1000+(i/sampleCt))); })
@@ -80,14 +81,19 @@ let anim = () => {
     const arr5 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(1)*(Date.now()/1000+(i/sampleCt))); })
     const arr6 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(3)*(Date.now()/1000+(i/sampleCt))); })
 
-    plotterInstance.default({
-        // 0:arr1,
-        // 1:arr2,
-        // 2:arr3,
-        // 3:arr4,
-        // 4:arr5,
+    const obj = {
+        0:arr1,
+        1:arr2,
+        2:arr3,
+        3:arr4,
+        4:arr5,
         5:arr6
-    })
+    }
+
+    const selected = count%6
+
+    plotterInstance.default({[selected]: obj[selected]})
+    count++
     // plotterInstance.default({
     //     '0':{
     //         values:arr1,
