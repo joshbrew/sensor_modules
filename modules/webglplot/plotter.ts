@@ -28,9 +28,9 @@ export let options: CanvasProps & {
     } & WebglLinePlotProps
 
 
-export function create() {
+function create(context) {
 
-    const options = this.options
+    const options = context.options
     options.init = init;
     options.update = update;
     options.clear = clear;
@@ -46,11 +46,11 @@ export function create() {
         }
     }
 
-    this.plot = workerCanvasRoutes.Renderer(options) as CanvasControls;
-    return this.plot
+    context.plot = workerCanvasRoutes.Renderer(options) as CanvasControls;
+    return context.plot
 }
 
-export default function (...args) {
-    if (!this.plot) this.create()
-    this.plot.update(...args);
+export default function (args) {
+    if (!this.plot) create(this) // NOTE: Using global scope will result in issues since the (wrapper) promise is not awaited
+    this.plot.update(args);
 }
