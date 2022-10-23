@@ -31,7 +31,7 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
         worker:true, //use an offscreen canvas
         canvas,
         overlay,
-        overlayFont:'1em Verdana',
+        overlayFont:'10px Verdana',
         overlayColor:'orange',
         lines:{
             '0':{
@@ -69,7 +69,9 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
     }
 });
 
-// console.log("Plot: ", plot);
+
+
+console.log("Plot: ", plotterInstance);
 
 let count = 0
 let anim = () => {

@@ -1,8 +1,8 @@
 
-import { workerCanvasRoutes } from 'graphscript/services/worker/WorkerCanvas';//'../../../GraphServiceRouter/services/worker/WorkerCanvas'//'graphscript/services/worker/WorkerCanvas';//'graphscript/services/worker/WorkerCanvas';
+import { workerCanvasRoutes } from 'graphscript/services/worker/WorkerCanvas';//'../../../graphscript/services/worker/WorkerCanvas'//
 //minimal web worker for running offscreen canvases, 
 //no graphscript required
-import {WebglLinePlotUtil} from 'webgl-plot-utils';
+import {WebglLinePlotUtil} from 'webgl-plot-utils'; //'../../../webgl-plot-utils'//
 globalThis.plotter = new WebglLinePlotUtil();
 
 const routes = {

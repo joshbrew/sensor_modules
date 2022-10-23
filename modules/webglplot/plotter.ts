@@ -1,4 +1,4 @@
-import {WebglLinePlotUtil, WebglLinePlotProps} from 'webgl-plot-utils';
+import {WebglLinePlotUtil, WebglLinePlotProps} from 'webgl-plot-utils';//'../../../webgl-plot-utils/webgl-plot-utils'//
 let plotter = new WebglLinePlotUtil();
 
 import canvasworker from './canvas.worker'
@@ -41,7 +41,8 @@ function create(context) {
         else if (typeof options.worker === 'string' || options.worker instanceof Blob) options.worker = new Worker(options.worker as any);
         
         if(options.overlay) {
-            options.overlay = (options.overlay as any).transferControlToOffscreen();
+            let offscreen = (options.overlay as any).transferControlToOffscreen();
+            options.overlay = offscreen;
             options.transfer = [options.overlay];
         }
     }
