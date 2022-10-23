@@ -11,19 +11,15 @@ let overlay = document.createElement('canvas');
 
 canvas.style.backgroundColor = 'black';
 canvas.style.position = 'absolute';
-canvas.style.width = '300px';
-canvas.style.height = '300px';
-canvas.width = 500;
-canvas.height = 500;
+canvas.style.width = '500px';
+canvas.style.height = '500px';
 overlay.style.position = 'absolute';
 overlay.style.width = canvas.style.width;
 overlay.style.height = canvas.style.height;
-overlay.width = 500;
-overlay.height = 500;
 document.body.appendChild(canvas);
 document.body.appendChild(overlay);
 
-let sampleCt = 1000
+let sampleCt = 1000;
 
 
 const plotterInstance = Object.assign(Object.assign({}, plotter), {
