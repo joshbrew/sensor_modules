@@ -11,7 +11,7 @@ export type WebglLineProps = {
     scaled?:number[], //rescaled values (same as values if autoscale is false)
     ymin?:number, //min y to scale based on? sets bottom of line visible
     ymax?:number, //max y to scale based on? sets top of line visible
-
+ 
     centerZero?:boolean, //center the line at zero (if autoscaling), i.e. the positive and negative axis get the same amount of space, default false
     xAxis?:boolean, //draw an xaxis, default true
     xColor?:[number,number,number,number]|ColorRGBA, //default gray and transparent
@@ -406,7 +406,7 @@ export class WebglLinePlotUtil {
             if(typeof plotInfo.settings.overlay === 'object') {
                 canvas = plotInfo.settings.overlay;
                 ctx = plotInfo.settings.overlayCtx as CanvasRenderingContext2D;
-                ctx.clearRect(0,0,plotInfo.settings.overlay.width,plotInfo.settings.overlay.height);
+                //ctx.clearRect(0,0,plotInfo.settings.overlay.width,plotInfo.settings.overlay.height);
                 ctx.font = plotInfo.settings.overlayFont ? plotInfo.settings.overlayFont : '1em Courier';
                 ctx.fillStyle = plotInfo.settings.overlayColor ? plotInfo.settings.overlayColor : 'white';
             }
@@ -506,6 +506,12 @@ export class WebglLinePlotUtil {
                         if(typeof plotInfo.settings.overlay === 'object') {
                             if(s.useOverlay || !('useOverlay' in s)) {
                                 let pos = plotInfo.settings.nLines - s.position - 1;
+                                ctx.clearRect(
+                                    0,
+                                    canvas.height*pos/plotInfo.settings.nLines,
+                                    canvas.width,
+                                    canvas.height/plotInfo.settings.nLines
+                                );
                                 ctx.fillText(line, 20,canvas.height*(pos as number + 0.2)/plotInfo.settings.nLines);
                                 ctx.fillText(`${Math.floor(max) === max ? max : max?.toFixed(5)} ${s.units ? s.units : ''}`, canvas.width - 100,canvas.height*(pos as number + 0.2)/plotInfo.settings.nLines);
                                 ctx.fillText(`${Math.floor(min) === min ? min : min?.toFixed(5)} ${s.units ? s.units : ''}`, canvas.width - 100,canvas.height*(pos as number + 0.9)/plotInfo.settings.nLines);
