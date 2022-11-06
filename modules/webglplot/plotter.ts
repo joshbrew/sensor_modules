@@ -7,8 +7,9 @@ import { CanvasControls, CanvasProps, workerCanvasRoutes } from 'graphscript/ser
 
 // provide the functions for the canvas routes, in our case wrapping the webglplot renderer instead of our own canvas render
 const init = (options, canvas, context) => {
+
     plotter.initPlot(options);
-    
+
     let onresize = (o) => {    
         canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight;
         options.overlay.width = canvas.clientWidth; options.overlay.height = canvas.clientHeight;
@@ -19,11 +20,9 @@ const init = (options, canvas, context) => {
     else canvas.addEventListener('resize',onresize);
 
     setTimeout(()=>{onresize(canvas)},10);
-
 }
 
 const update = (options, canvas, context, input) => {
-    //console.log('update plotter')
     plotter.update(options._id, input);
 }
 
@@ -39,6 +38,11 @@ export let options: CanvasProps & {
         route?:string
     } & WebglLinePlotProps
 
+export let canvas: WebglLinePlotProps['canvas']
+export let overlay: WebglLinePlotProps['overlay']
+
+export const failed = false
+
 
 function create(context) {
 
@@ -47,23 +51,52 @@ function create(context) {
     options.update = update;
     options.clear = clear;
 
-    if(options.worker) {
+    // Grab Canvas from DOM
+    if (typeof context.overlay === 'string') context.overlay = document.querySelector(context.overlay) as HTMLCanvasElement;
+    if (typeof context.canvas === 'string') context.canvas = document.querySelector(context.canvas) as HTMLCanvasElement;
 
-        if(options.worker === true) options.worker = new Worker(canvasworker);
-        else if (typeof options.worker === 'string' || options.worker instanceof Blob) options.worker = new Worker(options.worker as any);
-        
-        if(options.overlay) {
-            let offscreen = (options.overlay as any).transferControlToOffscreen();
-            options.overlay = offscreen;
-            options.transfer = [options.overlay];
+    options.canvas = context.canvas;
+    options.overlay = context.overlay;
+    const originalOptions = {...options}
+
+    try {
+        if(options.worker) {
+
+            try {
+
+                if (typeof canvasworker === 'object') options.worker = false; // Text compilation doesn't work yet...
+                
+                if(options.worker === true) {
+                    options.worker = new Worker(canvasworker);
+                } else if (typeof options.worker === 'string' || options.worker instanceof Blob) options.worker = new Worker(options.worker as any);
+                
+                if(options.overlay) {
+                    let offscreen = (options.overlay as any).transferControlToOffscreen();
+                    options.overlay = offscreen;
+                    options.transfer = [options.overlay];
+                }
+
+                context.plot = workerCanvasRoutes.Renderer(options) as CanvasControls;
+            } catch (e) {
+                originalOptions.worker = false;
+                console.warn('Could not create canvas with worker. Will try to use a standard canvas instead.', originalOptions, e)
+            }
         }
+
+        if (!context.plot) context.plot = workerCanvasRoutes.Renderer(originalOptions) as CanvasControls;
+
+
+    } catch (e){
+        console.error('Could not create a plot using the current options', e)
+        context.failed = true
     }
 
-    context.plot = workerCanvasRoutes.Renderer(options) as CanvasControls;
     return context.plot
 }
 
 export default function (args) {
-    if (!this.plot) create(this) // NOTE: Using global scope will result in issues since the (wrapper) promise is not awaited
-    this.plot.update(args);
+    if (!this.failed){
+        if (!this.plot) create(this) // NOTE: Using global scope will result in issues since the (wrapper) promise is not awaited
+        if (this.plot) this.plot.update(args);
+    }
 }

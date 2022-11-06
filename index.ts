@@ -27,10 +27,10 @@ document.body.appendChild(overlay);
 let sampleCt = 1000;
 
 const plotterInstance = Object.assign(Object.assign({}, plotter), {
+    canvas,
+    overlay,
     options: {
         //worker:true, //use an offscreen canvas
-        canvas,
-        overlay,
         overlayFont:'10px Verdana',
         overlayColor:'orange',
         lines:{
