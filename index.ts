@@ -24,48 +24,53 @@ overlay.style.height = canvas.style.height;
 document.body.appendChild(canvas);
 document.body.appendChild(overlay);
 
-let sampleCt = 1000;
+let sampleCt = 14;
 
 const plotterInstance = Object.assign(Object.assign({}, plotter), {
     canvas,
     overlay,
     options: {
-        //worker:true, //use an offscreen canvas
+        worker: true, //use an offscreen canvas // TODO: Properly load workers from text
         overlayFont:'10px Verdana',
         overlayColor:'orange',
-        lines:{
-            '0':{
-                values:new Array(sampleCt).fill(0).map((v,i)=>{ return Math.sin(2*Math.PI*(5)*(Date.now()/1000+(i/sampleCt))); }),
-                width:0.1,
-                color:[0,255,255,1],
-                ymin:-0.5
-            },
-            '1':{
-                values:new Array(sampleCt).fill(0).map((v,i)=>{ return 1+Math.sin(2*Math.PI*(15)*(Date.now()/1000+(i/sampleCt))); }),
-                //width:2,
-                color:[0,255,0,1]
-            },
-            '2':{
-                values:new Array(sampleCt).fill(0).map((v,i)=>{ return 2+0.5*Math.sin(2*Math.PI*(10)*(Date.now()/1000+(i/sampleCt))); }),
-                //width:2,
-                color:[255,255,0,1]
-            },
-            '3':{
-                values:new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(25)*(Date.now()/1000+(i/sampleCt))); }),
-                //width:2,
-                color:[0,255,0,1]
-            },
-            '4':{
-                values:new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(1)*(Date.now()/1000+(i/sampleCt))); }),
-                //width:2,
-                color:[0,255,0,1]
-            },
-            '5':{
-                values:new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(3)*(Date.now()/1000+(i/sampleCt))); }),
-                //width:2,
-                color:[0,255,0,1]
-            }
-        }
+        generateNewLines: true,
+        cleanGeneration: false,
+        lines: {},
+        lineWidth: 0.01,
+        
+        // lines:{
+        //     '0':{
+        //         values:new Array(sampleCt).fill(0).map((v,i)=>{ return Math.sin(2*Math.PI*(5)*(Date.now()/1000+(i/sampleCt))); }),
+        //         width:0.1,
+        //         color:[0,255,255,1],
+        //         ymin:-0.5
+        //     },
+        //     '1':{
+        //         values:new Array(sampleCt).fill(0).map((v,i)=>{ return 1+Math.sin(2*Math.PI*(15)*(Date.now()/1000+(i/sampleCt))); }),
+        //         //width:2,
+        //         color:[0,255,0,1]
+        //     },
+        //     '2':{
+        //         values:new Array(sampleCt).fill(0).map((v,i)=>{ return 2+0.5*Math.sin(2*Math.PI*(10)*(Date.now()/1000+(i/sampleCt))); }),
+        //         //width:2,
+        //         color:[255,255,0,1]
+        //     },
+        //     '3':{
+        //         values:new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(25)*(Date.now()/1000+(i/sampleCt))); }),
+        //         //width:2,
+        //         color:[0,255,0,1]
+        //     },
+        //     '4':{
+        //         values:new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(1)*(Date.now()/1000+(i/sampleCt))); }),
+        //         //width:2,
+        //         color:[0,255,0,1]
+        //     },
+        //     '5':{
+        //         values:new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(3)*(Date.now()/1000+(i/sampleCt))); }),
+        //         //width:2,
+        //         color:[0,255,0,1]
+        //     }
+        // }
     }
 });
 
@@ -92,9 +97,11 @@ let anim = () => {
         5:arr6
     }
 
-    const selected = count%6
+    // const selected = count%6
 
-    plotterInstance.default({[selected]: obj[selected]})
+    // plotterInstance.default({[selected]: obj[selected]})
+    plotterInstance.default(obj)
+
     count++
     // plotterInstance.default({
     //     '0':{
@@ -107,12 +114,13 @@ let anim = () => {
     //     '5': arr6
     // })
 
-    //setTimeout(() => {
+    // setTimeout(() => {
         requestAnimationFrame(anim);
-    //}, 100);
+    // }, 100);
 }
 
-anim();
+// Wait for three seconds to start animation
+setTimeout(() => anim(), 3000);
 
 let connect = document.createElement('button');
 connect.innerText = 'Connect'
