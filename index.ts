@@ -36,7 +36,7 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
         generateNewLines: true,
         cleanGeneration: false,
         lines: {},
-        //lineWidth: 0.004,
+        lineWidth: 0.004,
         
         // lines:{
         //     '0':{
