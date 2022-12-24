@@ -22,8 +22,8 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "device-decoder": "^0.2.48",
-    "graphscript": "~0.1.49",
+    "device-decoder": "^0.3.4",
+    "graphscript": "~0.2.26",
     "webgl-plot-utils": "~0.3.15"
   },
   "nodemonConfig": {
