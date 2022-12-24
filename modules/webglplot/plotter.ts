@@ -1,4 +1,4 @@
-import {WebglLinePlotUtil, WebglLinePlotProps} from '../../../webgl-plot-utils/webgl-plot-utils'//'webgl-plot-utils';//
+import {WebglLinePlotUtil, WebglLinePlotProps} from 'webgl-plot-utils'//'../../../webgl-plot-utils/webgl-plot-utils'//'webgl-plot-utils';//
 globalThis.plotter = new WebglLinePlotUtil();
 
 import canvasworker from './canvas.worker'

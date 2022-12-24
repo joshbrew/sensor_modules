@@ -5,7 +5,7 @@ import { workerCanvasRoutes } from 'graphscript/services/worker/WorkerCanvas';//
 
 declare var WorkerGlobalScope;
 
-import {WebglLinePlotUtil} from '../../../webgl-plot-utils/webgl-plot-utils'; //
+import {WebglLinePlotUtil} from 'webgl-plot-utils'//'../../../webgl-plot-utils/webgl-plot-utils'; //
 
 if(typeof WorkerGlobalScope !== 'undefined') {
 

@@ -159,10 +159,10 @@
   "resolved" "https://registry.npmjs.org/web-worker/-/web-worker-1.2.0.tgz"
   "version" "1.2.0"
 
-"webgl-plot-utils@~0.3.13":
-  "integrity" "sha512-uXUK4kmau2HZYrZ3gGy3olKnmYAXNAMfEIzuzD28pxQrmerxZPm73scyxeTph65l06W9gJwAB4OTDWrD5n4MWg=="
-  "resolved" "https://registry.npmjs.org/webgl-plot-utils/-/webgl-plot-utils-0.3.13.tgz"
-  "version" "0.3.13"
+"webgl-plot-utils@~0.3.13", "webgl-plot-utils@~0.3.14":
+  "integrity" "sha512-Dm9S26+t7GL3FyNMeVp7/MLOeweRXC3NZQCwPJRpaBrFbTcCzro0MRJ+0l6YzWZ/AJIXnb/ftfmVOxr0uwmtzQ=="
+  "resolved" "https://registry.npmjs.org/webgl-plot-utils/-/webgl-plot-utils-0.3.14.tgz"
+  "version" "0.3.14"
   dependencies:
     "webgl-plot" "~0.7.0"
 
