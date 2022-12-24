@@ -24,7 +24,7 @@
   "dependencies": {
     "device-decoder": "^0.2.48",
     "graphscript": "~0.1.49",
-    "webgl-plot-utils": "~0.3.14"
+    "webgl-plot-utils": "~0.3.15"
   },
   "nodemonConfig": {
     "env": {

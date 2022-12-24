@@ -35,7 +35,6 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
         overlayColor:'orange',
         generateNewLines: true,
         cleanGeneration: false,
-        lines: {},
         lineWidth: 0.004,
         
         // lines:{
