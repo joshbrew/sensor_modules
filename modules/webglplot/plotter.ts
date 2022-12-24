@@ -1,5 +1,5 @@
-import {WebglLinePlotUtil, WebglLinePlotProps} from 'webgl-plot-utils';//'../../../webgl-plot-utils/webgl-plot-utils'//
-let plotter = new WebglLinePlotUtil();
+import {WebglLinePlotUtil, WebglLinePlotProps} from '../../../webgl-plot-utils/webgl-plot-utils'//'webgl-plot-utils';//
+globalThis.plotter = new WebglLinePlotUtil();
 
 import canvasworker from './canvas.worker'
 
@@ -8,12 +8,12 @@ import { CanvasControls, CanvasProps, workerCanvasRoutes } from 'graphscript/ser
 // provide the functions for the canvas routes, in our case wrapping the webglplot renderer instead of our own canvas render
 const init = (options, canvas, context) => {
 
-    plotter.initPlot(options);
+    globalThis.plotter.initPlot(options);
 
     let onresize = (o) => {    
         canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight;
         options.overlay.width = canvas.clientWidth; options.overlay.height = canvas.clientHeight;
-        ((plotter.plots[options._id].plot as any).webgl as WebGLRenderingContext).viewport(0, 0, canvas.width, canvas.height);
+        (( globalThis.plotter.plots[options._id].plot as any).webgl as WebGLRenderingContext).viewport(0, 0, canvas.width, canvas.height);
     }
 
     if(typeof window !== 'undefined') window.addEventListener('resize',onresize);
@@ -23,11 +23,11 @@ const init = (options, canvas, context) => {
 }
 
 const update = (options, canvas, context, input) => {
-    plotter.update(options._id, input);
+    globalThis.plotter.update(options._id, input);
 }
 
 const clear = (options, canvas, context) => {
-    plotter.deinitPlot(options._id);   
+    globalThis.plotter.deinitPlot(options._id);   
 }
 
 export let plot:CanvasControls

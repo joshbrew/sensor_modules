@@ -30,7 +30,7 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
     canvas,
     overlay,
     options: {
-        worker: true, //use an offscreen canvas // TODO: Properly load workers from text
+        worker: false, //use an offscreen canvas // TODO: Properly load workers from text
         overlayFont:'10px Verdana',
         overlayColor:'orange',
         generateNewLines: true,
