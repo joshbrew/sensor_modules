@@ -22,7 +22,7 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "device-decoder": "~0.2.25",
+    "device-decoder": "^0.2.48",
     "graphscript": "~0.1.49",
     "webgl-plot-utils": "~0.3.13"
   },

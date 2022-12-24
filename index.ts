@@ -24,7 +24,7 @@ overlay.style.height = canvas.style.height;
 document.body.appendChild(canvas);
 document.body.appendChild(overlay);
 
-let sampleCt = 14;
+let sampleCt = 1000;
 
 const plotterInstance = Object.assign(Object.assign({}, plotter), {
     canvas,
@@ -36,7 +36,7 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
         generateNewLines: true,
         cleanGeneration: false,
         lines: {},
-        lineWidth: 0.01,
+        //lineWidth: 0.004,
         
         // lines:{
         //     '0':{
@@ -78,15 +78,18 @@ const plotterInstance = Object.assign(Object.assign({}, plotter), {
 
 console.log("Plot: ", plotterInstance);
 
-let count = 0
+let count = 0;
+let delay = 100;
 let anim = () => {
 
-    const arr1 = new Array(sampleCt).fill(0).map((v,i)=>{ return Math.sin(2*Math.PI*(5)*(Date.now()/1000+(i/sampleCt))); })
-    const arr2 = new Array(sampleCt).fill(0).map((v,i)=>{ return 1+Math.sin(2*Math.PI*(15)*(Date.now()/1000+(i/sampleCt))); })
-    const arr3 = new Array(sampleCt).fill(0).map((v,i)=>{ return 2+0.5*Math.sin(2*Math.PI*(10)*(Date.now()/1000+(i/sampleCt))); })
-    const arr4 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(25)*(Date.now()/1000+(i/sampleCt))); })
-    const arr5 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(1)*(Date.now()/1000+(i/sampleCt))); })
-    const arr6 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(3)*(Date.now()/1000+(i/sampleCt))); })
+    let now = Date.now()
+
+    const arr1 = new Array(sampleCt).fill(0).map((v,i)=>{ return Math.sin(2*Math.PI*(5)*(now/1000+(i/sampleCt))); })
+    const arr2 = new Array(sampleCt).fill(0).map((v,i)=>{ return 1+Math.sin(2*Math.PI*(15)*(now/1000+(i/sampleCt))); })
+    const arr3 = new Array(sampleCt).fill(0).map((v,i)=>{ return 2+0.5*Math.sin(2*Math.PI*(10)*(now/1000+(i/sampleCt))); })
+    const arr4 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(25)*(now/1000+(i/sampleCt))); })
+    const arr5 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(1)*(now/1000+(i/sampleCt))); })
+    const arr6 = new Array(sampleCt).fill(0).map((v,i)=>{ return 0.5*Math.sin(2*Math.PI*(3)*(now/1000+(i/sampleCt))); })
 
     const obj = {
         0:arr1,
@@ -102,7 +105,7 @@ let anim = () => {
     // plotterInstance.default({[selected]: obj[selected]})
     plotterInstance.default(obj)
 
-    count++
+    count+=sampleCt;
     // plotterInstance.default({
     //     '0':{
     //         values:arr1,
@@ -114,13 +117,13 @@ let anim = () => {
     //     '5': arr6
     // })
 
-    // setTimeout(() => {
+     //setTimeout(() => {
         requestAnimationFrame(anim);
-    // }, 100);
+     //}, 100);
 }
 
 // Wait for three seconds to start animation
-setTimeout(() => anim(), 3000);
+setTimeout(() => anim());
 
 let connect = document.createElement('button');
 connect.innerText = 'Connect'
