@@ -1,16 +1,16 @@
 
 import { workerCanvasRoutes } from 'graphscript/services/worker/WorkerCanvas';//'../../../graphscript/services/worker/WorkerCanvas'//
+import {WebglLinePlotUtil} from 'webgl-plot-utils'; //'../../../webgl-plot-utils'//
 //minimal web worker for running offscreen canvases, 
 //no graphscript required
 
-declare var WorkerGlobalScope;
 
-import {WebglLinePlotUtil} from 'webgl-plot-utils'//'../../../webgl-plot-utils/webgl-plot-utils'; //
+declare var WorkerGlobalScope;
 
 if(typeof WorkerGlobalScope !== 'undefined') {
 
     globalThis.plotter = new WebglLinePlotUtil();
-
+    
     const routes = {
         ...workerCanvasRoutes
         //add more compatible routes that don't require graphscript
@@ -27,6 +27,7 @@ if(typeof WorkerGlobalScope !== 'undefined') {
         } //that's it! The functions handle worker communication internally
     
     }
-    
+
 }
+
 export default self as any;
