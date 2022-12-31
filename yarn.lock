@@ -34,7 +34,7 @@
   "resolved" "https://registry.npmjs.org/better-sse/-/better-sse-0.8.0.tgz"
   "version" "0.8.0"
 
-"brainsatplay-math@~0.0.25":
+"brainsatplay-math@^0.0.25", "brainsatplay-math@~0.0.25":
   "integrity" "sha512-J2s+/4osnjVVqqKVwuCuYbr9eGhXF4eFsGq/ImPIHICx0+1hJHoUN1XVCyiC8rOM7Nf0/8mmtVknzEeayVc7sQ=="
   "resolved" "https://registry.npmjs.org/brainsatplay-math/-/brainsatplay-math-0.0.25.tgz"
   "version" "0.0.25"
@@ -114,6 +114,11 @@
     "bson-objectid" "~2.0.3"
     "web-worker" "~1.2.0"
     "ws" "~8.11.0"
+
+"howler@^2.2.3":
+  "integrity" "sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg=="
+  "resolved" "https://registry.npmjs.org/howler/-/howler-2.2.3.tgz"
+  "version" "2.2.3"
 
 "lodash@^4.17.14":
   "integrity" "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="

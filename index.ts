@@ -1,130 +1,381 @@
-import { initDevice, workers } from '../device_debugger/src/device.frontend'//"device-decoder";
+import { FilterSettings, initDevice, workers } from '../device_debugger/src/device.frontend'//"device-decoder";
 
 import plotworker from './modules/webglplot/canvas.worker'
 import gsworker from '../device_debugger/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
 
 import { mpu6050ChartSettings } from "device-decoder/devices/mpu6050.js";
 import { max3010xChartSettings } from "device-decoder/devices/max30102.js";
-import { ads131m08ChartSettings, ads131m08FilterSettings } from "device-decoder/devices/ads131m08.js";
+import { ads131m08ChartSettings } from "device-decoder/devices/ads131m08.js";
 import { bme280ChartSettings } from "device-decoder/devices/bme280.js";
 
-import {htmlloader} from 'graphscript'
-import { CanvasControls } from "graphscript/dist/services/worker/WorkerCanvas.js";
-
+import {htmlloader} from '../graphscript/build/main'
+import {Howl} from 'howler'
 
 import {WGLPlotter} from "./modules/webglplot/plotter.js";
+import { visualizeDirectory } from '../graphscript/src/extras/storage/BFS_CSV';
+import { HTMLNodeProperties } from '../graphscript/build/main';
+import { Math2 } from 'brainsatplay-math';
 
+//TODO: twilio sms backend
 
 const state = {
     ppg:{},
     emg:{},
     imu:{},
     env:{},
-    emg2:{}
-}
+    emg2:{},
+    recording:false,
+    test:0
+};
+
+const detected = {
+    emg:false,
+    ppg:false,
+    imu:false,
+    env:false,
+    emg2:false
+};
+
+
+let heartrateAvgCt = 5;
+let breathrateAvgCt = 5;
+
+let heartrateUpperBound = 150;
+let heartrateLowerBound = 25;
 
 workers.__node.loaders.html = htmlloader;
 
 workers.load({
 
     state:state,
+    detected:detected,
+
+    'test': {
+        __element:'button',
+        innerHTML:'0',
+        onclick:function() { 
+            state.test++; 
+        },
+        __listeners:{
+            'state.test':function(out) {
+                this.innerHTML = out;
+                console.log('incr', state.test, this);
+            }
+        }
+    },
 
     'connect':{
         __element:'button',
         innerHTML:'Connect Device',
-        onclick:() => { 
+        onclick:(ev) => { 
 
-            const device = initDevice(
-                'BLE',
-                'nrf5x',
-                {
-                    ondecoded:{ //after data comes back from codec
-                        '0002cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
-                            [key:string]:number[]
-                        })=>{
+            let connect = () => {
+                let csvworkers = {
+                    emg:workers.addWorker({url:gsworker}),
+                    ppg:workers.addWorker({url:gsworker}),
+                    imu:workers.addWorker({url:gsworker}),
+                    env:workers.addWorker({url:gsworker}),
+                    emg2:workers.addWorker({url:gsworker})
+                }
+    
+                let algoworkers = {
+                    hr:workers.addWorker({url:gsworker}),
+                    breath:workers.addWorker({url:gsworker})
+                };
+    
+                algoworkers.hr?.run('createSubprocess', ['heartrate',{sps:100}]);
+                algoworkers.breath?.run('createSubprocess', ['breath',{sps:100}]);
+    
+                let lasthr = [] as number[];
 
-                            state.emg = data;
+                algoworkers.hr?.subscribe('runSubprocess',(
+                    heartbeat:{
+                        bpm: number,
+                        change: number, //i.e. HRV, higher is better if it is oscillating nicely with breathing
+                        height0: number,
+                        height1: number,
+                        timestamp: number
+                    }
+                ) => {
+                    const data = {
+                        hr:heartbeat.bpm,
+                        hrv:heartbeat.change,
+                        timestamp:heartbeat.timestamp
+                    }
 
-                        }, //ads131m08 (main)
-                        '0003cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
-                            red:number[],
-                            ir:number[],
-                            max_dietemp:number,
-                            timestamp:number
-                        })=>{
+                    if(state.recording) {
+                        csvworkers.ppg?.run('appendCSV',data); //forward to csv thread (should use the message channel commands instead)
+                    }
 
-                            state.ppg = data;
-                        }, //max30102
-                        '0004cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
-                            ax:number[],
-                            ay:number[],
-                            az:number[],
-                            gx:number[],
-                            gy:number[],
-                            gz:number[],
-                            mpu_dietemp:number,
-                            timestamp:number
-                        })=>{
+                    state.ppg = data;
 
-                            state.imu = data;
-                        }, //mpu6050
-                        '0005cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
-                            [key:string]:number[] })=>{
+                    lasthr.push(heartbeat.bpm);
+                    if(lasthr.length > heartrateAvgCt) lasthr.pop();
 
-                            state.emg2 = data;
+                    if(lasthr.length === heartrateAvgCt) {
+                        let average = Math2.mean(lasthr);
+                        if(average < heartrateLowerBound) {
+                            new Howl({src:'./sounds/alarm.wav'}).play();
+                            let elm = document.getElementById('alertbar') as HTMLElement;
+                            elm.style.backgroundColor = 'red';
+                            elm.style.color = 'white';
+                            elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
+                        }
+                        if(average > heartrateUpperBound) {
+                            new Howl({src:'./sounds/alarm.wav'}).play();
+                            let elm = document.getElementById('alertbar') as HTMLElement;
+                            elm.style.backgroundColor = 'red';
+                            elm.style.color = 'white';
+                            elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
+                        }
+                    }
+                    //also e.g. erratic readings mean it's likely a bad signal since it would be picking up random noise
+                });
 
-                        }, //extra ads131 (if plugged in)
-                        '0006cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
-                            temp:number[],
-                            pressure:number[],
-                            humidity:number[], //if using BME, not available on BMP
-                            altitude:number[]
-                        })=>{
+    
+                algoworkers.breath?.subscribe('runSubprocess',(
+                    breath:{
+                        bpm: number,
+                        change: number, //lower is better
+                        height0: number, 
+                        height1: number,
+                        timestamp: number
+                    }
+                ) => {
+                    
 
-                            state.env = data;
+                    const data = {
+                        breath:breath.bpm,
+                        brv:breath.change,
+                        timestamp:breath.timestamp
+                    }
+                    
+                    if(state.recording) {
+                        csvworkers.ppg?.run('appendCSV',data); //forward to csv thread (should use the message channel commands instead)
+                    }
 
-                        } //bme280
-                    },
-                    onconnect:() => {
-                        device?.then(res => {res.workers.streamworker.run('setFilters', ads131m08FilterSettings)});
-                    },
-                    roots:{
-                        'record':{
-                            workerUrl:gsworker,
-                            callback:'appendCSV',
-                            stopped:true,
+                    state.ppg = data;
+                    
+                });
 
-                            __element:'button',
-                            innerHTML:'Record',
-                            onclick:function (ev){ 
-                                ev.target.innerHTML = 'Stop Recording'
+                let clearworkers = () => {
+                    for(const key in csvworkers) {
+                        csvworkers[key].terminate();
+                    }
+                    for(const key in algoworkers) {
+                        algoworkers[key].terminate();
+                    }
+    
+                    workers.unsubscribe('state',sub,'recording');
+                }
 
-                                ev.target.node.worker.run('createCSV', [
-                                    `data/${new Date().toISOString()}`,
-                                    [   
-                                        'timestamp',
-                                        'ax','ay','az','gx','gy','gz','mpu_dietemp'
-                                    ],
-                                    5,
-                                    100
-                                ])
-                                
-                                ev.target.onclick = function (ev) {
-                                    ev.target.innerHTML = 'Record';
-                                }
-                            },
-                            __onconnected:function(node) {
-                                
+                let disconnect = (controls?) => {
+                    if(!controls) {
+                        clearworkers();
+                    } else {
+                        ev.target.innerHTML = 'Disconnect'
+                        ev.target.onclick = () => {
+                            clearworkers();
+                            controls?.disconnect();
+                            ev.target.innerHTML = "Connect Device";
+                            ev.target.onclick = () => {
+                                connect();
                             }
                         }
                     }
+
+                    (document.getElementById('record') as HTMLElement).style.display = 'none';
                 }
-            )
+    
+                let sub = workers.subscribe('state',(recording)=>{
+                    if(recording) {
+    
+                        if(detected.emg) csvworkers.emg?.run('createCSV', [
+                            `data/EMG_${new Date().toISOString()}`,
+                            [   
+                                'timestamp',
+                                '0','1' //only record the first two channels for now (so much data!!)
+                            ],
+                            5,
+                            250
+                        ]);
+    
+                        if(detected.imu) csvworkers.imu?.run('createCSV', [
+                            `data/IMU_${new Date().toISOString()}`,
+                            [   
+                                'timestamp',
+                                'ax','ay','az','gx','gy','gz','mpu_dietemp'
+                            ],
+                            0,
+                            100
+                        ]);
+    
+                        if(detected.ppg) csvworkers.ppg?.run('createCSV', [
+                            `data/PPG_${new Date().toISOString()}`,
+                            [   
+                                'timestamp',
+                                'red','ir','hr','spo2','breath','max_dietemp'
+                            ],
+                            0,
+                            100
+                        ]);
+    
+                        if(detected.env) csvworkers.env?.run('createCSV', [
+                            `data/ENV_${new Date().toISOString()}`,
+                            [   
+                                'timestamp',
+                                'temperature','pressure','humidity','altitude'
+                            ],
+                            4
+                        ]);
+    
+                    } else {
+                        visualizeDirectory('data', document.getElementById('csvs') as HTMLElement);
+                    }
+                },'recording');
+    
+                const device = initDevice(
+                    'BLE',
+                    'nrf5x',
+                    {
+                        ondecoded:{ //after data comes back from codec
+                            '0002cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
+                                [key:string]:number[]
+                            })=>{
+                                state.emg = data; 
+                                if(!detected.emg) detected.emg = true;
+                                if(state.recording) {
+                                    csvworkers.emg?.run('appendCSV',data);
+                                }
+                            }, //ads131m08 (main)
+                            '0003cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
+                                red:number[],
+                                ir:number[],
+                                max_dietemp:number,
+                                timestamp:number
+                            })=>{
+                                state.ppg = data;
+                                
+                                if(!detected.ppg) detected.ppg = true;
+                                algoworkers.hr?.post('runSubprocess', data);
+                                algoworkers.breath?.post('runSubprocess', data);
+    
+                                if(state.recording) {
+                                    csvworkers.ppg?.run('appendCSV',data);
+                                }
+                            }, //max30102
+                            '0004cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
+                                ax:number[],
+                                ay:number[],
+                                az:number[],
+                                gx:number[],
+                                gy:number[],
+                                gz:number[],
+                                mpu_dietemp:number,
+                                timestamp:number
+                            })=>{
+                                state.imu = data;
+                                if(!detected.imu) detected.imu = true;
+                                if(state.recording) {
+                                    csvworkers.imu?.run('appendCSV',data);
+                                }
+                            }, //mpu6050
+                            '0005cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
+                                [key:string]:number[] })=>{
+                                state.emg2 = data;
+                            }, //extra ads131 (if plugged in)
+                            '0006cafe-b0ba-8bad-f00d-deadbeef0000':(data:{
+                                temp:number[],
+                                pressure:number[],
+                                humidity:number[], //if using BME, not available on BMP
+                                altitude:number[]
+                            })=>{
+                                state.env = data;
+                                if(!detected.env) detected.env = true;
+                                if(state.recording) {
+                                    csvworkers.env?.run('appendCSV',data);
+                                }
+                            } //bme280
+                        },
+                        onconnect:() => {
+
+                            
+                            (document.getElementById('record') as HTMLElement).style.display = '';
+                            
+                            const sps = 250;      
+                            const gain = 32;
+                            const nbits = 24;
+                            const vref = 1.2;
+                            
+                            let defaultsetting = {
+                                sps, 
+                                useDCBlock:false, 
+                                useBandpass:false, 
+                                useLowpass:true,
+                                lowpassHz:45,
+                                // bandpassLower:3, 
+                                // bandpassUpper:45, 
+                                useScaling:true, 
+                                scalar:0.96 * 1000*vref/(gain*(Math.pow(2,nbits)-1)), //adjust to millivolts
+                                //trimOutliers:true,
+                                //outlierTolerance:0.3
+                            } as FilterSettings;
+    
+                            const ads131m08FilterSettings:{[key:string]:FilterSettings} = {
+                                '0':JSON.parse(JSON.stringify(defaultsetting)),
+                                '1':JSON.parse(JSON.stringify(defaultsetting)),
+                                '2':JSON.parse(JSON.stringify(defaultsetting)),
+                                '3':JSON.parse(JSON.stringify(defaultsetting)),
+                                '4':JSON.parse(JSON.stringify(defaultsetting)),
+                                '5':JSON.parse(JSON.stringify(defaultsetting)),
+                                '6':JSON.parse(JSON.stringify(defaultsetting)),
+                                '7':JSON.parse(JSON.stringify(defaultsetting))
+                            }
+    
+                            device?.then(res => {
+                                res.workers.streamworker.run('setFilters', ads131m08FilterSettings); //filter the EMG results
+                            });
+                        },
+                        ondisconnect:() => {
+                            disconnect();
+                        }
+                    }
+                )
+                
+                device?.then(disconnect).catch(err => {disconnect();});
+            }
+
+            connect();
+            
         }
     },
 
-    lnm:{
+    'record':{
+        //workerUrl:gsworker,
+        //callback:'appendCSV',
+        //stopped:true,
+
+        __element:'button',
+        innerHTML:'Record',
+        style:{display:'none'},
+        onclick:function (ev){ 
+            this.innerHTML = 'Stop Recording'
+
+            state.recording = true;
+
+            this.onclick = function (ev) {
+                this.innerHTML = 'Record';
+                state.recording = false;
+            }
+        }
+    },
+
+    'ln':{
         __element:'hr'
+    },
+
+    'alertbar':{
+        __element:'div'
     },
 
     //spaghetti in my pockets
@@ -142,6 +393,10 @@ workers.load({
                     let canvas = div.querySelector('#chart') as HTMLCanvasElement;
                     let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
                 
+                    (max3010xChartSettings.lines as any).hr = {sps:1, nSec:100, units:'bpm'};
+                    (max3010xChartSettings.lines as any).hrv = {sps:1, nSec:100, units:'bpm'};
+                    (max3010xChartSettings.lines as any).breath = {sps:1, nSec:100, units:'bpm'};
+
                     let plotter = new WGLPlotter({
                         canvas,
                         overlay,
@@ -335,5 +590,13 @@ workers.load({
                 __element:'hr'
             }
         }
-    }
+    },
+
+    'csvs':{
+        __element:'div',
+        style:{ height:'200px', overflowY:'scroll', font:'Arial, Helvetica, sans-serif', fontSize:'10px' },
+        __onrender:function(elm) {
+            visualizeDirectory('data', this.__props as HTMLElement);
+        }
+    } as HTMLNodeProperties
 });
