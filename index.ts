@@ -50,20 +50,6 @@ workers.load({
     state:state,
     detected:detected,
 
-    'test': {
-        __element:'button',
-        innerHTML:'0',
-        onclick:function() { 
-            state.test++; 
-        },
-        __listeners:{
-            'state.test':function(out) {
-                this.innerHTML = out;
-                console.log('incr', state.test, this);
-            }
-        }
-    },
-
     'connect':{
         __element:'button',
         innerHTML:'Connect Device',
@@ -426,7 +412,7 @@ workers.load({
                 innerText:'Latest::',
                 __listeners:{
                     'state.ppg':function(data) {
-                        this.__props.innerText = `Latest:: Red: ${data.red[data.red.length-1]}; IR: ${data.ir[data.ir.length-1]}; Die Temp: ${data.max_dietemp};`
+                        this.innerText = `Latest:: Red: ${data.red[data.red.length-1]}; IR: ${data.ir[data.ir.length-1]}; Die Temp: ${data.max_dietemp};`
                     }
                 }
             },
@@ -478,7 +464,7 @@ workers.load({
                 innerText:'Latest::',
                 __listeners:{
                     'state.imu':function(data) {
-                        this.__props.innerText = `Latest:: AX: ${data.ax[data.ax.length-1]}; AY: ${data.ay[data.ay.length-1]}; AZ: ${data.ay[data.ay.length-1]}; GX: ${data.ay[data.ay.length-1]}; GY: ${data.ay[data.ay.length-1]}; GZ: ${data.ay[data.ay.length-1]}; DIE_TEMP: ${data.mpu_dietemp}`
+                        this.innerText = `Latest:: AX: ${data.ax[data.ax.length-1]}; AY: ${data.ay[data.ay.length-1]}; AZ: ${data.ay[data.ay.length-1]}; GX: ${data.ay[data.ay.length-1]}; GY: ${data.ay[data.ay.length-1]}; GZ: ${data.ay[data.ay.length-1]}; DIE_TEMP: ${data.mpu_dietemp}`
                     }
                 }
             },
@@ -530,7 +516,7 @@ workers.load({
                 innerText:'Latest::',
                 __listeners:{
                     'state.env':function(data) {
-                        this.__props.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity[data.humidity.length-1]};`
+                        this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity[data.humidity.length-1]};`
                     }
                 }
             },
@@ -582,7 +568,7 @@ workers.load({
                 innerText:'Latest::',
                 __listeners:{
                     'state.emg':function(data) {
-                        this.__props.innerText = `Latest:: 0:${data['0'][data['0'].length-1]}; 1:${data['1'][data['1'].length-1]}; 2:${data['2'][data['2'].length-1]}; 3:${data['3'][data['3'].length-1]}; 4:${data['4'][data['4'].length-1]}; 5:${data['5'][data['5'].length-1]}; 6:${data['6'][data['6'].length-1]}; 7:${data['7'][data['7'].length-1]};`;
+                        this.innerText = `Latest:: 0:${data['0'][data['0'].length-1]}; 1:${data['1'][data['1'].length-1]}; 2:${data['2'][data['2'].length-1]}; 3:${data['3'][data['3'].length-1]}; 4:${data['4'][data['4'].length-1]}; 5:${data['5'][data['5'].length-1]}; 6:${data['6'][data['6'].length-1]}; 7:${data['7'][data['7'].length-1]};`;
                     }
                 }
             },
