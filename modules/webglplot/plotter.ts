@@ -2,7 +2,7 @@ import {WebglLinePlotUtil, WebglLinePlotProps} from 'graphscript-services';//'..
 
 import canvasworker from './canvas.worker'
 
-import { CanvasControls, CanvasProps, workerCanvasRoutes } from 'graphscript/services/worker/WorkerCanvas' //../../../GraphServiceRouter/services/worker/WorkerCanvas'//'graphscript/services/worker/WorkerCanvas';
+import { CanvasControls, CanvasProps, workerCanvasRoutes } from 'graphscript/src/services/worker/WorkerCanvas' //../../../GraphServiceRouter/services/worker/WorkerCanvas'//'graphscript/services/worker/WorkerCanvas';
 
 type WGPlotterOptions = CanvasProps & {
     overlay?:HTMLCanvasElement, 

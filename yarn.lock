@@ -52,17 +52,17 @@
   "resolved" "https://registry.npmjs.org/bson-objectid/-/bson-objectid-2.0.4.tgz"
   "version" "2.0.4"
 
-"device-decoder@^0.3.5":
-  "integrity" "sha512-F2D61UWMXl/MC1PMX5EIt5y4nx8vA2MHeu//uvctKzFbCXbLiS9Qv/JE3avbxgGe3Mt/mW+4nlwNlAwBdv75iQ=="
-  "resolved" "https://registry.npmjs.org/device-decoder/-/device-decoder-0.3.5.tgz"
-  "version" "0.3.5"
+"device-decoder@^0.3.8":
+  "integrity" "sha512-+CO10OWBbQf+CvrRY9rnqV3diQADSdaTPmz23ti6LAkrHKLGWbllxNCeQD1At8Wd32edJP7yMjPTNblBzEtabA=="
+  "resolved" "https://registry.npmjs.org/device-decoder/-/device-decoder-0.3.8.tgz"
+  "version" "0.3.8"
   dependencies:
     "@capacitor-community/bluetooth-le" "~2.0.1"
     "brainsatplay-math" "~0.0.25"
-    "graphscript" "~0.2.27"
-    "graphscript-services" "~0.2.27"
-    "graphscript-services.gpu" "~0.2.27"
-    "graphscript-services.storage" "~0.2.27"
+    "graphscript" "~0.2.30"
+    "graphscript-services" "~0.2.33"
+    "graphscript-services.gpu" "~0.2.33"
+    "graphscript-services.storage" "~0.2.33"
     "webgl-plot-utils" "~0.3.15"
 
 "gpujsutils@~1.0.12":
@@ -70,10 +70,10 @@
   "resolved" "https://registry.npmjs.org/gpujsutils/-/gpujsutils-1.0.12.tgz"
   "version" "1.0.12"
 
-"graphscript-services.gpu@~0.2.27":
-  "integrity" "sha512-5+0O7aPXg8qc2xk/CJFPRuqrRDIyOKkgknxlDXqRnvqUf0LkwmREHaiAslwVZQIAgml471AU1GsAhoajdr7b6A=="
-  "resolved" "https://registry.npmjs.org/graphscript-services.gpu/-/graphscript-services.gpu-0.2.27.tgz"
-  "version" "0.2.27"
+"graphscript-services.gpu@~0.2.33":
+  "integrity" "sha512-d+S/kNp08R9dLEmc/bk6JRvznpazSsT1bas4MgFSdNT5fko0H8jdc7MaTVKtUzEZUEMfn81p4CM4QcrcRgNRcg=="
+  "resolved" "https://registry.npmjs.org/graphscript-services.gpu/-/graphscript-services.gpu-0.2.33.tgz"
+  "version" "0.2.33"
   dependencies:
     "brainsatplay-math" "~0.0.25"
     "browserfs" "^1.4.3"
@@ -81,10 +81,10 @@
     "gpujsutils" "~1.0.12"
     "webgl-plot-utils" "~0.3.15"
 
-"graphscript-services.storage@~0.2.27":
-  "integrity" "sha512-9CdgYwHzSEcfGAJP/4X9Q/gSLWJKGhxWjQcELG/z1c9j+rLN6Fe+btNCsr63UYPew79JlWTvpw/CwOXLqBmINA=="
-  "resolved" "https://registry.npmjs.org/graphscript-services.storage/-/graphscript-services.storage-0.2.27.tgz"
-  "version" "0.2.27"
+"graphscript-services.storage@^0.2.33", "graphscript-services.storage@~0.2.33":
+  "integrity" "sha512-kzOdU36SX3FDosx4mcfzh22zUHHYWbYV2fw97D/Mc3LajFdGIIjOMLHe72PIxABVL2QPpzWdstmj+xVEgHohwQ=="
+  "resolved" "https://registry.npmjs.org/graphscript-services.storage/-/graphscript-services.storage-0.2.33.tgz"
+  "version" "0.2.33"
   dependencies:
     "brainsatplay-math" "~0.0.25"
     "browserfs" "^1.4.3"
@@ -92,10 +92,10 @@
     "gpujsutils" "~1.0.12"
     "webgl-plot-utils" "~0.3.15"
 
-"graphscript-services@^0.2.27", "graphscript-services@~0.2.27":
-  "integrity" "sha512-9KDKkbswyFKV+HN+oyGGMuaqZhOLrXQiLKSpAhD4k973/KiXY2BPLZpZ5pMT2+FJA/WDWXq3RBhHRli4RPJEAw=="
-  "resolved" "https://registry.npmjs.org/graphscript-services/-/graphscript-services-0.2.27.tgz"
-  "version" "0.2.27"
+"graphscript-services@^0.2.33", "graphscript-services@~0.2.33":
+  "integrity" "sha512-4Cf8NREwpT/Jz2v0xUAnTZfGWgExMKk7S8juNJn4gk4KxDWk7AZjiEfcrsPffEb3t3yfhtvXw/icRzpqE1WA+g=="
+  "resolved" "https://registry.npmjs.org/graphscript-services/-/graphscript-services-0.2.33.tgz"
+  "version" "0.2.33"
   dependencies:
     "brainsatplay-math" "~0.0.25"
     "browserfs" "^1.4.3"
@@ -104,10 +104,10 @@
     "web-worker" "^1.2.0"
     "webgl-plot-utils" "~0.3.15"
 
-"graphscript@~0.2.27", "graphscript@~0.2.28":
-  "integrity" "sha512-zLrbekbjiQrnKIhCJtyb0DF5cDvGMkO+JCf/VOAn9paKYWKebI2TmUdzY2qDXdDWRJhO+tliLmDZl7Z7RtG7UQ=="
-  "resolved" "https://registry.npmjs.org/graphscript/-/graphscript-0.2.28.tgz"
-  "version" "0.2.28"
+"graphscript@~0.2.30":
+  "integrity" "sha512-swJL0BHhZdPfmZR3kfBmlvH2geSojrmFDEuib5KghOW6ifWdiLninJjRkvsv3OlZi49uE95d9Yt6XiC7vNsX/A=="
+  "resolved" "https://registry.npmjs.org/graphscript/-/graphscript-0.2.30.tgz"
+  "version" "0.2.30"
   dependencies:
     "better-sse" "~0.8.0"
     "brainsatplay-math" "~0.0.25"
@@ -137,7 +137,7 @@
 
 "tinybuild@file:../../../AppData/Roaming/npm/node_modules/tinybuild":
   "resolved" "file:../../../AppData/Roaming/npm/node_modules/tinybuild"
-  "version" "0.3.190"
+  "version" "0.3.191"
   dependencies:
     "chokidar" "~3.5.3"
     "esbuild" "~0.14.49"

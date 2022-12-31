@@ -1,19 +1,19 @@
-import { FilterSettings, initDevice, workers } from '../device_debugger/src/device.frontend'//"device-decoder";
+import { FilterSettings, initDevice, workers } from 'device-decoder'//"device-decoder";
 
 import plotworker from './modules/webglplot/canvas.worker'
-import gsworker from '../device_debugger/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
+import gsworker from 'device-decoder/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
 
-import { mpu6050ChartSettings } from "device-decoder/devices/mpu6050.js";
-import { max3010xChartSettings } from "device-decoder/devices/max30102.js";
-import { ads131m08ChartSettings } from "device-decoder/devices/ads131m08.js";
-import { bme280ChartSettings } from "device-decoder/devices/bme280.js";
+import { mpu6050ChartSettings } from "device-decoder/src/devices/mpu6050.js";
+import { max3010xChartSettings } from "device-decoder/src/devices/max30102.js";
+import { ads131m08ChartSettings } from "device-decoder/src/devices/ads131m08.js";
+import { bme280ChartSettings } from "device-decoder/src/devices/bme280.js";
 
-import {htmlloader} from '../graphscript/build/main'
+import {htmlloader} from 'graphscript'//'../graphscript/'
 import {Howl} from 'howler'
 
 import {WGLPlotter} from "./modules/webglplot/plotter.js";
-import { visualizeDirectory } from '../graphscript/src/extras/storage/BFS_CSV';
-import { HTMLNodeProperties } from '../graphscript/build/main';
+import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
+import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
 import { Math2 } from 'brainsatplay-math';
 
 //TODO: twilio sms backend

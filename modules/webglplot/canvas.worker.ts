@@ -1,5 +1,5 @@
 
-import { workerCanvasRoutes } from 'graphscript/services/worker/WorkerCanvas';//'../../../graphscript/services/worker/WorkerCanvas'//
+import { workerCanvasRoutes } from 'graphscript/src/services/worker/WorkerCanvas';//'../../../graphscript/services/worker/WorkerCanvas'//
 import {WebglLinePlotUtil} from 'webgl-plot-utils'; //'../../../webgl-plot-utils'//
 //minimal web worker for running offscreen canvases, 
 //no graphscript required
