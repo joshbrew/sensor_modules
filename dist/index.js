@@ -23,10 +23,7 @@
     }
     return to;
   };
-  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-    mod
-  ));
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 
   // node_modules/howler/dist/howler.js
   var require_howler = __commonJS({
@@ -9037,19 +9034,10 @@
       if (newEntries.length < arr.length) {
         let slice = arr.slice(newEntries.length);
         let len = arr.length;
-        arr.splice(
-          0,
-          len,
-          ...slice,
-          ...newEntries
-        );
+        arr.splice(0, len, ...slice, ...newEntries);
       } else if (newEntries.length > arr.length) {
         let len = arr.length;
-        arr.splice(
-          0,
-          len,
-          newEntries.slice(len - newEntries.length)
-        );
+        arr.splice(0, len, newEntries.slice(len - newEntries.length));
       } else {
         arr.splice(0, arr.length, ...newEntries);
       }
@@ -9214,9 +9202,7 @@
   // node_modules/device-decoder/src/util/ByteParser.ts
   var rechk2 = /^([<>])?(([1-9]\d*)?([xcbB?hHiIfdsp]))*$/;
   var refmt2 = /([1-9]\d*)?([xcbB?hHiIfdsp])/g;
-  var str2 = (v2, o, c) => String.fromCharCode(
-    ...new Uint8Array(v2.buffer, v2.byteOffset + o, c)
-  );
+  var str2 = (v2, o, c) => String.fromCharCode(...new Uint8Array(v2.buffer, v2.byteOffset + o, c));
   var rts2 = (v2, o, c, s) => new Uint8Array(v2.buffer, v2.byteOffset + o, c).set(s.split("").map((str4) => str4.charCodeAt(0)));
   var pst2 = (v2, o, c) => str2(v2, o + 1, Math.min(v2.getUint8(o), c - 1));
   var tsp2 = (v2, o, c, s) => {
@@ -9442,9 +9428,7 @@
               fns.push(f(size));
             }
           }
-        })(
-          ...lu(...m.slice(1))
-        );
+        })(...lu(...m.slice(1)));
       }
       const unpack_from = (arrb, offs) => {
         if (arrb.byteLength < (offs | 0) + size) {
@@ -35645,9 +35629,7 @@
       return sum / arr.length;
     }
     static mode(arr) {
-      return arr.sort(
-        (a, b2) => arr.filter((v2) => v2 === a).length - arr.filter((v2) => v2 === b2).length
-      ).pop();
+      return arr.sort((a, b2) => arr.filter((v2) => v2 === a).length - arr.filter((v2) => v2 === b2).length).pop();
     }
     static std(arr, mean = void 0) {
       let avg = mean;
@@ -36661,19 +36643,10 @@
         if (newEntries.length < arr.length) {
           let slice = arr.slice(newEntries.length);
           let len = arr.length;
-          arr.splice(
-            0,
-            len,
-            ...slice,
-            ...newEntries
-          );
+          arr.splice(0, len, ...slice, ...newEntries);
         } else if (newEntries.length > arr.length) {
           let len = arr.length;
-          arr.splice(
-            0,
-            len,
-            newEntries.slice(len - newEntries.length)
-          );
+          arr.splice(0, len, newEntries.slice(len - newEntries.length));
         } else {
           arr.splice(0, arr.length, ...newEntries);
         }
@@ -36960,6 +36933,64 @@
   Object.assign(Math, Math22);
 
   // index.ts
+  var GraphVisualization = class {
+    constructor(info) {
+      this.__element = "div";
+      this.__children = {
+        header: {
+          __element: "div",
+          innerHTML: "Graph Visualization"
+        },
+        chartarea: {
+          getLines: () => {
+            return {};
+          },
+          __element: "div",
+          style: { height: "200px" },
+          __onrender: function(div) {
+            let canvas = div.querySelector("#chart");
+            let overlay = div.querySelector("#overlay");
+            const lines = this.getLines();
+            let plotter = new WGLPlotter({
+              canvas,
+              overlay,
+              lines,
+              worker: canvas_worker_default
+            });
+            if (this.state) {
+              plotter.__listeners = {
+                [`state.${this.state}`]: function(data) {
+                  this.__operator(data);
+                }
+              };
+            }
+            workers.add(plotter);
+          },
+          __children: {
+            chart: {
+              __element: "canvas",
+              style: { height: "100%", width: "100%", backgroundColor: "black" }
+            },
+            overlay: {
+              __element: "canvas",
+              style: { height: "100%", width: "100%", transform: "translateY(-102%)" }
+            }
+          }
+        },
+        readout: {
+          __element: "div",
+          innerText: "Latest::",
+          __listeners: {}
+        },
+        ln: {
+          __element: "hr"
+        }
+      };
+      this.__children.header.innerHTML = info.header;
+      this.__children.readout.__listeners = info.readoutListeners;
+      this.__children.chartarea.getLines = info.getLines;
+    }
+  };
   var state4 = {
     ppg: {},
     emg: {},
@@ -37129,83 +37160,79 @@
               visualizeDirectory("data", document.getElementById("csvs"));
             }
           }, "recording");
-          const device = initDevice(
-            "BLE",
-            "nrf5x",
-            {
-              ondecoded: {
-                "0002cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                  state4.emg = data;
-                  if (!detected.emg)
-                    detected.emg = true;
-                  if (state4.recording) {
-                    csvworkers.emg?.run("appendCSV", data);
-                  }
-                },
-                "0003cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                  state4.ppg = data;
-                  if (!detected.ppg)
-                    detected.ppg = true;
-                  algoworkers.hr?.post("runSubprocess", data);
-                  algoworkers.breath?.post("runSubprocess", data);
-                  if (state4.recording) {
-                    csvworkers.ppg?.run("appendCSV", data);
-                  }
-                },
-                "0004cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                  state4.imu = data;
-                  if (!detected.imu)
-                    detected.imu = true;
-                  if (state4.recording) {
-                    csvworkers.imu?.run("appendCSV", data);
-                  }
-                },
-                "0005cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                  state4.emg2 = data;
-                },
-                "0006cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                  state4.env = data;
-                  if (!detected.env)
-                    detected.env = true;
-                  if (state4.recording) {
-                    csvworkers.env?.run("appendCSV", data);
-                  }
+          const device = initDevice("BLE", "nrf5x", {
+            ondecoded: {
+              "0002cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                state4.emg = data;
+                if (!detected.emg)
+                  detected.emg = true;
+                if (state4.recording) {
+                  csvworkers.emg?.run("appendCSV", data);
                 }
               },
-              onconnect: () => {
-                document.getElementById("record").style.display = "";
-                const sps11 = 250;
-                const gain4 = 32;
-                const nbits4 = 24;
-                const vref4 = 1.2;
-                let defaultsetting6 = {
-                  sps: sps11,
-                  useDCBlock: false,
-                  useBandpass: false,
-                  useLowpass: true,
-                  lowpassHz: 45,
-                  useScaling: true,
-                  scalar: 0.96 * 1e3 * vref4 / (gain4 * (Math.pow(2, nbits4) - 1))
-                };
-                const ads131m08FilterSettings3 = {
-                  "0": JSON.parse(JSON.stringify(defaultsetting6)),
-                  "1": JSON.parse(JSON.stringify(defaultsetting6)),
-                  "2": JSON.parse(JSON.stringify(defaultsetting6)),
-                  "3": JSON.parse(JSON.stringify(defaultsetting6)),
-                  "4": JSON.parse(JSON.stringify(defaultsetting6)),
-                  "5": JSON.parse(JSON.stringify(defaultsetting6)),
-                  "6": JSON.parse(JSON.stringify(defaultsetting6)),
-                  "7": JSON.parse(JSON.stringify(defaultsetting6))
-                };
-                device?.then((res) => {
-                  res.workers.streamworker.run("setFilters", ads131m08FilterSettings3);
-                });
+              "0003cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                state4.ppg = data;
+                if (!detected.ppg)
+                  detected.ppg = true;
+                algoworkers.hr?.post("runSubprocess", data);
+                algoworkers.breath?.post("runSubprocess", data);
+                if (state4.recording) {
+                  csvworkers.ppg?.run("appendCSV", data);
+                }
               },
-              ondisconnect: () => {
-                disconnect();
+              "0004cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                state4.imu = data;
+                if (!detected.imu)
+                  detected.imu = true;
+                if (state4.recording) {
+                  csvworkers.imu?.run("appendCSV", data);
+                }
+              },
+              "0005cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                state4.emg2 = data;
+              },
+              "0006cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                state4.env = data;
+                if (!detected.env)
+                  detected.env = true;
+                if (state4.recording) {
+                  csvworkers.env?.run("appendCSV", data);
+                }
               }
+            },
+            onconnect: () => {
+              document.getElementById("record").style.display = "";
+              const sps11 = 250;
+              const gain4 = 32;
+              const nbits4 = 24;
+              const vref4 = 1.2;
+              let defaultsetting6 = {
+                sps: sps11,
+                useDCBlock: false,
+                useBandpass: false,
+                useLowpass: true,
+                lowpassHz: 45,
+                useScaling: true,
+                scalar: 0.96 * 1e3 * vref4 / (gain4 * (Math.pow(2, nbits4) - 1))
+              };
+              const ads131m08FilterSettings3 = {
+                "0": JSON.parse(JSON.stringify(defaultsetting6)),
+                "1": JSON.parse(JSON.stringify(defaultsetting6)),
+                "2": JSON.parse(JSON.stringify(defaultsetting6)),
+                "3": JSON.parse(JSON.stringify(defaultsetting6)),
+                "4": JSON.parse(JSON.stringify(defaultsetting6)),
+                "5": JSON.parse(JSON.stringify(defaultsetting6)),
+                "6": JSON.parse(JSON.stringify(defaultsetting6)),
+                "7": JSON.parse(JSON.stringify(defaultsetting6))
+              };
+              device?.then((res) => {
+                res.workers.streamworker.run("setFilters", ads131m08FilterSettings3);
+              });
+            },
+            ondisconnect: () => {
+              disconnect();
             }
-          );
+          });
           device?.then(disconnect).catch((err) => {
             disconnect();
           });
@@ -37232,213 +37259,58 @@
     "alertbar": {
       __element: "div"
     },
-    "PPG": {
-      __element: "div",
-      __children: {
-        header: {
-          __element: "div",
-          innerHTML: `PPG Readings`
-        },
-        chartarea: {
-          __element: "div",
-          style: { height: "200px" },
-          __onrender: function(div) {
-            let canvas = div.querySelector("#chart");
-            let overlay = div.querySelector("#overlay");
-            max3010xChartSettings.lines.hr = { sps: 1, nSec: 100, units: "bpm" };
-            max3010xChartSettings.lines.hrv = { sps: 1, nSec: 100, units: "bpm" };
-            max3010xChartSettings.lines.breath = { sps: 1, nSec: 100, units: "bpm" };
-            let plotter = new WGLPlotter({
-              canvas,
-              overlay,
-              lines: max3010xChartSettings.lines,
-              worker: canvas_worker_default
-            });
-            plotter.__listeners = {
-              "state.ppg": function(data) {
-                this.__operator(data);
-              }
-            };
-            workers.add(plotter);
-          },
-          __children: {
-            chart: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", backgroundColor: "black" }
-            },
-            overlay: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", transform: "translateY(-102%)" }
-            }
-          }
-        },
-        readout: {
-          __element: "div",
-          innerText: "Latest::",
-          __listeners: {
-            "state.ppg": function(data) {
-              this.innerText = `Latest:: Red: ${data.red[data.red.length - 1]}; IR: ${data.ir[data.ir.length - 1]}; Die Temp: ${data.max_dietemp};`;
-            }
-          }
-        },
-        ln: {
-          __element: "hr"
+    "PPG": new GraphVisualization({
+      header: "PPG Readings",
+      state: "ppg",
+      readoutListeners: {
+        "state.ppg": function(data) {
+          this.innerText = `Latest:: Red: ${data.red[data.red.length - 1]}; IR: ${data.ir[data.ir.length - 1]}; Die Temp: ${data.max_dietemp};`;
         }
+      },
+      getLines: () => {
+        const lines = { ...max3010xChartSettings.lines };
+        lines.hr = { sps: 1, nSec: 100, units: "bpm" };
+        lines.hrv = { sps: 1, nSec: 100, units: "bpm" };
+        lines.breath = { sps: 1, nSec: 100, units: "bpm" };
+        return lines;
       }
-    },
-    "IMU": {
-      __element: "div",
-      __children: {
-        header: {
-          __element: "div",
-          innerHTML: `IMU Readings`
-        },
-        chartarea: {
-          __element: "div",
-          style: { height: "200px" },
-          __onrender: function(div) {
-            let canvas = div.querySelector("#chart");
-            let overlay = div.querySelector("#overlay");
-            let plotter = new WGLPlotter({
-              canvas,
-              overlay,
-              lines: mpu6050ChartSettings.lines,
-              worker: canvas_worker_default
-            });
-            plotter.__listeners = {
-              "state.imu": function(data) {
-                this.__operator(data);
-              }
-            };
-            workers.add(plotter);
-          },
-          __children: {
-            chart: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", backgroundColor: "black" }
-            },
-            overlay: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", transform: "translateY(-102%)" }
-            }
-          }
-        },
-        readout: {
-          __element: "div",
-          innerText: "Latest::",
-          __listeners: {
-            "state.imu": function(data) {
-              this.innerText = `Latest:: AX: ${data.ax[data.ax.length - 1]}; AY: ${data.ay[data.ay.length - 1]}; AZ: ${data.ay[data.ay.length - 1]}; GX: ${data.ay[data.ay.length - 1]}; GY: ${data.ay[data.ay.length - 1]}; GZ: ${data.ay[data.ay.length - 1]}; DIE_TEMP: ${data.mpu_dietemp}`;
-            }
-          }
-        },
-        ln: {
-          __element: "hr"
+    }),
+    "IMU": new GraphVisualization({
+      header: "IMU Readings",
+      state: "imu",
+      readoutListeners: {
+        "state.imu": function(data) {
+          this.innerText = `Latest:: AX: ${data.ax[data.ax.length - 1]}; AY: ${data.ay[data.ay.length - 1]}; AZ: ${data.ay[data.ay.length - 1]}; GX: ${data.ay[data.ay.length - 1]}; GY: ${data.ay[data.ay.length - 1]}; GZ: ${data.ay[data.ay.length - 1]}; DIE_TEMP: ${data.mpu_dietemp}`;
         }
+      },
+      getLines: () => {
+        return mpu6050ChartSettings.lines;
       }
-    },
-    "ENV": {
-      __element: "div",
-      __children: {
-        header: {
-          __element: "div",
-          innerHTML: `ENV Readings`
-        },
-        chartarea: {
-          __element: "div",
-          style: { height: "200px" },
-          __onrender: function(div) {
-            let canvas = div.querySelector("#chart");
-            let overlay = div.querySelector("#overlay");
-            let plotter = new WGLPlotter({
-              canvas,
-              overlay,
-              lines: bme280ChartSettings.lines,
-              worker: canvas_worker_default
-            });
-            plotter.__listeners = {
-              "state.env": function(data) {
-                this.__operator(data);
-              }
-            };
-            workers.add(plotter);
-          },
-          __children: {
-            chart: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", backgroundColor: "black" }
-            },
-            overlay: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", transform: "translateY(-102%)" }
-            }
-          }
-        },
-        readout: {
-          __element: "div",
-          innerText: "Latest::",
-          __listeners: {
-            "state.env": function(data) {
-              this.innerText = `Latest:: Temp: ${data.temp[data.temp.length - 1]}; Pressure: ${data.pressure[data.pressure.length - 1]}; Altitude: ${data.altitude[data.altitude.length - 1]}; Humidity: ${data.humidity[data.humidity.length - 1]};`;
-            }
-          }
-        },
-        ln: {
-          __element: "hr"
+    }),
+    "ENV": new GraphVisualization({
+      header: "ENV Readings",
+      state: "env",
+      readoutListeners: {
+        "state.env": function(data) {
+          this.innerText = `Latest:: Temp: ${data.temp[data.temp.length - 1]}; Pressure: ${data.pressure[data.pressure.length - 1]}; Altitude: ${data.altitude[data.altitude.length - 1]}; Humidity: ${data.humidity[data.humidity.length - 1]};`;
         }
+      },
+      getLines: () => {
+        return bme280ChartSettings.lines;
       }
-    },
-    "EMG": {
-      __element: "div",
-      __children: {
-        header: {
-          __element: "div",
-          innerHTML: `EMG Readings`
-        },
-        chartarea: {
-          __element: "div",
-          style: { height: "200px" },
-          __onrender: function(div) {
-            let canvas = div.querySelector("#chart");
-            let overlay = div.querySelector("#overlay");
-            let plotter = new WGLPlotter({
-              canvas,
-              overlay,
-              lines: ads131m08ChartSettings2.lines,
-              worker: canvas_worker_default
-            });
-            plotter.__listeners = {
-              "state.emg": function(data) {
-                this.__operator(data);
-              }
-            };
-            workers.add(plotter);
-          },
-          __children: {
-            chart: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", backgroundColor: "black" }
-            },
-            overlay: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", transform: "translateY(-102%)" }
-            }
-          }
-        },
-        readout: {
-          __element: "div",
-          innerText: "Latest::",
-          __listeners: {
-            "state.emg": function(data) {
-              this.innerText = `Latest:: 0:${data["0"][data["0"].length - 1]}; 1:${data["1"][data["1"].length - 1]}; 2:${data["2"][data["2"].length - 1]}; 3:${data["3"][data["3"].length - 1]}; 4:${data["4"][data["4"].length - 1]}; 5:${data["5"][data["5"].length - 1]}; 6:${data["6"][data["6"].length - 1]}; 7:${data["7"][data["7"].length - 1]};`;
-            }
-          }
-        },
-        ln: {
-          __element: "hr"
+    }),
+    "EMG": new GraphVisualization({
+      header: "EMG Readings",
+      state: "emg",
+      readoutListeners: {
+        "state.emg": function(data) {
+          this.innerText = `Latest:: Temp: ${data.temp[data.temp.length - 1]}; Pressure: ${data.pressure[data.pressure.length - 1]}; Altitude: ${data.altitude[data.altitude.length - 1]}; Humidity: ${data.humidity[data.humidity.length - 1]};`;
         }
+      },
+      getLines: () => {
+        return ads131m08ChartSettings2.lines;
       }
-    },
+    }),
     "csvs": {
       __element: "div",
       style: { height: "200px", overflowY: "scroll", font: "Arial, Helvetica, sans-serif", fontSize: "10px" },
