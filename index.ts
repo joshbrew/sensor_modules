@@ -9,13 +9,14 @@ import { ads131m08ChartSettings } from "device-decoder/src/devices/ads131m08.js"
 import { bme280ChartSettings } from "device-decoder/src/devices/bme280.js";
 
 import {htmlloader} from 'graphscript'//'../graphscript/'
-import {Howl} from 'howler'
 
 import {WGLPlotter} from "./modules/webglplot/plotter.js";
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
 import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
 import { Math2 } from 'brainsatplay-math';
 import { ByteParser } from 'device-decoder/src/util/ByteParser';
+
+import Alert from './Alert';
 
 //TODO: twilio sms backend
 
@@ -44,6 +45,14 @@ let breathrateAvgCt = 5;
 let heartrateUpperBound = 150;
 let heartrateLowerBound = 25;
 
+const heartRateAlert = {
+    condition: (value) => (value < heartrateLowerBound) || ( value > heartrateUpperBound),
+    message: (value) => {
+        const relativeString = value < heartrateLowerBound ? 'too low' : 'too high';
+        return `!!! Average Heart Rate is ${relativeString}: ${value} at ${new Date().toISOString()} !!!`
+    }
+}
+
 workers.__node.loaders.html = htmlloader;
 
 function genTimestamps(ct,sps,from?) {
@@ -51,6 +60,8 @@ function genTimestamps(ct,sps,from?) {
     let toInterp = [now - ct*1000/sps, now];
     return ByteParser.upsample(toInterp, ct);
 }
+
+const hrAlert = new Alert(heartRateAlert);
 
 workers.load({
 
@@ -106,20 +117,7 @@ workers.load({
     
                         if(lasthr.length === heartrateAvgCt) {
                             let average = Math2.mean(lasthr);
-                            if(average < heartrateLowerBound) {
-                                new Howl({src:'./sounds/alarm.wav'}).play();
-                                let elm = document.getElementById('alertbar') as HTMLElement;
-                                elm.style.backgroundColor = 'red';
-                                elm.style.color = 'white';
-                                elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
-                            }
-                            if(average > heartrateUpperBound) {
-                                new Howl({src:'./sounds/alarm.wav'}).play();
-                                let elm = document.getElementById('alertbar') as HTMLElement;
-                                elm.style.backgroundColor = 'red';
-                                elm.style.color = 'white';
-                                elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
-                            }
+                            hrAlert.check(average)
                         }
                         //also e.g. erratic readings mean it's likely a bad signal since it would be picking up random noise
                     });
