@@ -38029,7 +38029,7 @@
               state4.ppg = data;
               lasthr.push(heartbeat.bpm);
               if (lasthr.length > heartrateAvgCt)
-                lasthr.pop();
+                lasthr.shift();
               if (lasthr.length === heartrateAvgCt) {
                 let average = Math22.mean(lasthr);
                 if (average < heartrateLowerBound) {
@@ -38077,6 +38077,7 @@
             } else {
               ev2.target.innerHTML = "Disconnect";
               ev2.target.onclick = () => {
+                document.getElementById("record").style.display = "none";
                 clearworkers();
                 controls?.disconnect();
                 ev2.target.innerHTML = "Connect Device";
@@ -38085,13 +38086,12 @@
                 };
               };
             }
-            document.getElementById("record").style.display = "none";
           };
           let sub = workers.subscribe("state", (recording) => {
             if (recording) {
               if (detected.emg)
                 csvworkers.emg?.run("createCSV", [
-                  `data/EMG_${new Date().toISOString()}`,
+                  `data/EMG_${new Date().toISOString()}.csv`,
                   [
                     "timestamp",
                     "0",
@@ -38102,7 +38102,7 @@
                 ]);
               if (detected.imu)
                 csvworkers.imu?.run("createCSV", [
-                  `data/IMU_${new Date().toISOString()}`,
+                  `data/IMU_${new Date().toISOString()}.csv`,
                   [
                     "timestamp",
                     "ax",
@@ -38118,7 +38118,7 @@
                 ]);
               if (detected.ppg)
                 csvworkers.ppg?.run("createCSV", [
-                  `data/PPG_${new Date().toISOString()}`,
+                  `data/PPG_${new Date().toISOString()}.csv`,
                   [
                     "timestamp",
                     "red",
@@ -38133,7 +38133,7 @@
                 ]);
               if (detected.env)
                 csvworkers.env?.run("createCSV", [
-                  `data/ENV_${new Date().toISOString()}`,
+                  `data/ENV_${new Date().toISOString()}.csv`,
                   [
                     "timestamp",
                     "temperature",
@@ -38193,6 +38193,7 @@
                 }
               },
               onconnect: () => {
+                console.log("onconnect");
                 document.getElementById("record").style.display = "";
                 const sps11 = 250;
                 const gain4 = 32;
@@ -38203,7 +38204,7 @@
                   useDCBlock: false,
                   useBandpass: false,
                   useLowpass: true,
-                  lowpassHz: 45,
+                  lowpassHz: 30,
                   useScaling: true,
                   scalar: 0.96 * 1e3 * vref4 / (gain4 * (Math.pow(2, nbits4) - 1))
                 };
@@ -38236,7 +38237,6 @@
     "record": {
       __element: "button",
       innerHTML: "Record",
-      style: { display: "none" },
       onclick: function(ev2) {
         this.innerHTML = "Stop Recording";
         state4.recording = true;
