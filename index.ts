@@ -102,9 +102,10 @@ workers.load({
                         state.ppg = data;
     
                         lasthr.push(heartbeat.bpm);
-                        if(lasthr.length > heartrateAvgCt) lasthr.pop();
+                        if(lasthr.length > heartrateAvgCt) lasthr.shift();
     
                         if(lasthr.length === heartrateAvgCt) {
+                            //console.log(lasthr)
                             let average = Math2.mean(lasthr);
                             if(average < heartrateLowerBound) {
                                 new Howl({src:'./sounds/alarm.wav'}).play();
@@ -168,6 +169,7 @@ workers.load({
                     } else {
                         ev.target.innerHTML = 'Disconnect'
                         ev.target.onclick = () => {
+                            (document.getElementById('record') as HTMLElement).style.display = 'none';
                             clearworkers();
                             controls?.disconnect();
                             ev.target.innerHTML = "Connect Device";
@@ -177,14 +179,14 @@ workers.load({
                         }
                     }
 
-                    (document.getElementById('record') as HTMLElement).style.display = 'none';
+                    
                 }
     
                 let sub = workers.subscribe('state',(recording)=>{
                     if(recording) {
     
                         if(detected.emg) csvworkers.emg?.run('createCSV', [
-                            `data/EMG_${new Date().toISOString()}`,
+                            `data/EMG_${new Date().toISOString()}.csv`,
                             [   
                                 'timestamp',
                                 '0','1' //only record the first two channels for now (so much data!!)
@@ -194,7 +196,7 @@ workers.load({
                         ]);
     
                         if(detected.imu) csvworkers.imu?.run('createCSV', [
-                            `data/IMU_${new Date().toISOString()}`,
+                            `data/IMU_${new Date().toISOString()}.csv`,
                             [   
                                 'timestamp',
                                 'ax','ay','az','gx','gy','gz','mpu_dietemp'
@@ -204,7 +206,7 @@ workers.load({
                         ]);
     
                         if(detected.ppg) csvworkers.ppg?.run('createCSV', [
-                            `data/PPG_${new Date().toISOString()}`,
+                            `data/PPG_${new Date().toISOString()}.csv`,
                             [   
                                 'timestamp',
                                 'red','ir','hr','spo2','breath','max_dietemp'
@@ -214,7 +216,7 @@ workers.load({
                         ]);
     
                         if(detected.env) csvworkers.env?.run('createCSV', [
-                            `data/ENV_${new Date().toISOString()}`,
+                            `data/ENV_${new Date().toISOString()}.csv`,
                             [   
                                 'timestamp',
                                 'temperature','pressure','humidity','altitude'
@@ -295,7 +297,7 @@ workers.load({
                         },
                         onconnect:() => {
 
-                            
+                            console.log('onconnect');
                             (document.getElementById('record') as HTMLElement).style.display = '';
                             
                             const sps = 250;      
@@ -308,7 +310,7 @@ workers.load({
                                 useDCBlock:false, 
                                 useBandpass:false, 
                                 useLowpass:true,
-                                lowpassHz:45,
+                                lowpassHz:30,
                                 // bandpassLower:3, 
                                 // bandpassUpper:45, 
                                 useScaling:true, 
@@ -353,7 +355,7 @@ workers.load({
 
         __element:'button',
         innerHTML:'Record',
-        style:{display:'none'},
+        //style:{display:'none'},
         onclick:function (ev){ 
             this.innerHTML = 'Stop Recording'
 
