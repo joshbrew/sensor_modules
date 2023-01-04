@@ -1,7 +1,7 @@
-import { FilterSettings, initDevice, workers } from 'device-decoder'//"device-decoder";
+import { FilterSettings, initDevice, workers } from '../device_debugger/src/device.frontend'//"device-decoder";
 
 import plotworker from './modules/webglplot/canvas.worker'
-import gsworker from 'device-decoder/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
+import gsworker from '../device_debugger/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
 
 import { mpu6050ChartSettings } from "device-decoder/src/devices/mpu6050.js";
 import { max3010xChartSettings } from "device-decoder/src/devices/max30102.js";
@@ -15,6 +15,7 @@ import {WGLPlotter} from "./modules/webglplot/plotter.js";
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
 import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
 import { Math2 } from 'brainsatplay-math';
+import { ByteParser } from 'device-decoder/src/util/ByteParser';
 
 //TODO: twilio sms backend
 
@@ -45,6 +46,12 @@ let heartrateLowerBound = 25;
 
 workers.__node.loaders.html = htmlloader;
 
+function genTimestamps(ct,sps,from?) {
+    let now = from ? from : Date.now();
+    let toInterp = [now - ct*1000/sps, now];
+    return ByteParser.upsample(toInterp, ct);
+}
+
 workers.load({
 
     state:state,
@@ -69,80 +76,80 @@ workers.load({
                     breath:workers.addWorker({url:gsworker})
                 };
     
-                algoworkers.hr?.run('createSubprocess', ['heartrate',{sps:100}]);
-                algoworkers.breath?.run('createSubprocess', ['breath',{sps:100}]);
-    
                 let lasthr = [] as number[];
 
-                algoworkers.hr?.subscribe('runSubprocess',(
-                    heartbeat:{
-                        bpm: number,
-                        change: number, //i.e. HRV, higher is better if it is oscillating nicely with breathing
-                        height0: number,
-                        height1: number,
-                        timestamp: number
-                    }
-                ) => {
-                    const data = {
-                        hr:heartbeat.bpm,
-                        hrv:heartbeat.change,
-                        timestamp:heartbeat.timestamp
-                    }
+                algoworkers.hr?.run('createSubprocess', ['heartrate',{sps:100}]).then((id) => {
 
-                    if(state.recording) {
-                        csvworkers.ppg?.run('appendCSV',data); //forward to csv thread (should use the message channel commands instead)
-                    }
-
-                    state.ppg = data;
-
-                    lasthr.push(heartbeat.bpm);
-                    if(lasthr.length > heartrateAvgCt) lasthr.pop();
-
-                    if(lasthr.length === heartrateAvgCt) {
-                        let average = Math2.mean(lasthr);
-                        if(average < heartrateLowerBound) {
-                            new Howl({src:'./sounds/alarm.wav'}).play();
-                            let elm = document.getElementById('alertbar') as HTMLElement;
-                            elm.style.backgroundColor = 'red';
-                            elm.style.color = 'white';
-                            elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
+                    algoworkers.hr?.subscribe(id,(
+                        heartbeat:{
+                            bpm: number,
+                            change: number, //i.e. HRV, higher is better if it is oscillating nicely with breathing
+                            height0: number,
+                            height1: number,
+                            timestamp: number
                         }
-                        if(average > heartrateUpperBound) {
-                            new Howl({src:'./sounds/alarm.wav'}).play();
-                            let elm = document.getElementById('alertbar') as HTMLElement;
-                            elm.style.backgroundColor = 'red';
-                            elm.style.color = 'white';
-                            elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
+                    ) => {
+                        const data = {
+                            hr:heartbeat.bpm,
+                            hrv:heartbeat.change,
+                            timestamp:heartbeat.timestamp
                         }
-                    }
-                    //also e.g. erratic readings mean it's likely a bad signal since it would be picking up random noise
+    
+                        if(state.recording) {
+                            csvworkers.ppg?.run('appendCSV',data); //forward to csv thread (should use the message channel commands instead)
+                        }
+    
+                        state.ppg = data;
+    
+                        lasthr.push(heartbeat.bpm);
+                        if(lasthr.length > heartrateAvgCt) lasthr.pop();
+    
+                        if(lasthr.length === heartrateAvgCt) {
+                            let average = Math2.mean(lasthr);
+                            if(average < heartrateLowerBound) {
+                                new Howl({src:'./sounds/alarm.wav'}).play();
+                                let elm = document.getElementById('alertbar') as HTMLElement;
+                                elm.style.backgroundColor = 'red';
+                                elm.style.color = 'white';
+                                elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
+                            }
+                            if(average > heartrateUpperBound) {
+                                new Howl({src:'./sounds/alarm.wav'}).play();
+                                let elm = document.getElementById('alertbar') as HTMLElement;
+                                elm.style.backgroundColor = 'red';
+                                elm.style.color = 'white';
+                                elm.innerHTML = (`!!! Average Heart Rate is too low: ${average} at ${new Date().toISOString()} !!!`);
+                            }
+                        }
+                        //also e.g. erratic readings mean it's likely a bad signal since it would be picking up random noise
+                    });
                 });
+                algoworkers.breath?.run('createSubprocess', ['breath',{sps:100}]).then((id) => {
+                    algoworkers.breath?.subscribe(id,(
+                        breath:{
+                            bpm: number,
+                            change: number, //lower is better
+                            height0: number, 
+                            height1: number,
+                            timestamp: number
+                        }
+                    ) => {
+                        const data = {
+                            breath:breath.bpm,
+                            brv:breath.change,
+                            timestamp:breath.timestamp
+                        }
+                        
+                        if(state.recording) {
+                            csvworkers.ppg?.run('appendCSV',data); //forward to csv thread (should use the message channel commands instead)
+                        }
+    
+                        state.ppg = data;
+                    });
+                });
+    
 
     
-                algoworkers.breath?.subscribe('runSubprocess',(
-                    breath:{
-                        bpm: number,
-                        change: number, //lower is better
-                        height0: number, 
-                        height1: number,
-                        timestamp: number
-                    }
-                ) => {
-                    
-
-                    const data = {
-                        breath:breath.bpm,
-                        brv:breath.change,
-                        timestamp:breath.timestamp
-                    }
-                    
-                    if(state.recording) {
-                        csvworkers.ppg?.run('appendCSV',data); //forward to csv thread (should use the message channel commands instead)
-                    }
-
-                    state.ppg = data;
-                    
-                });
 
                 let clearworkers = () => {
                     for(const key in csvworkers) {
@@ -218,7 +225,7 @@ workers.load({
                     } else {
                         visualizeDirectory('data', document.getElementById('csvs') as HTMLElement);
                     }
-                },'recording');
+                },undefined, 'recording');
     
                 const device = initDevice(
                     'BLE',
@@ -243,8 +250,11 @@ workers.load({
                                 state.ppg = data;
                                 
                                 if(!detected.ppg) detected.ppg = true;
-                                algoworkers.hr?.post('runSubprocess', data);
-                                algoworkers.breath?.post('runSubprocess', data);
+
+                                let d = Object.assign({},data);
+                                d.timestamp = genTimestamps(32, 100, data.timestamp) as any;
+                                algoworkers.hr?.post('runSubprocess', d);
+                                algoworkers.breath?.post('runSubprocess', d);
     
                                 if(state.recording) {
                                     csvworkers.ppg?.run('appendCSV',data);
@@ -374,7 +384,7 @@ workers.load({
             },
             chartarea:{
                 __element:'div',
-                style:{height:'200px'},
+                style:{height:'300px'},
                 __onrender:function(div:HTMLElement){    
                     let canvas = div.querySelector('#chart') as HTMLCanvasElement;
                     let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
@@ -387,7 +397,8 @@ workers.load({
                         canvas,
                         overlay,
                         lines:max3010xChartSettings.lines as any,
-                        worker:plotworker
+                        worker:plotworker,
+                        generateNewLines:false
                     });
 
                     (plotter as any).__listeners = {
@@ -412,7 +423,7 @@ workers.load({
                 innerText:'Latest::',
                 __listeners:{
                     'state.ppg':function(data) {
-                        this.innerText = `Latest:: Red: ${data.red[data.red.length-1]}; IR: ${data.ir[data.ir.length-1]}; Die Temp: ${data.max_dietemp};`
+                        if(data?.red) this.innerText = `Latest:: Red: ${data.red[data.red.length-1]}; IR: ${data.ir[data.ir.length-1]}; Die Temp: ${data.max_dietemp};`
                     }
                 }
             },
@@ -421,6 +432,7 @@ workers.load({
             }
         }
     },
+
     'IMU':{
         __element:'div',
         __children:{
@@ -430,7 +442,7 @@ workers.load({
             },
             chartarea:{
                 __element:'div',
-                style:{height:'200px'},
+                style:{height:'300px'},
                 __onrender:function(div:HTMLElement){    
                     let canvas = div.querySelector('#chart') as HTMLCanvasElement;
                     let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
@@ -439,7 +451,8 @@ workers.load({
                         canvas,
                         overlay,
                         lines:mpu6050ChartSettings.lines as any,
-                        worker:plotworker
+                        worker:plotworker,
+                        generateNewLines:false
                     });
 
                     (plotter as any).__listeners = {
@@ -473,58 +486,7 @@ workers.load({
             }
         }
     },
-    'ENV':{
-        __element:'div',
-        __children:{
-            header:{
-                __element:'div',
-                innerHTML:`ENV Readings`
-            },
-            chartarea:{
-                __element:'div',
-                style:{height:'200px'},
-                __onrender:function(div:HTMLElement){    
-                    let canvas = div.querySelector('#chart') as HTMLCanvasElement;
-                    let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
-                
-                    let plotter = new WGLPlotter({
-                        canvas,
-                        overlay,
-                        lines:bme280ChartSettings.lines as any,
-                        worker:plotworker
-                    });
 
-                    (plotter as any).__listeners = {
-                        'state.env':function(data) { this.__operator(data); }
-                    }
-
-                    workers.add(plotter);
-                },
-                __children:{
-                    chart:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', backgroundColor:'black'}
-                    },
-                    overlay:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
-                    }
-                }
-            },
-            readout:{
-                __element:'div',
-                innerText:'Latest::',
-                __listeners:{
-                    'state.env':function(data) {
-                        this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity[data.humidity.length-1]};`
-                    }
-                }
-            },
-            ln:{
-                __element:'hr'
-            }
-        }
-    },
     'EMG':{
         __element:'div',
         __children:{
@@ -534,7 +496,7 @@ workers.load({
             },
             chartarea:{
                 __element:'div',
-                style:{height:'200px'},
+                style:{height:'300px'},
                 __onrender:function(div:HTMLElement){    
                     let canvas = div.querySelector('#chart') as HTMLCanvasElement;
                     let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
@@ -542,8 +504,12 @@ workers.load({
                     let plotter = new WGLPlotter({
                         canvas,
                         overlay,
-                        lines:ads131m08ChartSettings.lines as any,
-                        worker:plotworker
+                        lines:{
+                            0:ads131m08ChartSettings.lines?.['0'] as any,
+                            1:ads131m08ChartSettings.lines?.['1'] as any
+                        },
+                        worker:plotworker,
+                        generateNewLines:false
                     });
 
                     (plotter as any).__listeners = {
@@ -578,6 +544,60 @@ workers.load({
         }
     },
 
+    'ENV':{
+        __element:'div',
+        __children:{
+            header:{
+                __element:'div',
+                innerHTML:`ENV Readings`
+            },
+            chartarea:{
+                __element:'div',
+                style:{height:'300px'},
+                __onrender:function(div:HTMLElement){    
+                    let canvas = div.querySelector('#chart') as HTMLCanvasElement;
+                    let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
+                
+                    let plotter = new WGLPlotter({
+                        canvas,
+                        overlay,
+                        lines:bme280ChartSettings.lines as any,
+                        worker:plotworker,
+                        generateNewLines:false
+                    });
+
+                    (plotter as any).__listeners = {
+                        'state.env':function(data) { this.__operator(data); }
+                    }
+
+                    workers.add(plotter);
+                },
+                __children:{
+                    chart:{
+                        __element:'canvas',
+                        style:{height:'100%', width:'100%', backgroundColor:'black'}
+                    },
+                    overlay:{
+                        __element:'canvas',
+                        style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
+                    }
+                }
+            },
+            readout:{
+                __element:'div',
+                innerText:'Latest::',
+                __listeners:{
+                    'state.env':function(data) {
+                        this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity?.[data.humidity?.length-1]};`
+                    }
+                }
+            },
+            ln:{
+                __element:'hr'
+            }
+        }
+    },
+    
     'csvs':{
         __element:'div',
         style:{ height:'200px', overflowY:'scroll', font:'Arial, Helvetica, sans-serif', fontSize:'10px' },
