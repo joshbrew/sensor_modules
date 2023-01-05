@@ -36541,14 +36541,16 @@
     name: "arbitrary",
     structs: {},
     oncreate: ((ctx) => {
+      if (typeof ctx.animate === "string")
+        ctx.animate = (0, eval)(ctx.animate);
       console.log("Created!", ctx);
     }).toString(),
     ondata: ((ctx, data) => {
       console.log("Got data!", ctx, data);
-      if (data.animate) {
+      if (ctx.animate) {
         console.error("MUST ANIMATE");
-        const res = data.animate();
-        console.error("MUST ANIMATE", data.animate, res);
+        const res = ctx.animate();
+        console.error("MUST ANIMATE", ctx.animate, res);
       }
       return data;
     }).toString(),
@@ -36571,6 +36573,7 @@
       arbitraryAlgorithm.apply(info.value);
     });
   });
+  arbitraryWorker.run("runSubprocess", Date.now());
 })();
 /*!
  *  Spatial Plugin - Adds support for stereo and 3D audio where Web Audio is supported.

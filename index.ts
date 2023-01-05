@@ -580,14 +580,15 @@ const subprocessTemplate = {
     name:'arbitrary',
     structs:{},
     oncreate: ((ctx:SubprocessContext) => {
+        if(typeof ctx.animate === 'string') ctx.animate = (0,eval)(ctx.animate);
         console.log("Created!", ctx)
     }).toString(),
     ondata: ((ctx:SubprocessContext, data:{[key:string]:any}|any) => {
         console.log("Got data!", ctx, data)
-        if (data.animate) {
+        if (ctx.animate) {
             console.error('MUST ANIMATE')
-            const res = data.animate()
-            console.error('MUST ANIMATE', data.animate, res)
+            const res = ctx.animate()
+            console.error('MUST ANIMATE', ctx.animate, res)
         }
         return data
     }).toString(),
@@ -608,9 +609,11 @@ arbitraryWorker.run('addSubprocessTemplate', [
 
 arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: ((inp) => Math.sin(inp)).toString() }]).then((...args) => {
     console.log("Created!", ...args)
-    const id = args[0] // WHY IS THIS UNDEFINED...
+    const id = args[0] 
     arbitraryWorker.subscribe(id, (info) => {
         console.log("Got", id, info)
         arbitraryAlgorithm.apply(info.value)
     })
 })
+
+arbitraryWorker.run('runSubprocess', Date.now());
