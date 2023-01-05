@@ -1,4 +1,4 @@
-import { FilterSettings, initDevice, workers } from '../device_debugger/src/device.frontend'//"device-decoder";
+import { FilterSettings, initDevice, workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
 
 import plotworker from './modules/webglplot/canvas.worker'
 import gsworker from '../device_debugger/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
@@ -8,7 +8,7 @@ import { max3010xChartSettings } from "device-decoder/src/devices/max30102.js";
 import { ads131m08ChartSettings } from "device-decoder/src/devices/ads131m08.js";
 import { bme280ChartSettings } from "device-decoder/src/devices/bme280.js";
 
-import {htmlloader} from 'graphscript'//'../graphscript/'
+import {htmlloader, SubprocessContext} from 'graphscript'//'../graphscript/'
 
 import {WGLPlotter} from "./modules/webglplot/plotter.js";
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
@@ -17,6 +17,7 @@ import { Math2 } from 'brainsatplay-math';
 import { ByteParser } from 'device-decoder/src/util/ByteParser';
 
 import Alert from './Alert';
+import { accel_gyro } from 'graphscript-services.storage/algorithms/accel_gyro'
 
 //TODO: twilio sms backend
 
@@ -52,6 +53,7 @@ const heartRateAlert = {
         return `!!! Average Heart Rate is ${relativeString}: ${value} at ${new Date().toISOString()} !!!`
     }
 }
+console.log('workers', workers)
 
 workers.__node.loaders.html = htmlloader;
 
@@ -84,9 +86,9 @@ workers.load({
     
                 let algoworkers = {
                     hr:workers.addWorker({url:gsworker}),
-                    breath:workers.addWorker({url:gsworker})
+                    breath:workers.addWorker({url:gsworker}),
                 };
-    
+
                 let lasthr = [] as number[];
 
                 algoworkers.hr?.run('createSubprocess', ['heartrate',{sps:100}]).then((id) => {
@@ -606,3 +608,54 @@ workers.load({
         }
     } as HTMLNodeProperties
 });
+
+
+
+// Mockup Arbitrary Alert
+const arbitraryAlert = new Alert({
+    message: "Arbitrary!",
+    condition: (value) => {
+        return value === 1
+    }
+})
+
+const arbitraryWorker = workers.addWorker({url:gsworker})
+
+const subprocessTemplate = {
+    name:'arbitrary',
+    structs:{},
+    oncreate: ((ctx:SubprocessContext) => {
+        console.log("Created!", ctx)
+    }).toString(),
+    ondata: ((ctx:SubprocessContext, data:{[key:string]:any}|any) => {
+        console.log("Got data!", ctx, data)
+        if (data.animate) {
+            console.error('MUST ANIMATE')
+            const res = data.animate()
+            console.error('MUST ANIMATE', data.animate, res)
+        }
+        return data
+    }).toString(),
+    props:{}
+}
+
+// NOTE: It is not possible to add a subprocess template from the main thread UNLESS YOU MANUALLY STRINGIFY FUNCTIONS
+// We may want to add a worker.add() function that will do this for us
+arbitraryWorker.run('addSubprocessTemplate', [
+    subprocessTemplate.name, 
+    subprocessTemplate.structs,
+    subprocessTemplate.oncreate,
+    subprocessTemplate.ondata,
+    subprocessTemplate.props
+]).then((...args) => {
+    console.log('Set!', ...args)
+}) 
+
+arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: ((...args) => Math.sin(...args)).toString() }]).then((...args) => {
+    console.log("Created!", ...args)
+    const id = args[0] // WHY IS THIS UNDEFINED...
+    arbitraryWorker.subscribe(id, (info) => {
+        console.log("Got", id, info)
+        arbitraryAlert.check(info.value)
+    })
+})

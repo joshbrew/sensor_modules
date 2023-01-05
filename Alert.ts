@@ -4,7 +4,7 @@ export type AlertAlgorithm = (value: number) => boolean;
 
 type AlertSettings = {
     condition: AlertAlgorithm,
-    message: (value: number) => string | string
+    message: string | ((value: number) => string)
 }
 
 class Alert {
