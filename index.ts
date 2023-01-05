@@ -1,6 +1,5 @@
 import { FilterSettings, initDevice, workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
 
-import plotworker from './modules/webglplot/canvas.worker'
 import gsworker from '../device_debugger/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
 
 import { mpu6050ChartSettings } from "device-decoder/src/devices/mpu6050.js";
@@ -10,7 +9,6 @@ import { bme280ChartSettings } from "device-decoder/src/devices/bme280.js";
 
 import {htmlloader, SubprocessContext} from 'graphscript'//'../graphscript/'
 
-import {WGLPlotter} from "./modules/webglplot/plotter.js";
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
 import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
 import { ByteParser } from 'device-decoder/src/util/ByteParser';
@@ -21,69 +19,8 @@ import heartRateAlertSettings from './alerts/heartrate';
 import gyroAlertSettings from './alerts/gyro';
 import Algorithm from "./algorithms/Algorithm";
 
-// import { gyro_gyro } from 'graphscript-services.storage/algorithms/gyro_gyro'
-
-class GraphVisualization { 
-    state?: string 
-    __element = 'div'
-    __children = {
-        header:{
-            __element: 'div',
-            innerHTML: 'Graph Visualization'
-        },
-        chartarea:{
-            getLines:() => {return {} as any},
-            __element:'div',
-            style:{ height:'200px' },
-            __onrender:function(div:HTMLElement){    
-                let canvas = div.querySelector('#chart') as HTMLCanvasElement;
-                let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
-            
-                const lines = this.getLines();
-
-                let plotter = new WGLPlotter({
-                    canvas,
-                    overlay,
-                    lines,
-                    worker:plotworker
-                });
-
-                if (this.state) {
-                    (plotter as any).__listeners = {
-                        [`state.${this.state}`]:function(data) { this.__operator(data); }
-                    }
-                }
-
-                workers.add(plotter);
-            },
-            __children:{
-                chart:{
-                    __element:'canvas',
-                    style:{height:'100%', width:'100%', backgroundColor:'black'}
-                },
-                overlay:{
-                    __element:'canvas',
-                    style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
-                }
-            }
-        },
-        readout:{
-            __element:'div',
-            innerText:'Latest::',
-            __listeners: {}
-        },
-        ln:{
-            __element:'hr'
-        }
-    }
-
-    constructor (info) {
-        this.__children.header.innerHTML = info.header;
-        this.__children.readout.__listeners = info.readoutListeners
-        this.__children.chartarea.getLines = info.getLines;
-    }
-
-}
+// Graph Component Imports
+import Plot from "./components/plot/Plot";
 
 //TODO: twilio sms backend
 
@@ -438,7 +375,7 @@ workers.load({
     },
 
     //spaghetti in my pockets
-    'PPG': new GraphVisualization({
+    'PPG': new Plot({
         header: 'PPG Readings',
         state: 'ppg',
         readoutListeners: {
@@ -455,7 +392,7 @@ workers.load({
             return lines
         }
     }),
-    'IMU':new GraphVisualization({
+    'IMU':new Plot({
         header: 'IMU Readings',
         state: 'imu',
         readoutListeners: {
@@ -468,28 +405,32 @@ workers.load({
             return mpu6050ChartSettings.lines
         }
     }),
-    'ENV':new GraphVisualization({
-        header: 'ENV Readings',
-        state: 'env',
-        readoutListeners: {
-            'state.env':function(data) {
-                this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity[data.humidity.length-1]};`
-            }
-        },
-        getLines: () => {
-            return bme280ChartSettings.lines
-        }
-    }),
-    'EMG': new GraphVisualization({
+    'EMG': new Plot({
         header: 'EMG Readings',
         state: 'emg',
         readoutListeners: {
             'state.emg':function(data) {
-                this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity[data.humidity.length-1]};`
+                this.innerText = this.innerText = `Latest:: 0:${data['0'][data['0'].length-1]}; 1:${data['1'][data['1'].length-1]}; 2:${data['2'][data['2'].length-1]}; 3:${data['3'][data['3'].length-1]}; 4:${data['4'][data['4'].length-1]}; 5:${data['5'][data['5'].length-1]}; 6:${data['6'][data['6'].length-1]}; 7:${data['7'][data['7'].length-1]};`;
             }
         },
         getLines: () => {
-            return ads131m08ChartSettings.lines
+            return {
+                0:ads131m08ChartSettings.lines?.['0'] as any,
+                1:ads131m08ChartSettings.lines?.['1'] as any
+            }
+        }
+    }),
+
+    'ENV':new Plot({
+        header: 'ENV Readings',
+        state: 'env',
+        readoutListeners: {
+            'state.env':function(data) {
+                this.innerText = this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity?.[data.humidity?.length-1]};`
+            }
+        },
+        getLines: () => {
+            return bme280ChartSettings.lines
         }
     }),
     
