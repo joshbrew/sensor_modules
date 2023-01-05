@@ -11,6 +11,7 @@ import {htmlloader, SubprocessContext} from 'graphscript'//'../graphscript/'
 
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
 import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
+import {WebglLineProps} from 'graphscript-services'
 import { ByteParser } from 'device-decoder/src/util/ByteParser';
 
 // Alert Imports
@@ -523,38 +524,34 @@ workers.load({
                     PPG: new Plot({
                         header: 'PPG Readings',
                         state: 'ppg',
-                        getLines: () => {
-                            const lines = { ...max3010xChartSettings.lines} ;
-                            lines.hr = {sps:1, nSec:100, units:'bpm'};
-                            lines.hrv = {sps:1, nSec:100, units:'bpm'};
-                            lines.breath = {sps:1, nSec:100, units:'bpm'};
-                            return lines
+                        lines:  {
+                            ...max3010xChartSettings.lines,
+                            hr: {sps:1, nSec:100, units:'bpm'},
+                            hrv: {sps:1, nSec:100, units:'bpm'},
+                            breath: {sps:1, nSec:100, units:'bpm'}
+
                         }
                     }),
                     IMU:new Plot({
                         header: 'IMU Readings',
                         state: 'imu',
-                        getLines: () => {
-                            return mpu6050ChartSettings.lines
-                        }
+                        lines:  mpu6050ChartSettings.lines as {[key:string]: WebglLineProps}
+                        
                     }),
                     EMG: new Plot({
                         header: 'EMG Readings',
                         state: 'emg',
-                        getLines: () => {
-                            return {
-                                0:ads131m08ChartSettings.lines?.['0'] as any,
-                                1:ads131m08ChartSettings.lines?.['1'] as any
+                        lines: {
+                                0:ads131m08ChartSettings.lines?.['0'] as WebglLineProps,
+                                1:ads131m08ChartSettings.lines?.['1'] as WebglLineProps
                             }
-                        }
                     }),
                 
                     ENV:new Plot({
                         header: 'ENV Readings',
                         state: 'env',
-                        getLines: () => {
-                            return bme280ChartSettings.lines
-                        }
+                        lines: bme280ChartSettings.lines as {[key:string]: WebglLineProps}
+                        
                     }),
 
 

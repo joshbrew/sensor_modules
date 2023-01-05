@@ -2,20 +2,21 @@ import plotworker from './webglplot/canvas.worker'
 import {WGLPlotter} from "./webglplot/plotter.js";
 import { workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
 import Container, { ContainerInfo } from '../Display';
+import {WebglLineProps} from 'graphscript-services'
 
 type PlotInfo = {
     workers?: Plot['workers'],
     state: Plot['state'],
-    getLines: Plot['getLines']
+    lines: WebglLineProps
 } & ContainerInfo
 
-class Plot extends Container{ 
+class Plot extends Container { 
 
     workers = workers // NOTE: This isn't shared if used directly
     
     state?: string 
 
-    getLines?: () => {[key:string]:any} | undefined
+    lines:{ [key:string]:WebglLineProps }
 
     constructor (info: PlotInfo) {
         super(info)
@@ -27,7 +28,7 @@ class Plot extends Container{
                 let canvas = div.querySelector('#chart') as HTMLCanvasElement;
                 let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
             
-                const lines = this.getLines();
+                const lines = this.lines;
 
                 let plotter = new WGLPlotter({
                     canvas,
@@ -60,11 +61,11 @@ class Plot extends Container{
             }
 
         this.state = info.state;
-        this.getLines = info.getLines;
+        this.lines = info.lines;
         if (info.workers) this.workers = info.workers;
         Object.defineProperty(this.__children.body, 'workers', { get: () => this.workers, enumerable: true })
         Object.defineProperty(this.__children.body, 'state', { get: () => this.state, enumerable: true })
-        Object.defineProperty(this.__children.body, 'getLines', { get: () => this.getLines, enumerable: true })
+        Object.defineProperty(this.__children.body, 'lines', { get: () => this.lines, enumerable: true })
 
     }
 
