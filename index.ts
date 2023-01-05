@@ -443,7 +443,7 @@ workers.load({
         state: 'ppg',
         readoutListeners: {
             'state.ppg':function(data) {
-                gyroAlert.check(data.heartrate)
+                hrAlert.check(data.bpm)
                 this.innerText = `Latest:: Red: ${data.red[data.red.length-1]}; IR: ${data.ir[data.ir.length-1]}; Die Temp: ${data.max_dietemp};`
             }
         },
