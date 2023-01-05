@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+}
+html, body { 
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif
+}
+
+body {
+    background-color:#101010;
+    color:white;
+}
+
+#alertbar {
+    background: red;
+    color: white;
+    max-width: 500px;
+    padding: 10px 25px;
+    margin: 25px;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    font-size: 80%;
+}

@@ -13,11 +13,15 @@ import {htmlloader, SubprocessContext} from 'graphscript'//'../graphscript/'
 import {WGLPlotter} from "./modules/webglplot/plotter.js";
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
 import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
-import { Math2 } from 'brainsatplay-math';
 import { ByteParser } from 'device-decoder/src/util/ByteParser';
 
-import Alert from './Alert';
-import { accel_gyro } from 'graphscript-services.storage/algorithms/accel_gyro'
+// Alert Imports
+import Alert from './alerts/Alert';
+import heartRateAlertSettings from './alerts/heartrate';
+import gyroAlertSettings from './alerts/gyro';
+import Algorithm from "./algorithms/Algorithm";
+
+// import { gyro_gyro } from 'graphscript-services.storage/algorithms/gyro_gyro'
 
 //TODO: twilio sms backend
 
@@ -39,22 +43,6 @@ const detected = {
     emg2:false
 };
 
-
-let heartrateAvgCt = 5;
-let breathrateAvgCt = 5;
-
-let heartrateUpperBound = 150;
-let heartrateLowerBound = 25;
-
-const heartRateAlert = {
-    condition: (value) => (value < heartrateLowerBound) || ( value > heartrateUpperBound),
-    message: (value) => {
-        const relativeString = value < heartrateLowerBound ? 'too low' : 'too high';
-        return `!!! Average Heart Rate is ${relativeString}: ${value} at ${new Date().toISOString()} !!!`
-    }
-}
-console.log('workers', workers)
-
 workers.__node.loaders.html = htmlloader;
 
 function genTimestamps(ct,sps,from?) {
@@ -63,7 +51,29 @@ function genTimestamps(ct,sps,from?) {
     return ByteParser.upsample(toInterp, ct);
 }
 
-const hrAlert = new Alert(heartRateAlert);
+const hrAlert = new Alert(heartRateAlertSettings);
+const gyroAlert = new Alert(gyroAlertSettings);
+
+const arbitraryAlertSettings = {
+    message: `<h2>Arbitrary Alert</h2><p>This alert has been thrown</p>`,
+    condition: (value) => {
+        return value === 1
+    }
+}
+const arbitraryAlgorithm = new Algorithm({
+    function: (value) => {
+        console.log('Processing with arbitrary algorithm', value)
+        return value
+    },
+    alert: arbitraryAlertSettings
+})
+
+// Trigger an alert when the user presses 'a'
+window.onkeydown = (ev) => {
+    if (ev.key === 'a') {
+        arbitraryAlgorithm.alert.throw();
+    }
+}
 
 workers.load({
 
@@ -89,8 +99,6 @@ workers.load({
                     breath:workers.addWorker({url:gsworker}),
                 };
 
-                let lasthr = [] as number[];
-
                 algoworkers.hr?.run('createSubprocess', ['heartrate',{sps:100}]).then((id) => {
 
                     algoworkers.hr?.subscribe(id,(
@@ -113,18 +121,9 @@ workers.load({
                         }
     
                         state.ppg = data;
-    
-                        lasthr.push(heartbeat.bpm);
-                        if(lasthr.length > heartrateAvgCt) lasthr.shift();
-    
-                        if(lasthr.length === heartrateAvgCt) {
-                            //console.log(lasthr)
-                            let average = Math2.mean(lasthr);
-                            hrAlert.check(average)
-                        }
-                        //also e.g. erratic readings mean it's likely a bad signal since it would be picking up random noise
                     });
                 });
+
                 algoworkers.breath?.run('createSubprocess', ['breath',{sps:100}]).then((id) => {
                     algoworkers.breath?.subscribe(id,(
                         breath:{
@@ -404,7 +403,10 @@ workers.load({
                     });
 
                     (plotter as any).__listeners = {
-                        'state.ppg':function(data) { this.__operator(data); }
+                        'state.ppg':function(data) { 
+                            hrAlert.check(data.bpm) //also e.g. erratic readings mean it's likely a bad signal since it would be picking up random noise
+                            this.__operator(data); 
+                        }
                     }
 
                     workers.add(plotter);
@@ -458,7 +460,10 @@ workers.load({
                     });
 
                     (plotter as any).__listeners = {
-                        'state.imu':function(data) { this.__operator(data); }
+                        'state.imu':function(data) { 
+                            gyroAlert.check(data.gz)
+                            this.__operator(data); 
+                        }
                     }
 
                     workers.add(plotter);
@@ -612,13 +617,6 @@ workers.load({
 
 
 // Mockup Arbitrary Alert
-const arbitraryAlert = new Alert({
-    message: "Arbitrary!",
-    condition: (value) => {
-        return value === 1
-    }
-})
-
 const arbitraryWorker = workers.addWorker({url:gsworker})
 
 const subprocessTemplate = {
@@ -656,6 +654,6 @@ arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: ((...args) => Mat
     const id = args[0] // WHY IS THIS UNDEFINED...
     arbitraryWorker.subscribe(id, (info) => {
         console.log("Got", id, info)
-        arbitraryAlert.check(info.value)
+        arbitraryAlgorithm.apply(info.value)
     })
 })

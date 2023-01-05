@@ -1,10 +1,4 @@
 (() => {
-  var __create = Object.create;
-  var __defProp = Object.defineProperty;
-  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getProtoOf = Object.getPrototypeOf;
-  var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __require = /* @__PURE__ */ ((x3) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x3, {
     get: (a, b2) => (typeof require !== "undefined" ? require : a)[b2]
   }) : x3)(function(x3) {
@@ -12,8 +6,28 @@
       return require.apply(this, arguments);
     throw new Error('Dynamic require of "' + x3 + '" is not supported');
   });
-  var __commonJS = (cb, mod) => function __require4() {
+
+  // node_modules/device-decoder/dist/device.frontend.esm.js
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __require2 = ((x3) => typeof __require !== "undefined" ? __require : typeof Proxy !== "undefined" ? new Proxy(x3, { get: (a, b2) => (typeof __require !== "undefined" ? __require : a)[b2] }) : x3)(function(x3) {
+    if (typeof __require !== "undefined")
+      return __require.apply(this, arguments);
+    throw new Error('Dynamic require of "' + x3 + '" is not supported');
+  });
+  var __esm = (fn, res) => function __init() {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  };
+  var __commonJS = (cb, mod) => function __require32() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
@@ -24,1988 +38,6 @@
     return to;
   };
   var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
-
-  // node_modules/howler/dist/howler.js
-  var require_howler = __commonJS({
-    "node_modules/howler/dist/howler.js"(exports) {
-      (function() {
-        "use strict";
-        var HowlerGlobal2 = function() {
-          this.init();
-        };
-        HowlerGlobal2.prototype = {
-          init: function() {
-            var self2 = this || Howler2;
-            self2._counter = 1e3;
-            self2._html5AudioPool = [];
-            self2.html5PoolSize = 10;
-            self2._codecs = {};
-            self2._howls = [];
-            self2._muted = false;
-            self2._volume = 1;
-            self2._canPlayEvent = "canplaythrough";
-            self2._navigator = typeof window !== "undefined" && window.navigator ? window.navigator : null;
-            self2.masterGain = null;
-            self2.noAudio = false;
-            self2.usingWebAudio = true;
-            self2.autoSuspend = true;
-            self2.ctx = null;
-            self2.autoUnlock = true;
-            self2._setup();
-            return self2;
-          },
-          volume: function(vol) {
-            var self2 = this || Howler2;
-            vol = parseFloat(vol);
-            if (!self2.ctx) {
-              setupAudioContext();
-            }
-            if (typeof vol !== "undefined" && vol >= 0 && vol <= 1) {
-              self2._volume = vol;
-              if (self2._muted) {
-                return self2;
-              }
-              if (self2.usingWebAudio) {
-                self2.masterGain.gain.setValueAtTime(vol, Howler2.ctx.currentTime);
-              }
-              for (var i = 0; i < self2._howls.length; i++) {
-                if (!self2._howls[i]._webAudio) {
-                  var ids = self2._howls[i]._getSoundIds();
-                  for (var j = 0; j < ids.length; j++) {
-                    var sound = self2._howls[i]._soundById(ids[j]);
-                    if (sound && sound._node) {
-                      sound._node.volume = sound._volume * vol;
-                    }
-                  }
-                }
-              }
-              return self2;
-            }
-            return self2._volume;
-          },
-          mute: function(muted) {
-            var self2 = this || Howler2;
-            if (!self2.ctx) {
-              setupAudioContext();
-            }
-            self2._muted = muted;
-            if (self2.usingWebAudio) {
-              self2.masterGain.gain.setValueAtTime(muted ? 0 : self2._volume, Howler2.ctx.currentTime);
-            }
-            for (var i = 0; i < self2._howls.length; i++) {
-              if (!self2._howls[i]._webAudio) {
-                var ids = self2._howls[i]._getSoundIds();
-                for (var j = 0; j < ids.length; j++) {
-                  var sound = self2._howls[i]._soundById(ids[j]);
-                  if (sound && sound._node) {
-                    sound._node.muted = muted ? true : sound._muted;
-                  }
-                }
-              }
-            }
-            return self2;
-          },
-          stop: function() {
-            var self2 = this || Howler2;
-            for (var i = 0; i < self2._howls.length; i++) {
-              self2._howls[i].stop();
-            }
-            return self2;
-          },
-          unload: function() {
-            var self2 = this || Howler2;
-            for (var i = self2._howls.length - 1; i >= 0; i--) {
-              self2._howls[i].unload();
-            }
-            if (self2.usingWebAudio && self2.ctx && typeof self2.ctx.close !== "undefined") {
-              self2.ctx.close();
-              self2.ctx = null;
-              setupAudioContext();
-            }
-            return self2;
-          },
-          codecs: function(ext) {
-            return (this || Howler2)._codecs[ext.replace(/^x-/, "")];
-          },
-          _setup: function() {
-            var self2 = this || Howler2;
-            self2.state = self2.ctx ? self2.ctx.state || "suspended" : "suspended";
-            self2._autoSuspend();
-            if (!self2.usingWebAudio) {
-              if (typeof Audio !== "undefined") {
-                try {
-                  var test = new Audio();
-                  if (typeof test.oncanplaythrough === "undefined") {
-                    self2._canPlayEvent = "canplay";
-                  }
-                } catch (e) {
-                  self2.noAudio = true;
-                }
-              } else {
-                self2.noAudio = true;
-              }
-            }
-            try {
-              var test = new Audio();
-              if (test.muted) {
-                self2.noAudio = true;
-              }
-            } catch (e) {
-            }
-            if (!self2.noAudio) {
-              self2._setupCodecs();
-            }
-            return self2;
-          },
-          _setupCodecs: function() {
-            var self2 = this || Howler2;
-            var audioTest = null;
-            try {
-              audioTest = typeof Audio !== "undefined" ? new Audio() : null;
-            } catch (err) {
-              return self2;
-            }
-            if (!audioTest || typeof audioTest.canPlayType !== "function") {
-              return self2;
-            }
-            var mpegTest = audioTest.canPlayType("audio/mpeg;").replace(/^no$/, "");
-            var ua = self2._navigator ? self2._navigator.userAgent : "";
-            var checkOpera = ua.match(/OPR\/([0-6].)/g);
-            var isOldOpera = checkOpera && parseInt(checkOpera[0].split("/")[1], 10) < 33;
-            var checkSafari = ua.indexOf("Safari") !== -1 && ua.indexOf("Chrome") === -1;
-            var safariVersion = ua.match(/Version\/(.*?) /);
-            var isOldSafari = checkSafari && safariVersion && parseInt(safariVersion[1], 10) < 15;
-            self2._codecs = {
-              mp3: !!(!isOldOpera && (mpegTest || audioTest.canPlayType("audio/mp3;").replace(/^no$/, ""))),
-              mpeg: !!mpegTest,
-              opus: !!audioTest.canPlayType('audio/ogg; codecs="opus"').replace(/^no$/, ""),
-              ogg: !!audioTest.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/, ""),
-              oga: !!audioTest.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/, ""),
-              wav: !!(audioTest.canPlayType('audio/wav; codecs="1"') || audioTest.canPlayType("audio/wav")).replace(/^no$/, ""),
-              aac: !!audioTest.canPlayType("audio/aac;").replace(/^no$/, ""),
-              caf: !!audioTest.canPlayType("audio/x-caf;").replace(/^no$/, ""),
-              m4a: !!(audioTest.canPlayType("audio/x-m4a;") || audioTest.canPlayType("audio/m4a;") || audioTest.canPlayType("audio/aac;")).replace(/^no$/, ""),
-              m4b: !!(audioTest.canPlayType("audio/x-m4b;") || audioTest.canPlayType("audio/m4b;") || audioTest.canPlayType("audio/aac;")).replace(/^no$/, ""),
-              mp4: !!(audioTest.canPlayType("audio/x-mp4;") || audioTest.canPlayType("audio/mp4;") || audioTest.canPlayType("audio/aac;")).replace(/^no$/, ""),
-              weba: !!(!isOldSafari && audioTest.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/, "")),
-              webm: !!(!isOldSafari && audioTest.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/, "")),
-              dolby: !!audioTest.canPlayType('audio/mp4; codecs="ec-3"').replace(/^no$/, ""),
-              flac: !!(audioTest.canPlayType("audio/x-flac;") || audioTest.canPlayType("audio/flac;")).replace(/^no$/, "")
-            };
-            return self2;
-          },
-          _unlockAudio: function() {
-            var self2 = this || Howler2;
-            if (self2._audioUnlocked || !self2.ctx) {
-              return;
-            }
-            self2._audioUnlocked = false;
-            self2.autoUnlock = false;
-            if (!self2._mobileUnloaded && self2.ctx.sampleRate !== 44100) {
-              self2._mobileUnloaded = true;
-              self2.unload();
-            }
-            self2._scratchBuffer = self2.ctx.createBuffer(1, 1, 22050);
-            var unlock = function(e) {
-              while (self2._html5AudioPool.length < self2.html5PoolSize) {
-                try {
-                  var audioNode = new Audio();
-                  audioNode._unlocked = true;
-                  self2._releaseHtml5Audio(audioNode);
-                } catch (e2) {
-                  self2.noAudio = true;
-                  break;
-                }
-              }
-              for (var i = 0; i < self2._howls.length; i++) {
-                if (!self2._howls[i]._webAudio) {
-                  var ids = self2._howls[i]._getSoundIds();
-                  for (var j = 0; j < ids.length; j++) {
-                    var sound = self2._howls[i]._soundById(ids[j]);
-                    if (sound && sound._node && !sound._node._unlocked) {
-                      sound._node._unlocked = true;
-                      sound._node.load();
-                    }
-                  }
-                }
-              }
-              self2._autoResume();
-              var source = self2.ctx.createBufferSource();
-              source.buffer = self2._scratchBuffer;
-              source.connect(self2.ctx.destination);
-              if (typeof source.start === "undefined") {
-                source.noteOn(0);
-              } else {
-                source.start(0);
-              }
-              if (typeof self2.ctx.resume === "function") {
-                self2.ctx.resume();
-              }
-              source.onended = function() {
-                source.disconnect(0);
-                self2._audioUnlocked = true;
-                document.removeEventListener("touchstart", unlock, true);
-                document.removeEventListener("touchend", unlock, true);
-                document.removeEventListener("click", unlock, true);
-                document.removeEventListener("keydown", unlock, true);
-                for (var i2 = 0; i2 < self2._howls.length; i2++) {
-                  self2._howls[i2]._emit("unlock");
-                }
-              };
-            };
-            document.addEventListener("touchstart", unlock, true);
-            document.addEventListener("touchend", unlock, true);
-            document.addEventListener("click", unlock, true);
-            document.addEventListener("keydown", unlock, true);
-            return self2;
-          },
-          _obtainHtml5Audio: function() {
-            var self2 = this || Howler2;
-            if (self2._html5AudioPool.length) {
-              return self2._html5AudioPool.pop();
-            }
-            var testPlay = new Audio().play();
-            if (testPlay && typeof Promise !== "undefined" && (testPlay instanceof Promise || typeof testPlay.then === "function")) {
-              testPlay.catch(function() {
-                console.warn("HTML5 Audio pool exhausted, returning potentially locked audio object.");
-              });
-            }
-            return new Audio();
-          },
-          _releaseHtml5Audio: function(audio) {
-            var self2 = this || Howler2;
-            if (audio._unlocked) {
-              self2._html5AudioPool.push(audio);
-            }
-            return self2;
-          },
-          _autoSuspend: function() {
-            var self2 = this;
-            if (!self2.autoSuspend || !self2.ctx || typeof self2.ctx.suspend === "undefined" || !Howler2.usingWebAudio) {
-              return;
-            }
-            for (var i = 0; i < self2._howls.length; i++) {
-              if (self2._howls[i]._webAudio) {
-                for (var j = 0; j < self2._howls[i]._sounds.length; j++) {
-                  if (!self2._howls[i]._sounds[j]._paused) {
-                    return self2;
-                  }
-                }
-              }
-            }
-            if (self2._suspendTimer) {
-              clearTimeout(self2._suspendTimer);
-            }
-            self2._suspendTimer = setTimeout(function() {
-              if (!self2.autoSuspend) {
-                return;
-              }
-              self2._suspendTimer = null;
-              self2.state = "suspending";
-              var handleSuspension = function() {
-                self2.state = "suspended";
-                if (self2._resumeAfterSuspend) {
-                  delete self2._resumeAfterSuspend;
-                  self2._autoResume();
-                }
-              };
-              self2.ctx.suspend().then(handleSuspension, handleSuspension);
-            }, 3e4);
-            return self2;
-          },
-          _autoResume: function() {
-            var self2 = this;
-            if (!self2.ctx || typeof self2.ctx.resume === "undefined" || !Howler2.usingWebAudio) {
-              return;
-            }
-            if (self2.state === "running" && self2.ctx.state !== "interrupted" && self2._suspendTimer) {
-              clearTimeout(self2._suspendTimer);
-              self2._suspendTimer = null;
-            } else if (self2.state === "suspended" || self2.state === "running" && self2.ctx.state === "interrupted") {
-              self2.ctx.resume().then(function() {
-                self2.state = "running";
-                for (var i = 0; i < self2._howls.length; i++) {
-                  self2._howls[i]._emit("resume");
-                }
-              });
-              if (self2._suspendTimer) {
-                clearTimeout(self2._suspendTimer);
-                self2._suspendTimer = null;
-              }
-            } else if (self2.state === "suspending") {
-              self2._resumeAfterSuspend = true;
-            }
-            return self2;
-          }
-        };
-        var Howler2 = new HowlerGlobal2();
-        var Howl3 = function(o) {
-          var self2 = this;
-          if (!o.src || o.src.length === 0) {
-            console.error("An array of source files must be passed with any new Howl.");
-            return;
-          }
-          self2.init(o);
-        };
-        Howl3.prototype = {
-          init: function(o) {
-            var self2 = this;
-            if (!Howler2.ctx) {
-              setupAudioContext();
-            }
-            self2._autoplay = o.autoplay || false;
-            self2._format = typeof o.format !== "string" ? o.format : [o.format];
-            self2._html5 = o.html5 || false;
-            self2._muted = o.mute || false;
-            self2._loop = o.loop || false;
-            self2._pool = o.pool || 5;
-            self2._preload = typeof o.preload === "boolean" || o.preload === "metadata" ? o.preload : true;
-            self2._rate = o.rate || 1;
-            self2._sprite = o.sprite || {};
-            self2._src = typeof o.src !== "string" ? o.src : [o.src];
-            self2._volume = o.volume !== void 0 ? o.volume : 1;
-            self2._xhr = {
-              method: o.xhr && o.xhr.method ? o.xhr.method : "GET",
-              headers: o.xhr && o.xhr.headers ? o.xhr.headers : null,
-              withCredentials: o.xhr && o.xhr.withCredentials ? o.xhr.withCredentials : false
-            };
-            self2._duration = 0;
-            self2._state = "unloaded";
-            self2._sounds = [];
-            self2._endTimers = {};
-            self2._queue = [];
-            self2._playLock = false;
-            self2._onend = o.onend ? [{ fn: o.onend }] : [];
-            self2._onfade = o.onfade ? [{ fn: o.onfade }] : [];
-            self2._onload = o.onload ? [{ fn: o.onload }] : [];
-            self2._onloaderror = o.onloaderror ? [{ fn: o.onloaderror }] : [];
-            self2._onplayerror = o.onplayerror ? [{ fn: o.onplayerror }] : [];
-            self2._onpause = o.onpause ? [{ fn: o.onpause }] : [];
-            self2._onplay = o.onplay ? [{ fn: o.onplay }] : [];
-            self2._onstop = o.onstop ? [{ fn: o.onstop }] : [];
-            self2._onmute = o.onmute ? [{ fn: o.onmute }] : [];
-            self2._onvolume = o.onvolume ? [{ fn: o.onvolume }] : [];
-            self2._onrate = o.onrate ? [{ fn: o.onrate }] : [];
-            self2._onseek = o.onseek ? [{ fn: o.onseek }] : [];
-            self2._onunlock = o.onunlock ? [{ fn: o.onunlock }] : [];
-            self2._onresume = [];
-            self2._webAudio = Howler2.usingWebAudio && !self2._html5;
-            if (typeof Howler2.ctx !== "undefined" && Howler2.ctx && Howler2.autoUnlock) {
-              Howler2._unlockAudio();
-            }
-            Howler2._howls.push(self2);
-            if (self2._autoplay) {
-              self2._queue.push({
-                event: "play",
-                action: function() {
-                  self2.play();
-                }
-              });
-            }
-            if (self2._preload && self2._preload !== "none") {
-              self2.load();
-            }
-            return self2;
-          },
-          load: function() {
-            var self2 = this;
-            var url5 = null;
-            if (Howler2.noAudio) {
-              self2._emit("loaderror", null, "No audio support.");
-              return;
-            }
-            if (typeof self2._src === "string") {
-              self2._src = [self2._src];
-            }
-            for (var i = 0; i < self2._src.length; i++) {
-              var ext, str4;
-              if (self2._format && self2._format[i]) {
-                ext = self2._format[i];
-              } else {
-                str4 = self2._src[i];
-                if (typeof str4 !== "string") {
-                  self2._emit("loaderror", null, "Non-string found in selected audio sources - ignoring.");
-                  continue;
-                }
-                ext = /^data:audio\/([^;,]+);/i.exec(str4);
-                if (!ext) {
-                  ext = /\.([^.]+)$/.exec(str4.split("?", 1)[0]);
-                }
-                if (ext) {
-                  ext = ext[1].toLowerCase();
-                }
-              }
-              if (!ext) {
-                console.warn('No file extension was found. Consider using the "format" property or specify an extension.');
-              }
-              if (ext && Howler2.codecs(ext)) {
-                url5 = self2._src[i];
-                break;
-              }
-            }
-            if (!url5) {
-              self2._emit("loaderror", null, "No codec support for selected audio sources.");
-              return;
-            }
-            self2._src = url5;
-            self2._state = "loading";
-            if (window.location.protocol === "https:" && url5.slice(0, 5) === "http:") {
-              self2._html5 = true;
-              self2._webAudio = false;
-            }
-            new Sound2(self2);
-            if (self2._webAudio) {
-              loadBuffer(self2);
-            }
-            return self2;
-          },
-          play: function(sprite, internal) {
-            var self2 = this;
-            var id = null;
-            if (typeof sprite === "number") {
-              id = sprite;
-              sprite = null;
-            } else if (typeof sprite === "string" && self2._state === "loaded" && !self2._sprite[sprite]) {
-              return null;
-            } else if (typeof sprite === "undefined") {
-              sprite = "__default";
-              if (!self2._playLock) {
-                var num = 0;
-                for (var i = 0; i < self2._sounds.length; i++) {
-                  if (self2._sounds[i]._paused && !self2._sounds[i]._ended) {
-                    num++;
-                    id = self2._sounds[i]._id;
-                  }
-                }
-                if (num === 1) {
-                  sprite = null;
-                } else {
-                  id = null;
-                }
-              }
-            }
-            var sound = id ? self2._soundById(id) : self2._inactiveSound();
-            if (!sound) {
-              return null;
-            }
-            if (id && !sprite) {
-              sprite = sound._sprite || "__default";
-            }
-            if (self2._state !== "loaded") {
-              sound._sprite = sprite;
-              sound._ended = false;
-              var soundId = sound._id;
-              self2._queue.push({
-                event: "play",
-                action: function() {
-                  self2.play(soundId);
-                }
-              });
-              return soundId;
-            }
-            if (id && !sound._paused) {
-              if (!internal) {
-                self2._loadQueue("play");
-              }
-              return sound._id;
-            }
-            if (self2._webAudio) {
-              Howler2._autoResume();
-            }
-            var seek = Math.max(0, sound._seek > 0 ? sound._seek : self2._sprite[sprite][0] / 1e3);
-            var duration = Math.max(0, (self2._sprite[sprite][0] + self2._sprite[sprite][1]) / 1e3 - seek);
-            var timeout = duration * 1e3 / Math.abs(sound._rate);
-            var start = self2._sprite[sprite][0] / 1e3;
-            var stop = (self2._sprite[sprite][0] + self2._sprite[sprite][1]) / 1e3;
-            sound._sprite = sprite;
-            sound._ended = false;
-            var setParams = function() {
-              sound._paused = false;
-              sound._seek = seek;
-              sound._start = start;
-              sound._stop = stop;
-              sound._loop = !!(sound._loop || self2._sprite[sprite][2]);
-            };
-            if (seek >= stop) {
-              self2._ended(sound);
-              return;
-            }
-            var node = sound._node;
-            if (self2._webAudio) {
-              var playWebAudio = function() {
-                self2._playLock = false;
-                setParams();
-                self2._refreshBuffer(sound);
-                var vol = sound._muted || self2._muted ? 0 : sound._volume;
-                node.gain.setValueAtTime(vol, Howler2.ctx.currentTime);
-                sound._playStart = Howler2.ctx.currentTime;
-                if (typeof node.bufferSource.start === "undefined") {
-                  sound._loop ? node.bufferSource.noteGrainOn(0, seek, 86400) : node.bufferSource.noteGrainOn(0, seek, duration);
-                } else {
-                  sound._loop ? node.bufferSource.start(0, seek, 86400) : node.bufferSource.start(0, seek, duration);
-                }
-                if (timeout !== Infinity) {
-                  self2._endTimers[sound._id] = setTimeout(self2._ended.bind(self2, sound), timeout);
-                }
-                if (!internal) {
-                  setTimeout(function() {
-                    self2._emit("play", sound._id);
-                    self2._loadQueue();
-                  }, 0);
-                }
-              };
-              if (Howler2.state === "running" && Howler2.ctx.state !== "interrupted") {
-                playWebAudio();
-              } else {
-                self2._playLock = true;
-                self2.once("resume", playWebAudio);
-                self2._clearTimer(sound._id);
-              }
-            } else {
-              var playHtml5 = function() {
-                node.currentTime = seek;
-                node.muted = sound._muted || self2._muted || Howler2._muted || node.muted;
-                node.volume = sound._volume * Howler2.volume();
-                node.playbackRate = sound._rate;
-                try {
-                  var play = node.play();
-                  if (play && typeof Promise !== "undefined" && (play instanceof Promise || typeof play.then === "function")) {
-                    self2._playLock = true;
-                    setParams();
-                    play.then(function() {
-                      self2._playLock = false;
-                      node._unlocked = true;
-                      if (!internal) {
-                        self2._emit("play", sound._id);
-                      } else {
-                        self2._loadQueue();
-                      }
-                    }).catch(function() {
-                      self2._playLock = false;
-                      self2._emit("playerror", sound._id, "Playback was unable to start. This is most commonly an issue on mobile devices and Chrome where playback was not within a user interaction.");
-                      sound._ended = true;
-                      sound._paused = true;
-                    });
-                  } else if (!internal) {
-                    self2._playLock = false;
-                    setParams();
-                    self2._emit("play", sound._id);
-                  }
-                  node.playbackRate = sound._rate;
-                  if (node.paused) {
-                    self2._emit("playerror", sound._id, "Playback was unable to start. This is most commonly an issue on mobile devices and Chrome where playback was not within a user interaction.");
-                    return;
-                  }
-                  if (sprite !== "__default" || sound._loop) {
-                    self2._endTimers[sound._id] = setTimeout(self2._ended.bind(self2, sound), timeout);
-                  } else {
-                    self2._endTimers[sound._id] = function() {
-                      self2._ended(sound);
-                      node.removeEventListener("ended", self2._endTimers[sound._id], false);
-                    };
-                    node.addEventListener("ended", self2._endTimers[sound._id], false);
-                  }
-                } catch (err) {
-                  self2._emit("playerror", sound._id, err);
-                }
-              };
-              if (node.src === "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA") {
-                node.src = self2._src;
-                node.load();
-              }
-              var loadedNoReadyState = window && window.ejecta || !node.readyState && Howler2._navigator.isCocoonJS;
-              if (node.readyState >= 3 || loadedNoReadyState) {
-                playHtml5();
-              } else {
-                self2._playLock = true;
-                self2._state = "loading";
-                var listener = function() {
-                  self2._state = "loaded";
-                  playHtml5();
-                  node.removeEventListener(Howler2._canPlayEvent, listener, false);
-                };
-                node.addEventListener(Howler2._canPlayEvent, listener, false);
-                self2._clearTimer(sound._id);
-              }
-            }
-            return sound._id;
-          },
-          pause: function(id) {
-            var self2 = this;
-            if (self2._state !== "loaded" || self2._playLock) {
-              self2._queue.push({
-                event: "pause",
-                action: function() {
-                  self2.pause(id);
-                }
-              });
-              return self2;
-            }
-            var ids = self2._getSoundIds(id);
-            for (var i = 0; i < ids.length; i++) {
-              self2._clearTimer(ids[i]);
-              var sound = self2._soundById(ids[i]);
-              if (sound && !sound._paused) {
-                sound._seek = self2.seek(ids[i]);
-                sound._rateSeek = 0;
-                sound._paused = true;
-                self2._stopFade(ids[i]);
-                if (sound._node) {
-                  if (self2._webAudio) {
-                    if (!sound._node.bufferSource) {
-                      continue;
-                    }
-                    if (typeof sound._node.bufferSource.stop === "undefined") {
-                      sound._node.bufferSource.noteOff(0);
-                    } else {
-                      sound._node.bufferSource.stop(0);
-                    }
-                    self2._cleanBuffer(sound._node);
-                  } else if (!isNaN(sound._node.duration) || sound._node.duration === Infinity) {
-                    sound._node.pause();
-                  }
-                }
-              }
-              if (!arguments[1]) {
-                self2._emit("pause", sound ? sound._id : null);
-              }
-            }
-            return self2;
-          },
-          stop: function(id, internal) {
-            var self2 = this;
-            if (self2._state !== "loaded" || self2._playLock) {
-              self2._queue.push({
-                event: "stop",
-                action: function() {
-                  self2.stop(id);
-                }
-              });
-              return self2;
-            }
-            var ids = self2._getSoundIds(id);
-            for (var i = 0; i < ids.length; i++) {
-              self2._clearTimer(ids[i]);
-              var sound = self2._soundById(ids[i]);
-              if (sound) {
-                sound._seek = sound._start || 0;
-                sound._rateSeek = 0;
-                sound._paused = true;
-                sound._ended = true;
-                self2._stopFade(ids[i]);
-                if (sound._node) {
-                  if (self2._webAudio) {
-                    if (sound._node.bufferSource) {
-                      if (typeof sound._node.bufferSource.stop === "undefined") {
-                        sound._node.bufferSource.noteOff(0);
-                      } else {
-                        sound._node.bufferSource.stop(0);
-                      }
-                      self2._cleanBuffer(sound._node);
-                    }
-                  } else if (!isNaN(sound._node.duration) || sound._node.duration === Infinity) {
-                    sound._node.currentTime = sound._start || 0;
-                    sound._node.pause();
-                    if (sound._node.duration === Infinity) {
-                      self2._clearSound(sound._node);
-                    }
-                  }
-                }
-                if (!internal) {
-                  self2._emit("stop", sound._id);
-                }
-              }
-            }
-            return self2;
-          },
-          mute: function(muted, id) {
-            var self2 = this;
-            if (self2._state !== "loaded" || self2._playLock) {
-              self2._queue.push({
-                event: "mute",
-                action: function() {
-                  self2.mute(muted, id);
-                }
-              });
-              return self2;
-            }
-            if (typeof id === "undefined") {
-              if (typeof muted === "boolean") {
-                self2._muted = muted;
-              } else {
-                return self2._muted;
-              }
-            }
-            var ids = self2._getSoundIds(id);
-            for (var i = 0; i < ids.length; i++) {
-              var sound = self2._soundById(ids[i]);
-              if (sound) {
-                sound._muted = muted;
-                if (sound._interval) {
-                  self2._stopFade(sound._id);
-                }
-                if (self2._webAudio && sound._node) {
-                  sound._node.gain.setValueAtTime(muted ? 0 : sound._volume, Howler2.ctx.currentTime);
-                } else if (sound._node) {
-                  sound._node.muted = Howler2._muted ? true : muted;
-                }
-                self2._emit("mute", sound._id);
-              }
-            }
-            return self2;
-          },
-          volume: function() {
-            var self2 = this;
-            var args = arguments;
-            var vol, id;
-            if (args.length === 0) {
-              return self2._volume;
-            } else if (args.length === 1 || args.length === 2 && typeof args[1] === "undefined") {
-              var ids = self2._getSoundIds();
-              var index = ids.indexOf(args[0]);
-              if (index >= 0) {
-                id = parseInt(args[0], 10);
-              } else {
-                vol = parseFloat(args[0]);
-              }
-            } else if (args.length >= 2) {
-              vol = parseFloat(args[0]);
-              id = parseInt(args[1], 10);
-            }
-            var sound;
-            if (typeof vol !== "undefined" && vol >= 0 && vol <= 1) {
-              if (self2._state !== "loaded" || self2._playLock) {
-                self2._queue.push({
-                  event: "volume",
-                  action: function() {
-                    self2.volume.apply(self2, args);
-                  }
-                });
-                return self2;
-              }
-              if (typeof id === "undefined") {
-                self2._volume = vol;
-              }
-              id = self2._getSoundIds(id);
-              for (var i = 0; i < id.length; i++) {
-                sound = self2._soundById(id[i]);
-                if (sound) {
-                  sound._volume = vol;
-                  if (!args[2]) {
-                    self2._stopFade(id[i]);
-                  }
-                  if (self2._webAudio && sound._node && !sound._muted) {
-                    sound._node.gain.setValueAtTime(vol, Howler2.ctx.currentTime);
-                  } else if (sound._node && !sound._muted) {
-                    sound._node.volume = vol * Howler2.volume();
-                  }
-                  self2._emit("volume", sound._id);
-                }
-              }
-            } else {
-              sound = id ? self2._soundById(id) : self2._sounds[0];
-              return sound ? sound._volume : 0;
-            }
-            return self2;
-          },
-          fade: function(from, to, len, id) {
-            var self2 = this;
-            if (self2._state !== "loaded" || self2._playLock) {
-              self2._queue.push({
-                event: "fade",
-                action: function() {
-                  self2.fade(from, to, len, id);
-                }
-              });
-              return self2;
-            }
-            from = Math.min(Math.max(0, parseFloat(from)), 1);
-            to = Math.min(Math.max(0, parseFloat(to)), 1);
-            len = parseFloat(len);
-            self2.volume(from, id);
-            var ids = self2._getSoundIds(id);
-            for (var i = 0; i < ids.length; i++) {
-              var sound = self2._soundById(ids[i]);
-              if (sound) {
-                if (!id) {
-                  self2._stopFade(ids[i]);
-                }
-                if (self2._webAudio && !sound._muted) {
-                  var currentTime = Howler2.ctx.currentTime;
-                  var end = currentTime + len / 1e3;
-                  sound._volume = from;
-                  sound._node.gain.setValueAtTime(from, currentTime);
-                  sound._node.gain.linearRampToValueAtTime(to, end);
-                }
-                self2._startFadeInterval(sound, from, to, len, ids[i], typeof id === "undefined");
-              }
-            }
-            return self2;
-          },
-          _startFadeInterval: function(sound, from, to, len, id, isGroup) {
-            var self2 = this;
-            var vol = from;
-            var diff = to - from;
-            var steps = Math.abs(diff / 0.01);
-            var stepLen = Math.max(4, steps > 0 ? len / steps : len);
-            var lastTick = Date.now();
-            sound._fadeTo = to;
-            sound._interval = setInterval(function() {
-              var tick = (Date.now() - lastTick) / len;
-              lastTick = Date.now();
-              vol += diff * tick;
-              vol = Math.round(vol * 100) / 100;
-              if (diff < 0) {
-                vol = Math.max(to, vol);
-              } else {
-                vol = Math.min(to, vol);
-              }
-              if (self2._webAudio) {
-                sound._volume = vol;
-              } else {
-                self2.volume(vol, sound._id, true);
-              }
-              if (isGroup) {
-                self2._volume = vol;
-              }
-              if (to < from && vol <= to || to > from && vol >= to) {
-                clearInterval(sound._interval);
-                sound._interval = null;
-                sound._fadeTo = null;
-                self2.volume(to, sound._id);
-                self2._emit("fade", sound._id);
-              }
-            }, stepLen);
-          },
-          _stopFade: function(id) {
-            var self2 = this;
-            var sound = self2._soundById(id);
-            if (sound && sound._interval) {
-              if (self2._webAudio) {
-                sound._node.gain.cancelScheduledValues(Howler2.ctx.currentTime);
-              }
-              clearInterval(sound._interval);
-              sound._interval = null;
-              self2.volume(sound._fadeTo, id);
-              sound._fadeTo = null;
-              self2._emit("fade", id);
-            }
-            return self2;
-          },
-          loop: function() {
-            var self2 = this;
-            var args = arguments;
-            var loop3, id, sound;
-            if (args.length === 0) {
-              return self2._loop;
-            } else if (args.length === 1) {
-              if (typeof args[0] === "boolean") {
-                loop3 = args[0];
-                self2._loop = loop3;
-              } else {
-                sound = self2._soundById(parseInt(args[0], 10));
-                return sound ? sound._loop : false;
-              }
-            } else if (args.length === 2) {
-              loop3 = args[0];
-              id = parseInt(args[1], 10);
-            }
-            var ids = self2._getSoundIds(id);
-            for (var i = 0; i < ids.length; i++) {
-              sound = self2._soundById(ids[i]);
-              if (sound) {
-                sound._loop = loop3;
-                if (self2._webAudio && sound._node && sound._node.bufferSource) {
-                  sound._node.bufferSource.loop = loop3;
-                  if (loop3) {
-                    sound._node.bufferSource.loopStart = sound._start || 0;
-                    sound._node.bufferSource.loopEnd = sound._stop;
-                    if (self2.playing(ids[i])) {
-                      self2.pause(ids[i], true);
-                      self2.play(ids[i], true);
-                    }
-                  }
-                }
-              }
-            }
-            return self2;
-          },
-          rate: function() {
-            var self2 = this;
-            var args = arguments;
-            var rate, id;
-            if (args.length === 0) {
-              id = self2._sounds[0]._id;
-            } else if (args.length === 1) {
-              var ids = self2._getSoundIds();
-              var index = ids.indexOf(args[0]);
-              if (index >= 0) {
-                id = parseInt(args[0], 10);
-              } else {
-                rate = parseFloat(args[0]);
-              }
-            } else if (args.length === 2) {
-              rate = parseFloat(args[0]);
-              id = parseInt(args[1], 10);
-            }
-            var sound;
-            if (typeof rate === "number") {
-              if (self2._state !== "loaded" || self2._playLock) {
-                self2._queue.push({
-                  event: "rate",
-                  action: function() {
-                    self2.rate.apply(self2, args);
-                  }
-                });
-                return self2;
-              }
-              if (typeof id === "undefined") {
-                self2._rate = rate;
-              }
-              id = self2._getSoundIds(id);
-              for (var i = 0; i < id.length; i++) {
-                sound = self2._soundById(id[i]);
-                if (sound) {
-                  if (self2.playing(id[i])) {
-                    sound._rateSeek = self2.seek(id[i]);
-                    sound._playStart = self2._webAudio ? Howler2.ctx.currentTime : sound._playStart;
-                  }
-                  sound._rate = rate;
-                  if (self2._webAudio && sound._node && sound._node.bufferSource) {
-                    sound._node.bufferSource.playbackRate.setValueAtTime(rate, Howler2.ctx.currentTime);
-                  } else if (sound._node) {
-                    sound._node.playbackRate = rate;
-                  }
-                  var seek = self2.seek(id[i]);
-                  var duration = (self2._sprite[sound._sprite][0] + self2._sprite[sound._sprite][1]) / 1e3 - seek;
-                  var timeout = duration * 1e3 / Math.abs(sound._rate);
-                  if (self2._endTimers[id[i]] || !sound._paused) {
-                    self2._clearTimer(id[i]);
-                    self2._endTimers[id[i]] = setTimeout(self2._ended.bind(self2, sound), timeout);
-                  }
-                  self2._emit("rate", sound._id);
-                }
-              }
-            } else {
-              sound = self2._soundById(id);
-              return sound ? sound._rate : self2._rate;
-            }
-            return self2;
-          },
-          seek: function() {
-            var self2 = this;
-            var args = arguments;
-            var seek, id;
-            if (args.length === 0) {
-              if (self2._sounds.length) {
-                id = self2._sounds[0]._id;
-              }
-            } else if (args.length === 1) {
-              var ids = self2._getSoundIds();
-              var index = ids.indexOf(args[0]);
-              if (index >= 0) {
-                id = parseInt(args[0], 10);
-              } else if (self2._sounds.length) {
-                id = self2._sounds[0]._id;
-                seek = parseFloat(args[0]);
-              }
-            } else if (args.length === 2) {
-              seek = parseFloat(args[0]);
-              id = parseInt(args[1], 10);
-            }
-            if (typeof id === "undefined") {
-              return 0;
-            }
-            if (typeof seek === "number" && (self2._state !== "loaded" || self2._playLock)) {
-              self2._queue.push({
-                event: "seek",
-                action: function() {
-                  self2.seek.apply(self2, args);
-                }
-              });
-              return self2;
-            }
-            var sound = self2._soundById(id);
-            if (sound) {
-              if (typeof seek === "number" && seek >= 0) {
-                var playing = self2.playing(id);
-                if (playing) {
-                  self2.pause(id, true);
-                }
-                sound._seek = seek;
-                sound._ended = false;
-                self2._clearTimer(id);
-                if (!self2._webAudio && sound._node && !isNaN(sound._node.duration)) {
-                  sound._node.currentTime = seek;
-                }
-                var seekAndEmit = function() {
-                  if (playing) {
-                    self2.play(id, true);
-                  }
-                  self2._emit("seek", id);
-                };
-                if (playing && !self2._webAudio) {
-                  var emitSeek = function() {
-                    if (!self2._playLock) {
-                      seekAndEmit();
-                    } else {
-                      setTimeout(emitSeek, 0);
-                    }
-                  };
-                  setTimeout(emitSeek, 0);
-                } else {
-                  seekAndEmit();
-                }
-              } else {
-                if (self2._webAudio) {
-                  var realTime = self2.playing(id) ? Howler2.ctx.currentTime - sound._playStart : 0;
-                  var rateSeek = sound._rateSeek ? sound._rateSeek - sound._seek : 0;
-                  return sound._seek + (rateSeek + realTime * Math.abs(sound._rate));
-                } else {
-                  return sound._node.currentTime;
-                }
-              }
-            }
-            return self2;
-          },
-          playing: function(id) {
-            var self2 = this;
-            if (typeof id === "number") {
-              var sound = self2._soundById(id);
-              return sound ? !sound._paused : false;
-            }
-            for (var i = 0; i < self2._sounds.length; i++) {
-              if (!self2._sounds[i]._paused) {
-                return true;
-              }
-            }
-            return false;
-          },
-          duration: function(id) {
-            var self2 = this;
-            var duration = self2._duration;
-            var sound = self2._soundById(id);
-            if (sound) {
-              duration = self2._sprite[sound._sprite][1] / 1e3;
-            }
-            return duration;
-          },
-          state: function() {
-            return this._state;
-          },
-          unload: function() {
-            var self2 = this;
-            var sounds = self2._sounds;
-            for (var i = 0; i < sounds.length; i++) {
-              if (!sounds[i]._paused) {
-                self2.stop(sounds[i]._id);
-              }
-              if (!self2._webAudio) {
-                self2._clearSound(sounds[i]._node);
-                sounds[i]._node.removeEventListener("error", sounds[i]._errorFn, false);
-                sounds[i]._node.removeEventListener(Howler2._canPlayEvent, sounds[i]._loadFn, false);
-                sounds[i]._node.removeEventListener("ended", sounds[i]._endFn, false);
-                Howler2._releaseHtml5Audio(sounds[i]._node);
-              }
-              delete sounds[i]._node;
-              self2._clearTimer(sounds[i]._id);
-            }
-            var index = Howler2._howls.indexOf(self2);
-            if (index >= 0) {
-              Howler2._howls.splice(index, 1);
-            }
-            var remCache = true;
-            for (i = 0; i < Howler2._howls.length; i++) {
-              if (Howler2._howls[i]._src === self2._src || self2._src.indexOf(Howler2._howls[i]._src) >= 0) {
-                remCache = false;
-                break;
-              }
-            }
-            if (cache && remCache) {
-              delete cache[self2._src];
-            }
-            Howler2.noAudio = false;
-            self2._state = "unloaded";
-            self2._sounds = [];
-            self2 = null;
-            return null;
-          },
-          on: function(event, fn, id, once) {
-            var self2 = this;
-            var events = self2["_on" + event];
-            if (typeof fn === "function") {
-              events.push(once ? { id, fn, once } : { id, fn });
-            }
-            return self2;
-          },
-          off: function(event, fn, id) {
-            var self2 = this;
-            var events = self2["_on" + event];
-            var i = 0;
-            if (typeof fn === "number") {
-              id = fn;
-              fn = null;
-            }
-            if (fn || id) {
-              for (i = 0; i < events.length; i++) {
-                var isId = id === events[i].id;
-                if (fn === events[i].fn && isId || !fn && isId) {
-                  events.splice(i, 1);
-                  break;
-                }
-              }
-            } else if (event) {
-              self2["_on" + event] = [];
-            } else {
-              var keys = Object.keys(self2);
-              for (i = 0; i < keys.length; i++) {
-                if (keys[i].indexOf("_on") === 0 && Array.isArray(self2[keys[i]])) {
-                  self2[keys[i]] = [];
-                }
-              }
-            }
-            return self2;
-          },
-          once: function(event, fn, id) {
-            var self2 = this;
-            self2.on(event, fn, id, 1);
-            return self2;
-          },
-          _emit: function(event, id, msg) {
-            var self2 = this;
-            var events = self2["_on" + event];
-            for (var i = events.length - 1; i >= 0; i--) {
-              if (!events[i].id || events[i].id === id || event === "load") {
-                setTimeout(function(fn) {
-                  fn.call(this, id, msg);
-                }.bind(self2, events[i].fn), 0);
-                if (events[i].once) {
-                  self2.off(event, events[i].fn, events[i].id);
-                }
-              }
-            }
-            self2._loadQueue(event);
-            return self2;
-          },
-          _loadQueue: function(event) {
-            var self2 = this;
-            if (self2._queue.length > 0) {
-              var task = self2._queue[0];
-              if (task.event === event) {
-                self2._queue.shift();
-                self2._loadQueue();
-              }
-              if (!event) {
-                task.action();
-              }
-            }
-            return self2;
-          },
-          _ended: function(sound) {
-            var self2 = this;
-            var sprite = sound._sprite;
-            if (!self2._webAudio && sound._node && !sound._node.paused && !sound._node.ended && sound._node.currentTime < sound._stop) {
-              setTimeout(self2._ended.bind(self2, sound), 100);
-              return self2;
-            }
-            var loop3 = !!(sound._loop || self2._sprite[sprite][2]);
-            self2._emit("end", sound._id);
-            if (!self2._webAudio && loop3) {
-              self2.stop(sound._id, true).play(sound._id);
-            }
-            if (self2._webAudio && loop3) {
-              self2._emit("play", sound._id);
-              sound._seek = sound._start || 0;
-              sound._rateSeek = 0;
-              sound._playStart = Howler2.ctx.currentTime;
-              var timeout = (sound._stop - sound._start) * 1e3 / Math.abs(sound._rate);
-              self2._endTimers[sound._id] = setTimeout(self2._ended.bind(self2, sound), timeout);
-            }
-            if (self2._webAudio && !loop3) {
-              sound._paused = true;
-              sound._ended = true;
-              sound._seek = sound._start || 0;
-              sound._rateSeek = 0;
-              self2._clearTimer(sound._id);
-              self2._cleanBuffer(sound._node);
-              Howler2._autoSuspend();
-            }
-            if (!self2._webAudio && !loop3) {
-              self2.stop(sound._id, true);
-            }
-            return self2;
-          },
-          _clearTimer: function(id) {
-            var self2 = this;
-            if (self2._endTimers[id]) {
-              if (typeof self2._endTimers[id] !== "function") {
-                clearTimeout(self2._endTimers[id]);
-              } else {
-                var sound = self2._soundById(id);
-                if (sound && sound._node) {
-                  sound._node.removeEventListener("ended", self2._endTimers[id], false);
-                }
-              }
-              delete self2._endTimers[id];
-            }
-            return self2;
-          },
-          _soundById: function(id) {
-            var self2 = this;
-            for (var i = 0; i < self2._sounds.length; i++) {
-              if (id === self2._sounds[i]._id) {
-                return self2._sounds[i];
-              }
-            }
-            return null;
-          },
-          _inactiveSound: function() {
-            var self2 = this;
-            self2._drain();
-            for (var i = 0; i < self2._sounds.length; i++) {
-              if (self2._sounds[i]._ended) {
-                return self2._sounds[i].reset();
-              }
-            }
-            return new Sound2(self2);
-          },
-          _drain: function() {
-            var self2 = this;
-            var limit = self2._pool;
-            var cnt = 0;
-            var i = 0;
-            if (self2._sounds.length < limit) {
-              return;
-            }
-            for (i = 0; i < self2._sounds.length; i++) {
-              if (self2._sounds[i]._ended) {
-                cnt++;
-              }
-            }
-            for (i = self2._sounds.length - 1; i >= 0; i--) {
-              if (cnt <= limit) {
-                return;
-              }
-              if (self2._sounds[i]._ended) {
-                if (self2._webAudio && self2._sounds[i]._node) {
-                  self2._sounds[i]._node.disconnect(0);
-                }
-                self2._sounds.splice(i, 1);
-                cnt--;
-              }
-            }
-          },
-          _getSoundIds: function(id) {
-            var self2 = this;
-            if (typeof id === "undefined") {
-              var ids = [];
-              for (var i = 0; i < self2._sounds.length; i++) {
-                ids.push(self2._sounds[i]._id);
-              }
-              return ids;
-            } else {
-              return [id];
-            }
-          },
-          _refreshBuffer: function(sound) {
-            var self2 = this;
-            sound._node.bufferSource = Howler2.ctx.createBufferSource();
-            sound._node.bufferSource.buffer = cache[self2._src];
-            if (sound._panner) {
-              sound._node.bufferSource.connect(sound._panner);
-            } else {
-              sound._node.bufferSource.connect(sound._node);
-            }
-            sound._node.bufferSource.loop = sound._loop;
-            if (sound._loop) {
-              sound._node.bufferSource.loopStart = sound._start || 0;
-              sound._node.bufferSource.loopEnd = sound._stop || 0;
-            }
-            sound._node.bufferSource.playbackRate.setValueAtTime(sound._rate, Howler2.ctx.currentTime);
-            return self2;
-          },
-          _cleanBuffer: function(node) {
-            var self2 = this;
-            var isIOS = Howler2._navigator && Howler2._navigator.vendor.indexOf("Apple") >= 0;
-            if (Howler2._scratchBuffer && node.bufferSource) {
-              node.bufferSource.onended = null;
-              node.bufferSource.disconnect(0);
-              if (isIOS) {
-                try {
-                  node.bufferSource.buffer = Howler2._scratchBuffer;
-                } catch (e) {
-                }
-              }
-            }
-            node.bufferSource = null;
-            return self2;
-          },
-          _clearSound: function(node) {
-            var checkIE = /MSIE |Trident\//.test(Howler2._navigator && Howler2._navigator.userAgent);
-            if (!checkIE) {
-              node.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
-            }
-          }
-        };
-        var Sound2 = function(howl) {
-          this._parent = howl;
-          this.init();
-        };
-        Sound2.prototype = {
-          init: function() {
-            var self2 = this;
-            var parent = self2._parent;
-            self2._muted = parent._muted;
-            self2._loop = parent._loop;
-            self2._volume = parent._volume;
-            self2._rate = parent._rate;
-            self2._seek = 0;
-            self2._paused = true;
-            self2._ended = true;
-            self2._sprite = "__default";
-            self2._id = ++Howler2._counter;
-            parent._sounds.push(self2);
-            self2.create();
-            return self2;
-          },
-          create: function() {
-            var self2 = this;
-            var parent = self2._parent;
-            var volume = Howler2._muted || self2._muted || self2._parent._muted ? 0 : self2._volume;
-            if (parent._webAudio) {
-              self2._node = typeof Howler2.ctx.createGain === "undefined" ? Howler2.ctx.createGainNode() : Howler2.ctx.createGain();
-              self2._node.gain.setValueAtTime(volume, Howler2.ctx.currentTime);
-              self2._node.paused = true;
-              self2._node.connect(Howler2.masterGain);
-            } else if (!Howler2.noAudio) {
-              self2._node = Howler2._obtainHtml5Audio();
-              self2._errorFn = self2._errorListener.bind(self2);
-              self2._node.addEventListener("error", self2._errorFn, false);
-              self2._loadFn = self2._loadListener.bind(self2);
-              self2._node.addEventListener(Howler2._canPlayEvent, self2._loadFn, false);
-              self2._endFn = self2._endListener.bind(self2);
-              self2._node.addEventListener("ended", self2._endFn, false);
-              self2._node.src = parent._src;
-              self2._node.preload = parent._preload === true ? "auto" : parent._preload;
-              self2._node.volume = volume * Howler2.volume();
-              self2._node.load();
-            }
-            return self2;
-          },
-          reset: function() {
-            var self2 = this;
-            var parent = self2._parent;
-            self2._muted = parent._muted;
-            self2._loop = parent._loop;
-            self2._volume = parent._volume;
-            self2._rate = parent._rate;
-            self2._seek = 0;
-            self2._rateSeek = 0;
-            self2._paused = true;
-            self2._ended = true;
-            self2._sprite = "__default";
-            self2._id = ++Howler2._counter;
-            return self2;
-          },
-          _errorListener: function() {
-            var self2 = this;
-            self2._parent._emit("loaderror", self2._id, self2._node.error ? self2._node.error.code : 0);
-            self2._node.removeEventListener("error", self2._errorFn, false);
-          },
-          _loadListener: function() {
-            var self2 = this;
-            var parent = self2._parent;
-            parent._duration = Math.ceil(self2._node.duration * 10) / 10;
-            if (Object.keys(parent._sprite).length === 0) {
-              parent._sprite = { __default: [0, parent._duration * 1e3] };
-            }
-            if (parent._state !== "loaded") {
-              parent._state = "loaded";
-              parent._emit("load");
-              parent._loadQueue();
-            }
-            self2._node.removeEventListener(Howler2._canPlayEvent, self2._loadFn, false);
-          },
-          _endListener: function() {
-            var self2 = this;
-            var parent = self2._parent;
-            if (parent._duration === Infinity) {
-              parent._duration = Math.ceil(self2._node.duration * 10) / 10;
-              if (parent._sprite.__default[1] === Infinity) {
-                parent._sprite.__default[1] = parent._duration * 1e3;
-              }
-              parent._ended(self2);
-            }
-            self2._node.removeEventListener("ended", self2._endFn, false);
-          }
-        };
-        var cache = {};
-        var loadBuffer = function(self2) {
-          var url5 = self2._src;
-          if (cache[url5]) {
-            self2._duration = cache[url5].duration;
-            loadSound(self2);
-            return;
-          }
-          if (/^data:[^;]+;base64,/.test(url5)) {
-            var data = atob(url5.split(",")[1]);
-            var dataView = new Uint8Array(data.length);
-            for (var i = 0; i < data.length; ++i) {
-              dataView[i] = data.charCodeAt(i);
-            }
-            decodeAudioData(dataView.buffer, self2);
-          } else {
-            var xhr = new XMLHttpRequest();
-            xhr.open(self2._xhr.method, url5, true);
-            xhr.withCredentials = self2._xhr.withCredentials;
-            xhr.responseType = "arraybuffer";
-            if (self2._xhr.headers) {
-              Object.keys(self2._xhr.headers).forEach(function(key) {
-                xhr.setRequestHeader(key, self2._xhr.headers[key]);
-              });
-            }
-            xhr.onload = function() {
-              var code = (xhr.status + "")[0];
-              if (code !== "0" && code !== "2" && code !== "3") {
-                self2._emit("loaderror", null, "Failed loading audio file with status: " + xhr.status + ".");
-                return;
-              }
-              decodeAudioData(xhr.response, self2);
-            };
-            xhr.onerror = function() {
-              if (self2._webAudio) {
-                self2._html5 = true;
-                self2._webAudio = false;
-                self2._sounds = [];
-                delete cache[url5];
-                self2.load();
-              }
-            };
-            safeXhrSend(xhr);
-          }
-        };
-        var safeXhrSend = function(xhr) {
-          try {
-            xhr.send();
-          } catch (e) {
-            xhr.onerror();
-          }
-        };
-        var decodeAudioData = function(arraybuffer, self2) {
-          var error = function() {
-            self2._emit("loaderror", null, "Decoding audio data failed.");
-          };
-          var success = function(buffer) {
-            if (buffer && self2._sounds.length > 0) {
-              cache[self2._src] = buffer;
-              loadSound(self2, buffer);
-            } else {
-              error();
-            }
-          };
-          if (typeof Promise !== "undefined" && Howler2.ctx.decodeAudioData.length === 1) {
-            Howler2.ctx.decodeAudioData(arraybuffer).then(success).catch(error);
-          } else {
-            Howler2.ctx.decodeAudioData(arraybuffer, success, error);
-          }
-        };
-        var loadSound = function(self2, buffer) {
-          if (buffer && !self2._duration) {
-            self2._duration = buffer.duration;
-          }
-          if (Object.keys(self2._sprite).length === 0) {
-            self2._sprite = { __default: [0, self2._duration * 1e3] };
-          }
-          if (self2._state !== "loaded") {
-            self2._state = "loaded";
-            self2._emit("load");
-            self2._loadQueue();
-          }
-        };
-        var setupAudioContext = function() {
-          if (!Howler2.usingWebAudio) {
-            return;
-          }
-          try {
-            if (typeof AudioContext !== "undefined") {
-              Howler2.ctx = new AudioContext();
-            } else if (typeof webkitAudioContext !== "undefined") {
-              Howler2.ctx = new webkitAudioContext();
-            } else {
-              Howler2.usingWebAudio = false;
-            }
-          } catch (e) {
-            Howler2.usingWebAudio = false;
-          }
-          if (!Howler2.ctx) {
-            Howler2.usingWebAudio = false;
-          }
-          var iOS = /iP(hone|od|ad)/.test(Howler2._navigator && Howler2._navigator.platform);
-          var appVersion = Howler2._navigator && Howler2._navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
-          var version = appVersion ? parseInt(appVersion[1], 10) : null;
-          if (iOS && version && version < 9) {
-            var safari = /safari/.test(Howler2._navigator && Howler2._navigator.userAgent.toLowerCase());
-            if (Howler2._navigator && !safari) {
-              Howler2.usingWebAudio = false;
-            }
-          }
-          if (Howler2.usingWebAudio) {
-            Howler2.masterGain = typeof Howler2.ctx.createGain === "undefined" ? Howler2.ctx.createGainNode() : Howler2.ctx.createGain();
-            Howler2.masterGain.gain.setValueAtTime(Howler2._muted ? 0 : Howler2._volume, Howler2.ctx.currentTime);
-            Howler2.masterGain.connect(Howler2.ctx.destination);
-          }
-          Howler2._setup();
-        };
-        if (typeof define === "function" && define.amd) {
-          define([], function() {
-            return {
-              Howler: Howler2,
-              Howl: Howl3
-            };
-          });
-        }
-        if (typeof exports !== "undefined") {
-          exports.Howler = Howler2;
-          exports.Howl = Howl3;
-        }
-        if (typeof global !== "undefined") {
-          global.HowlerGlobal = HowlerGlobal2;
-          global.Howler = Howler2;
-          global.Howl = Howl3;
-          global.Sound = Sound2;
-        } else if (typeof window !== "undefined") {
-          window.HowlerGlobal = HowlerGlobal2;
-          window.Howler = Howler2;
-          window.Howl = Howl3;
-          window.Sound = Sound2;
-        }
-      })();
-      (function() {
-        "use strict";
-        HowlerGlobal.prototype._pos = [0, 0, 0];
-        HowlerGlobal.prototype._orientation = [0, 0, -1, 0, 1, 0];
-        HowlerGlobal.prototype.stereo = function(pan) {
-          var self2 = this;
-          if (!self2.ctx || !self2.ctx.listener) {
-            return self2;
-          }
-          for (var i = self2._howls.length - 1; i >= 0; i--) {
-            self2._howls[i].stereo(pan);
-          }
-          return self2;
-        };
-        HowlerGlobal.prototype.pos = function(x3, y4, z3) {
-          var self2 = this;
-          if (!self2.ctx || !self2.ctx.listener) {
-            return self2;
-          }
-          y4 = typeof y4 !== "number" ? self2._pos[1] : y4;
-          z3 = typeof z3 !== "number" ? self2._pos[2] : z3;
-          if (typeof x3 === "number") {
-            self2._pos = [x3, y4, z3];
-            if (typeof self2.ctx.listener.positionX !== "undefined") {
-              self2.ctx.listener.positionX.setTargetAtTime(self2._pos[0], Howler.ctx.currentTime, 0.1);
-              self2.ctx.listener.positionY.setTargetAtTime(self2._pos[1], Howler.ctx.currentTime, 0.1);
-              self2.ctx.listener.positionZ.setTargetAtTime(self2._pos[2], Howler.ctx.currentTime, 0.1);
-            } else {
-              self2.ctx.listener.setPosition(self2._pos[0], self2._pos[1], self2._pos[2]);
-            }
-          } else {
-            return self2._pos;
-          }
-          return self2;
-        };
-        HowlerGlobal.prototype.orientation = function(x3, y4, z3, xUp, yUp, zUp) {
-          var self2 = this;
-          if (!self2.ctx || !self2.ctx.listener) {
-            return self2;
-          }
-          var or = self2._orientation;
-          y4 = typeof y4 !== "number" ? or[1] : y4;
-          z3 = typeof z3 !== "number" ? or[2] : z3;
-          xUp = typeof xUp !== "number" ? or[3] : xUp;
-          yUp = typeof yUp !== "number" ? or[4] : yUp;
-          zUp = typeof zUp !== "number" ? or[5] : zUp;
-          if (typeof x3 === "number") {
-            self2._orientation = [x3, y4, z3, xUp, yUp, zUp];
-            if (typeof self2.ctx.listener.forwardX !== "undefined") {
-              self2.ctx.listener.forwardX.setTargetAtTime(x3, Howler.ctx.currentTime, 0.1);
-              self2.ctx.listener.forwardY.setTargetAtTime(y4, Howler.ctx.currentTime, 0.1);
-              self2.ctx.listener.forwardZ.setTargetAtTime(z3, Howler.ctx.currentTime, 0.1);
-              self2.ctx.listener.upX.setTargetAtTime(xUp, Howler.ctx.currentTime, 0.1);
-              self2.ctx.listener.upY.setTargetAtTime(yUp, Howler.ctx.currentTime, 0.1);
-              self2.ctx.listener.upZ.setTargetAtTime(zUp, Howler.ctx.currentTime, 0.1);
-            } else {
-              self2.ctx.listener.setOrientation(x3, y4, z3, xUp, yUp, zUp);
-            }
-          } else {
-            return or;
-          }
-          return self2;
-        };
-        Howl.prototype.init = function(_super) {
-          return function(o) {
-            var self2 = this;
-            self2._orientation = o.orientation || [1, 0, 0];
-            self2._stereo = o.stereo || null;
-            self2._pos = o.pos || null;
-            self2._pannerAttr = {
-              coneInnerAngle: typeof o.coneInnerAngle !== "undefined" ? o.coneInnerAngle : 360,
-              coneOuterAngle: typeof o.coneOuterAngle !== "undefined" ? o.coneOuterAngle : 360,
-              coneOuterGain: typeof o.coneOuterGain !== "undefined" ? o.coneOuterGain : 0,
-              distanceModel: typeof o.distanceModel !== "undefined" ? o.distanceModel : "inverse",
-              maxDistance: typeof o.maxDistance !== "undefined" ? o.maxDistance : 1e4,
-              panningModel: typeof o.panningModel !== "undefined" ? o.panningModel : "HRTF",
-              refDistance: typeof o.refDistance !== "undefined" ? o.refDistance : 1,
-              rolloffFactor: typeof o.rolloffFactor !== "undefined" ? o.rolloffFactor : 1
-            };
-            self2._onstereo = o.onstereo ? [{ fn: o.onstereo }] : [];
-            self2._onpos = o.onpos ? [{ fn: o.onpos }] : [];
-            self2._onorientation = o.onorientation ? [{ fn: o.onorientation }] : [];
-            return _super.call(this, o);
-          };
-        }(Howl.prototype.init);
-        Howl.prototype.stereo = function(pan, id) {
-          var self2 = this;
-          if (!self2._webAudio) {
-            return self2;
-          }
-          if (self2._state !== "loaded") {
-            self2._queue.push({
-              event: "stereo",
-              action: function() {
-                self2.stereo(pan, id);
-              }
-            });
-            return self2;
-          }
-          var pannerType = typeof Howler.ctx.createStereoPanner === "undefined" ? "spatial" : "stereo";
-          if (typeof id === "undefined") {
-            if (typeof pan === "number") {
-              self2._stereo = pan;
-              self2._pos = [pan, 0, 0];
-            } else {
-              return self2._stereo;
-            }
-          }
-          var ids = self2._getSoundIds(id);
-          for (var i = 0; i < ids.length; i++) {
-            var sound = self2._soundById(ids[i]);
-            if (sound) {
-              if (typeof pan === "number") {
-                sound._stereo = pan;
-                sound._pos = [pan, 0, 0];
-                if (sound._node) {
-                  sound._pannerAttr.panningModel = "equalpower";
-                  if (!sound._panner || !sound._panner.pan) {
-                    setupPanner(sound, pannerType);
-                  }
-                  if (pannerType === "spatial") {
-                    if (typeof sound._panner.positionX !== "undefined") {
-                      sound._panner.positionX.setValueAtTime(pan, Howler.ctx.currentTime);
-                      sound._panner.positionY.setValueAtTime(0, Howler.ctx.currentTime);
-                      sound._panner.positionZ.setValueAtTime(0, Howler.ctx.currentTime);
-                    } else {
-                      sound._panner.setPosition(pan, 0, 0);
-                    }
-                  } else {
-                    sound._panner.pan.setValueAtTime(pan, Howler.ctx.currentTime);
-                  }
-                }
-                self2._emit("stereo", sound._id);
-              } else {
-                return sound._stereo;
-              }
-            }
-          }
-          return self2;
-        };
-        Howl.prototype.pos = function(x3, y4, z3, id) {
-          var self2 = this;
-          if (!self2._webAudio) {
-            return self2;
-          }
-          if (self2._state !== "loaded") {
-            self2._queue.push({
-              event: "pos",
-              action: function() {
-                self2.pos(x3, y4, z3, id);
-              }
-            });
-            return self2;
-          }
-          y4 = typeof y4 !== "number" ? 0 : y4;
-          z3 = typeof z3 !== "number" ? -0.5 : z3;
-          if (typeof id === "undefined") {
-            if (typeof x3 === "number") {
-              self2._pos = [x3, y4, z3];
-            } else {
-              return self2._pos;
-            }
-          }
-          var ids = self2._getSoundIds(id);
-          for (var i = 0; i < ids.length; i++) {
-            var sound = self2._soundById(ids[i]);
-            if (sound) {
-              if (typeof x3 === "number") {
-                sound._pos = [x3, y4, z3];
-                if (sound._node) {
-                  if (!sound._panner || sound._panner.pan) {
-                    setupPanner(sound, "spatial");
-                  }
-                  if (typeof sound._panner.positionX !== "undefined") {
-                    sound._panner.positionX.setValueAtTime(x3, Howler.ctx.currentTime);
-                    sound._panner.positionY.setValueAtTime(y4, Howler.ctx.currentTime);
-                    sound._panner.positionZ.setValueAtTime(z3, Howler.ctx.currentTime);
-                  } else {
-                    sound._panner.setPosition(x3, y4, z3);
-                  }
-                }
-                self2._emit("pos", sound._id);
-              } else {
-                return sound._pos;
-              }
-            }
-          }
-          return self2;
-        };
-        Howl.prototype.orientation = function(x3, y4, z3, id) {
-          var self2 = this;
-          if (!self2._webAudio) {
-            return self2;
-          }
-          if (self2._state !== "loaded") {
-            self2._queue.push({
-              event: "orientation",
-              action: function() {
-                self2.orientation(x3, y4, z3, id);
-              }
-            });
-            return self2;
-          }
-          y4 = typeof y4 !== "number" ? self2._orientation[1] : y4;
-          z3 = typeof z3 !== "number" ? self2._orientation[2] : z3;
-          if (typeof id === "undefined") {
-            if (typeof x3 === "number") {
-              self2._orientation = [x3, y4, z3];
-            } else {
-              return self2._orientation;
-            }
-          }
-          var ids = self2._getSoundIds(id);
-          for (var i = 0; i < ids.length; i++) {
-            var sound = self2._soundById(ids[i]);
-            if (sound) {
-              if (typeof x3 === "number") {
-                sound._orientation = [x3, y4, z3];
-                if (sound._node) {
-                  if (!sound._panner) {
-                    if (!sound._pos) {
-                      sound._pos = self2._pos || [0, 0, -0.5];
-                    }
-                    setupPanner(sound, "spatial");
-                  }
-                  if (typeof sound._panner.orientationX !== "undefined") {
-                    sound._panner.orientationX.setValueAtTime(x3, Howler.ctx.currentTime);
-                    sound._panner.orientationY.setValueAtTime(y4, Howler.ctx.currentTime);
-                    sound._panner.orientationZ.setValueAtTime(z3, Howler.ctx.currentTime);
-                  } else {
-                    sound._panner.setOrientation(x3, y4, z3);
-                  }
-                }
-                self2._emit("orientation", sound._id);
-              } else {
-                return sound._orientation;
-              }
-            }
-          }
-          return self2;
-        };
-        Howl.prototype.pannerAttr = function() {
-          var self2 = this;
-          var args = arguments;
-          var o, id, sound;
-          if (!self2._webAudio) {
-            return self2;
-          }
-          if (args.length === 0) {
-            return self2._pannerAttr;
-          } else if (args.length === 1) {
-            if (typeof args[0] === "object") {
-              o = args[0];
-              if (typeof id === "undefined") {
-                if (!o.pannerAttr) {
-                  o.pannerAttr = {
-                    coneInnerAngle: o.coneInnerAngle,
-                    coneOuterAngle: o.coneOuterAngle,
-                    coneOuterGain: o.coneOuterGain,
-                    distanceModel: o.distanceModel,
-                    maxDistance: o.maxDistance,
-                    refDistance: o.refDistance,
-                    rolloffFactor: o.rolloffFactor,
-                    panningModel: o.panningModel
-                  };
-                }
-                self2._pannerAttr = {
-                  coneInnerAngle: typeof o.pannerAttr.coneInnerAngle !== "undefined" ? o.pannerAttr.coneInnerAngle : self2._coneInnerAngle,
-                  coneOuterAngle: typeof o.pannerAttr.coneOuterAngle !== "undefined" ? o.pannerAttr.coneOuterAngle : self2._coneOuterAngle,
-                  coneOuterGain: typeof o.pannerAttr.coneOuterGain !== "undefined" ? o.pannerAttr.coneOuterGain : self2._coneOuterGain,
-                  distanceModel: typeof o.pannerAttr.distanceModel !== "undefined" ? o.pannerAttr.distanceModel : self2._distanceModel,
-                  maxDistance: typeof o.pannerAttr.maxDistance !== "undefined" ? o.pannerAttr.maxDistance : self2._maxDistance,
-                  refDistance: typeof o.pannerAttr.refDistance !== "undefined" ? o.pannerAttr.refDistance : self2._refDistance,
-                  rolloffFactor: typeof o.pannerAttr.rolloffFactor !== "undefined" ? o.pannerAttr.rolloffFactor : self2._rolloffFactor,
-                  panningModel: typeof o.pannerAttr.panningModel !== "undefined" ? o.pannerAttr.panningModel : self2._panningModel
-                };
-              }
-            } else {
-              sound = self2._soundById(parseInt(args[0], 10));
-              return sound ? sound._pannerAttr : self2._pannerAttr;
-            }
-          } else if (args.length === 2) {
-            o = args[0];
-            id = parseInt(args[1], 10);
-          }
-          var ids = self2._getSoundIds(id);
-          for (var i = 0; i < ids.length; i++) {
-            sound = self2._soundById(ids[i]);
-            if (sound) {
-              var pa = sound._pannerAttr;
-              pa = {
-                coneInnerAngle: typeof o.coneInnerAngle !== "undefined" ? o.coneInnerAngle : pa.coneInnerAngle,
-                coneOuterAngle: typeof o.coneOuterAngle !== "undefined" ? o.coneOuterAngle : pa.coneOuterAngle,
-                coneOuterGain: typeof o.coneOuterGain !== "undefined" ? o.coneOuterGain : pa.coneOuterGain,
-                distanceModel: typeof o.distanceModel !== "undefined" ? o.distanceModel : pa.distanceModel,
-                maxDistance: typeof o.maxDistance !== "undefined" ? o.maxDistance : pa.maxDistance,
-                refDistance: typeof o.refDistance !== "undefined" ? o.refDistance : pa.refDistance,
-                rolloffFactor: typeof o.rolloffFactor !== "undefined" ? o.rolloffFactor : pa.rolloffFactor,
-                panningModel: typeof o.panningModel !== "undefined" ? o.panningModel : pa.panningModel
-              };
-              var panner = sound._panner;
-              if (panner) {
-                panner.coneInnerAngle = pa.coneInnerAngle;
-                panner.coneOuterAngle = pa.coneOuterAngle;
-                panner.coneOuterGain = pa.coneOuterGain;
-                panner.distanceModel = pa.distanceModel;
-                panner.maxDistance = pa.maxDistance;
-                panner.refDistance = pa.refDistance;
-                panner.rolloffFactor = pa.rolloffFactor;
-                panner.panningModel = pa.panningModel;
-              } else {
-                if (!sound._pos) {
-                  sound._pos = self2._pos || [0, 0, -0.5];
-                }
-                setupPanner(sound, "spatial");
-              }
-            }
-          }
-          return self2;
-        };
-        Sound.prototype.init = function(_super) {
-          return function() {
-            var self2 = this;
-            var parent = self2._parent;
-            self2._orientation = parent._orientation;
-            self2._stereo = parent._stereo;
-            self2._pos = parent._pos;
-            self2._pannerAttr = parent._pannerAttr;
-            _super.call(this);
-            if (self2._stereo) {
-              parent.stereo(self2._stereo);
-            } else if (self2._pos) {
-              parent.pos(self2._pos[0], self2._pos[1], self2._pos[2], self2._id);
-            }
-          };
-        }(Sound.prototype.init);
-        Sound.prototype.reset = function(_super) {
-          return function() {
-            var self2 = this;
-            var parent = self2._parent;
-            self2._orientation = parent._orientation;
-            self2._stereo = parent._stereo;
-            self2._pos = parent._pos;
-            self2._pannerAttr = parent._pannerAttr;
-            if (self2._stereo) {
-              parent.stereo(self2._stereo);
-            } else if (self2._pos) {
-              parent.pos(self2._pos[0], self2._pos[1], self2._pos[2], self2._id);
-            } else if (self2._panner) {
-              self2._panner.disconnect(0);
-              self2._panner = void 0;
-              parent._refreshBuffer(self2);
-            }
-            return _super.call(this);
-          };
-        }(Sound.prototype.reset);
-        var setupPanner = function(sound, type) {
-          type = type || "spatial";
-          if (type === "spatial") {
-            sound._panner = Howler.ctx.createPanner();
-            sound._panner.coneInnerAngle = sound._pannerAttr.coneInnerAngle;
-            sound._panner.coneOuterAngle = sound._pannerAttr.coneOuterAngle;
-            sound._panner.coneOuterGain = sound._pannerAttr.coneOuterGain;
-            sound._panner.distanceModel = sound._pannerAttr.distanceModel;
-            sound._panner.maxDistance = sound._pannerAttr.maxDistance;
-            sound._panner.refDistance = sound._pannerAttr.refDistance;
-            sound._panner.rolloffFactor = sound._pannerAttr.rolloffFactor;
-            sound._panner.panningModel = sound._pannerAttr.panningModel;
-            if (typeof sound._panner.positionX !== "undefined") {
-              sound._panner.positionX.setValueAtTime(sound._pos[0], Howler.ctx.currentTime);
-              sound._panner.positionY.setValueAtTime(sound._pos[1], Howler.ctx.currentTime);
-              sound._panner.positionZ.setValueAtTime(sound._pos[2], Howler.ctx.currentTime);
-            } else {
-              sound._panner.setPosition(sound._pos[0], sound._pos[1], sound._pos[2]);
-            }
-            if (typeof sound._panner.orientationX !== "undefined") {
-              sound._panner.orientationX.setValueAtTime(sound._orientation[0], Howler.ctx.currentTime);
-              sound._panner.orientationY.setValueAtTime(sound._orientation[1], Howler.ctx.currentTime);
-              sound._panner.orientationZ.setValueAtTime(sound._orientation[2], Howler.ctx.currentTime);
-            } else {
-              sound._panner.setOrientation(sound._orientation[0], sound._orientation[1], sound._orientation[2]);
-            }
-          } else {
-            sound._panner = Howler.ctx.createStereoPanner();
-            sound._panner.pan.setValueAtTime(sound._stereo, Howler.ctx.currentTime);
-          }
-          sound._panner.connect(sound._node);
-          if (!sound._paused) {
-            sound._parent.pause(sound._id, true).play(sound._id, true);
-          }
-        };
-      })();
-    }
-  });
-
-  // node_modules/device-decoder/dist/device.frontend.esm.js
-  var __create2 = Object.create;
-  var __defProp2 = Object.defineProperty;
-  var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-  var __getOwnPropNames2 = Object.getOwnPropertyNames;
-  var __getProtoOf2 = Object.getPrototypeOf;
-  var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-  var __require2 = ((x3) => typeof __require !== "undefined" ? __require : typeof Proxy !== "undefined" ? new Proxy(x3, { get: (a, b2) => (typeof __require !== "undefined" ? __require : a)[b2] }) : x3)(function(x3) {
-    if (typeof __require !== "undefined")
-      return __require.apply(this, arguments);
-    throw new Error('Dynamic require of "' + x3 + '" is not supported');
-  });
-  var __esm = (fn, res) => function __init() {
-    return fn && (res = (0, fn[__getOwnPropNames2(fn)[0]])(fn = 0)), res;
-  };
-  var __commonJS2 = (cb, mod) => function __require32() {
-    return mod || (0, cb[__getOwnPropNames2(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-  };
-  var __export = (target, all) => {
-    for (var name in all)
-      __defProp2(target, name, { get: all[name], enumerable: true });
-  };
-  var __copyProps2 = (to, from, except, desc) => {
-    if (from && typeof from === "object" || typeof from === "function") {
-      for (let key of __getOwnPropNames2(from))
-        if (!__hasOwnProp2.call(to, key) && key !== except)
-          __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-    }
-    return to;
-  };
-  var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target, mod));
   var createCapacitorPlatforms;
   var initPlatforms;
   var CapacitorPlatforms;
@@ -2046,9 +78,9 @@
       ExceptionCode2["Unavailable"] = "UNAVAILABLE";
     })(ExceptionCode || (ExceptionCode = {}));
     CapacitorException = class extends Error {
-      constructor(message, code, data) {
-        super(message);
-        this.message = message;
+      constructor(message3, code, data) {
+        super(message3);
+        this.message = message3;
         this.code = code;
         this.data = data;
       }
@@ -2601,7 +633,7 @@
       }
     };
   } });
-  var require_throat = __commonJS2({ "src/ble/node_modules/throat/index.js"(exports, module2) {
+  var require_throat = __commonJS({ "src/ble/node_modules/throat/index.js"(exports, module2) {
     "use strict";
     function throatInternal(size) {
       var queue = new Queue();
@@ -2727,30 +759,30 @@
       return result;
     };
   } });
-  var __create22 = Object.create;
-  var __defProp22 = Object.defineProperty;
-  var __getOwnPropDesc22 = Object.getOwnPropertyDescriptor;
-  var __getOwnPropNames22 = Object.getOwnPropertyNames;
-  var __getProtoOf22 = Object.getPrototypeOf;
-  var __hasOwnProp22 = Object.prototype.hasOwnProperty;
+  var __create2 = Object.create;
+  var __defProp2 = Object.defineProperty;
+  var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames2 = Object.getOwnPropertyNames;
+  var __getProtoOf2 = Object.getPrototypeOf;
+  var __hasOwnProp2 = Object.prototype.hasOwnProperty;
   var __require22 = ((x3) => typeof __require2 !== "undefined" ? __require2 : typeof Proxy !== "undefined" ? new Proxy(x3, { get: (a, b2) => (typeof __require2 !== "undefined" ? __require2 : a)[b2] }) : x3)(function(x3) {
     if (typeof __require2 !== "undefined")
       return __require2.apply(this, arguments);
     throw new Error('Dynamic require of "' + x3 + '" is not supported');
   });
-  var __commonJS22 = (cb, mod) => function __require222() {
-    return mod || (0, cb[__getOwnPropNames22(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  var __commonJS2 = (cb, mod) => function __require222() {
+    return mod || (0, cb[__getOwnPropNames2(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
-  var __copyProps22 = (to, from, except, desc) => {
+  var __copyProps2 = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
-      for (let key of __getOwnPropNames22(from))
-        if (!__hasOwnProp22.call(to, key) && key !== except)
-          __defProp22(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc22(from, key)) || desc.enumerable });
+      for (let key of __getOwnPropNames2(from))
+        if (!__hasOwnProp2.call(to, key) && key !== except)
+          __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
     }
     return to;
   };
-  var __toESM22 = (mod, isNodeMode, target) => (target = mod != null ? __create22(__getProtoOf22(mod)) : {}, __copyProps22(isNodeMode || !mod || !mod.__esModule ? __defProp22(target, "default", { value: mod, enumerable: true }) : target, mod));
-  var require_browser = __commonJS22({ "node_modules/web-worker/cjs/browser.js"(exports, module2) {
+  var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target, mod));
+  var require_browser = __commonJS2({ "node_modules/web-worker/cjs/browser.js"(exports, module2) {
     module2.exports = Worker;
   } });
   var EventHandler = class {
@@ -4050,21 +2082,21 @@
         this.addServices(options.services);
       this.load(this);
     }
-    handleServiceMessage(message) {
+    handleServiceMessage(message3) {
       let call;
-      if (typeof message === "object") {
-        if (message.route)
-          call = message.route;
-        else if (message.node)
-          call = message.node;
+      if (typeof message3 === "object") {
+        if (message3.route)
+          call = message3.route;
+        else if (message3.node)
+          call = message3.node;
       }
       if (call) {
-        if (Array.isArray(message.args))
-          return this.run(call, ...message.args);
+        if (Array.isArray(message3.args))
+          return this.run(call, ...message3.args);
         else
-          return this.run(call, message.args);
+          return this.run(call, message3.args);
       } else
-        return message;
+        return message3;
     }
     handleGraphNodeCall(route, args) {
       if (!route)
@@ -4376,8 +2408,8 @@
   }, transferClass: (classObj, className) => {
     if (typeof classObj === "object") {
       let str22 = classObj.toString();
-      let message = { route: "receiveClass", args: [str22, className] };
-      return message;
+      let message3 = { route: "receiveClass", args: [str22, className] };
+      return message3;
     }
     return false;
   }, receiveClass: function(stringified, className) {
@@ -5292,14 +3324,14 @@
           } });
         }).catch(console.error);
       };
-      this.POST = (message, url22 = "http://localhost:8080/echo", type = "", mimeType) => {
-        if (typeof message === "object" && (type === "json" || type === "text" || !type)) {
-          message = JSON.stringify(message);
+      this.POST = (message3, url22 = "http://localhost:8080/echo", type = "", mimeType) => {
+        if (typeof message3 === "object" && (type === "json" || type === "text" || !type)) {
+          message3 = JSON.stringify(message3);
         }
         if (type === "json")
           mimeType = "application/json";
         return new Promise((resolve, reject) => {
-          let xhr = _HTTPfrontend.request({ method: "POST", url: url22, data: message, responseType: type, mimeType, onload: (ev2) => {
+          let xhr = _HTTPfrontend.request({ method: "POST", url: url22, data: message3, responseType: type, mimeType, onload: (ev2) => {
             let data;
             if (xhr.responseType === "" || xhr.responseType === "text")
               data = xhr.responseText;
@@ -5314,27 +3346,27 @@
           } });
         }).catch(console.error);
       };
-      this.transmit = (message, url22) => {
-        let obj = message;
+      this.transmit = (message3, url22) => {
+        let obj = message3;
         if (typeof obj === "object") {
-          message = JSON.stringify(obj);
+          message3 = JSON.stringify(obj);
         }
-        if (obj?.method?.toLowerCase() == "get" || message?.toLowerCase() === "get")
+        if (obj?.method?.toLowerCase() == "get" || message3?.toLowerCase() === "get")
           return this.GET(url22);
-        return this.POST(message, url22);
+        return this.POST(message3, url22);
       };
-      this.transponder = (url22, message, type = "", mimeType) => {
-        if (typeof message === "object")
-          message = JSON.stringify(message);
+      this.transponder = (url22, message3, type = "", mimeType) => {
+        if (typeof message3 === "object")
+          message3 = JSON.stringify(message3);
         let method = "GET";
-        if (message) {
+        if (message3) {
           method = "POST";
         }
         if (type === "json")
           mimeType = "application/json";
         else
           return new Promise((resolve, reject) => {
-            let xhr = _HTTPfrontend.request({ method, url: url22, data: message, responseType: type, onload: (ev2) => {
+            let xhr = _HTTPfrontend.request({ method, url: url22, data: message3, responseType: type, onload: (ev2) => {
               let body = xhr.response;
               if (typeof body === "string") {
                 let substr = body.substring(0, 8);
@@ -5443,7 +3475,7 @@
     xhr.send(options.data);
     return xhr;
   };
-  var import_web_worker = __toESM22(require_browser());
+  var import_web_worker = __toESM2(require_browser());
   var WorkerService = class extends Service {
     constructor(options) {
       super();
@@ -5578,11 +3610,11 @@
             this.setState({ [this.name]: result });
         };
       };
-      this.postMessage = (message, target, transfer) => {
+      this.postMessage = (message3, target, transfer) => {
         if (this.workers[target]) {
-          this.workers[target].send(message, transfer);
+          this.workers[target].send(message3, transfer);
         } else {
-          globalThis.postMessage(message, target, transfer);
+          globalThis.postMessage(message3, target, transfer);
         }
       };
       this.addWorker = (options2) => {
@@ -5601,14 +3633,14 @@
         }
         if (!worker)
           return;
-        let send = (message, transfer) => {
-          return this.transmit(message, worker, transfer);
+        let send = (message3, transfer) => {
+          return this.transmit(message3, worker, transfer);
         };
         let post = (route, args, transfer, method) => {
-          let message = { route, args };
+          let message3 = { route, args };
           if (method)
-            message.method = method;
-          return this.transmit(message, worker, transfer);
+            message3.method = method;
+          return this.transmit(message3, worker, transfer);
         };
         let run = (route, args, transfer, method) => {
           return new Promise((res, rej) => {
@@ -5628,10 +3660,10 @@
             this.transmit(req, worker, transfer);
           });
         };
-        let request = (message, transfer, method) => {
+        let request = (message3, transfer, method) => {
           return new Promise((res, rej) => {
             let callbackId = Math.random();
-            let req = { route: "runRequest", args: [message, options2._id, callbackId] };
+            let req = { route: "runRequest", args: [message3, options2._id, callbackId] };
             if (method)
               req.method = method;
             let onmessage = (ev2) => {
@@ -5711,27 +3743,27 @@
         let blob = new Blob([scriptTemplate], { type: "text/javascript" });
         return URL.createObjectURL(blob);
       };
-      this.transmit = (message, worker, transfer) => {
+      this.transmit = (message3, worker, transfer) => {
         if (!transfer) {
-          transfer = this.getTransferable(message);
+          transfer = this.getTransferable(message3);
         }
         if (worker instanceof import_web_worker.default || worker instanceof MessagePort) {
-          worker.postMessage(message, transfer);
+          worker.postMessage(message3, transfer);
         } else if (typeof worker === "string") {
           if (this.workers[worker]) {
             if (this.workers[worker].port)
-              this.workers[worker].port.postMessage(message, transfer);
+              this.workers[worker].port.postMessage(message3, transfer);
             else if (this.workers[worker].worker)
-              this.workers[worker].worker.postMessage(message, transfer);
+              this.workers[worker].worker.postMessage(message3, transfer);
           }
         } else {
           let keys = Object.keys(this.workers);
-          this.workers[keys[this.threadRot]].worker.postMessage(message, transfer);
+          this.workers[keys[this.threadRot]].worker.postMessage(message3, transfer);
           this.threadRot++;
           if (this.threadRot === keys.length)
             this.threadRot = 0;
         }
-        return message;
+        return message3;
       };
       this.terminate = (worker) => {
         let onclose;
@@ -5800,11 +3832,11 @@
         }
         return false;
       };
-      this.request = (message, workerId, transfer, method) => {
+      this.request = (message3, workerId, transfer, method) => {
         let worker = this.workers[workerId].worker;
         return new Promise((res, rej) => {
           let callbackId = Math.random();
-          let req = { route: "runRequest", args: [message, callbackId] };
+          let req = { route: "runRequest", args: [message3, callbackId] };
           if (method)
             req.method = method;
           let onmessage = (ev2) => {
@@ -5819,8 +3851,8 @@
           this.transmit(req, worker, transfer);
         });
       };
-      this.runRequest = (message, worker, callbackId) => {
-        let res = this.receive(message);
+      this.runRequest = (message3, worker, callbackId) => {
+        let res = this.receive(message3);
         if (typeof worker === "string" && this.workers[worker]) {
           if (this.workers[worker].port)
             worker = this.workers[worker].port;
@@ -5945,61 +3977,61 @@
         this.addDefaultMessageListener();
       }
     }
-    getTransferable(message) {
+    getTransferable(message3) {
       let transfer;
-      if (typeof message === "object") {
-        if (message.args) {
-          if (message.args?.constructor?.name === "Object") {
-            for (const key in message.args) {
-              if (ArrayBuffer.isView(message.args[key])) {
+      if (typeof message3 === "object") {
+        if (message3.args) {
+          if (message3.args?.constructor?.name === "Object") {
+            for (const key in message3.args) {
+              if (ArrayBuffer.isView(message3.args[key])) {
                 if (!transfer)
-                  transfer = [message.args[key].buffer];
+                  transfer = [message3.args[key].buffer];
                 else
-                  transfer.push(message.args[key].buffer);
-              } else if (message.args[key]?.constructor?.name === "ArrayBuffer") {
+                  transfer.push(message3.args[key].buffer);
+              } else if (message3.args[key]?.constructor?.name === "ArrayBuffer") {
                 if (!transfer)
-                  transfer = [message.args[key]];
+                  transfer = [message3.args[key]];
                 else
-                  transfer.push(message.args[key]);
+                  transfer.push(message3.args[key]);
               }
             }
-          } else if (Array.isArray(message.args) && message.args.length < 11) {
-            message.args.forEach((arg) => {
+          } else if (Array.isArray(message3.args) && message3.args.length < 11) {
+            message3.args.forEach((arg) => {
               if (ArrayBuffer.isView(arg)) {
                 transfer = [arg.buffer];
               } else if (arg?.constructor?.name === "ArrayBuffer")
                 transfer = [arg];
             });
-          } else if (ArrayBuffer.isView(message.args)) {
-            transfer = [message.args.buffer];
-          } else if (message.args?.constructor?.name === "ArrayBuffer") {
-            transfer = [message];
+          } else if (ArrayBuffer.isView(message3.args)) {
+            transfer = [message3.args.buffer];
+          } else if (message3.args?.constructor?.name === "ArrayBuffer") {
+            transfer = [message3];
           }
-        } else if (message?.constructor?.name === "Object") {
-          for (const key in message) {
-            if (ArrayBuffer.isView(message[key])) {
+        } else if (message3?.constructor?.name === "Object") {
+          for (const key in message3) {
+            if (ArrayBuffer.isView(message3[key])) {
               if (!transfer)
-                transfer = [message[key].buffer];
+                transfer = [message3[key].buffer];
               else
-                transfer.push(message[key].buffer);
-            } else if (message[key]?.constructor?.name === "ArrayBuffer") {
+                transfer.push(message3[key].buffer);
+            } else if (message3[key]?.constructor?.name === "ArrayBuffer") {
               if (!transfer)
-                transfer = [message[key]];
+                transfer = [message3[key]];
               else
-                transfer.push(message[key]);
+                transfer.push(message3[key]);
             }
           }
-        } else if (Array.isArray(message) && message.length < 11) {
-          message.forEach((arg) => {
+        } else if (Array.isArray(message3) && message3.length < 11) {
+          message3.forEach((arg) => {
             if (ArrayBuffer.isView(arg)) {
               transfer = [arg.buffer];
             } else if (arg.constructor?.name === "ArrayBuffer")
               transfer = [arg];
           });
-        } else if (ArrayBuffer.isView(message)) {
-          transfer = [message.buffer];
-        } else if (message.constructor?.name === "ArrayBuffer") {
-          transfer = [message];
+        } else if (ArrayBuffer.isView(message3)) {
+          transfer = [message3.buffer];
+        } else if (message3.constructor?.name === "ArrayBuffer") {
+          transfer = [message3];
         }
       }
       return transfer;
@@ -6271,41 +4303,41 @@
       options.width = options.canvas.clientWidth;
     if (!options.height)
       options.height = options.canvas.clientHeight;
-    let message = { route: route ? route : "setupCanvas", args: { ...options, canvas: offscreen } };
+    let message3 = { route: route ? route : "setupCanvas", args: { ...options, canvas: offscreen } };
     if (this?.__node?.graph)
       this.__node.graph.run("initProxyElement", options.canvas, worker, options._id);
     else
       initProxyElement(options.canvas, worker, options._id);
     if (options.draw) {
       if (typeof options.draw === "function")
-        message.args.draw = options.draw.toString();
+        message3.args.draw = options.draw.toString();
       else
-        message.args.draw = options.draw;
+        message3.args.draw = options.draw;
     }
     if (options.update) {
       if (typeof options.update === "function")
-        message.args.update = options.update.toString();
+        message3.args.update = options.update.toString();
       else
-        message.args.update = options.update;
+        message3.args.update = options.update;
     }
     if (options.init) {
       if (typeof options.init === "function")
-        message.args.init = options.init.toString();
+        message3.args.init = options.init.toString();
       else
-        message.args.init = options.init;
+        message3.args.init = options.init;
     }
     if (options.clear) {
       if (typeof options.clear === "function")
-        message.args.clear = options.clear.toString();
+        message3.args.clear = options.clear.toString();
       else
-        message.args.clear = options.clear;
+        message3.args.clear = options.clear;
     }
     let transfer = [offscreen];
     if (options.transfer) {
       transfer.push(...options.transfer);
       delete options.transfer;
     }
-    worker.postMessage(message, transfer);
+    worker.postMessage(message3, transfer);
     const canvascontrols = { _id: options._id, width: options.width, height: options.height, worker, draw: (props) => {
       worker.postMessage({ route: "drawFrame", args: [props, options._id] });
     }, update: (props) => {
@@ -7437,7 +5469,7 @@
   init_conversion();
   init_dist();
   var BluetoothLe = registerPlugin("BluetoothLe", { web: () => Promise.resolve().then(() => (init_web(), web_exports)).then((m) => new m.BluetoothLeWeb()) });
-  var import_throat = __toESM2(require_throat());
+  var import_throat = __toESM(require_throat());
   function getQueue(enabled) {
     if (enabled) {
       return (0, import_throat.default)(1);
@@ -8055,9 +6087,9 @@
       reader.releaseLock();
       return result;
     }
-    async writePort(port, message) {
+    async writePort(port, message3) {
       const writer = port.writable.getWriter();
-      await writer.write(WebSerial.toDataView(message));
+      await writer.write(WebSerial.toDataView(message3));
       writer.releaseLock();
       return true;
     }
@@ -8141,12 +6173,12 @@
       }
       return void 0;
     }
-    writeStream(stream, message) {
+    writeStream(stream, message3) {
       if (typeof stream === "string")
         stream = this.streams[stream];
       if (stream.port.writable) {
         let writer = stream.port.writable.getWriter();
-        writer.write(WebSerial.toDataView(message));
+        writer.write(WebSerial.toDataView(message3));
         writer.releaseLock();
         return true;
       }
@@ -10879,21 +8911,21 @@
         this.addServices(options.services);
       this.load(this);
     }
-    handleServiceMessage(message) {
+    handleServiceMessage(message3) {
       let call;
-      if (typeof message === "object") {
-        if (message.route)
-          call = message.route;
-        else if (message.node)
-          call = message.node;
+      if (typeof message3 === "object") {
+        if (message3.route)
+          call = message3.route;
+        else if (message3.node)
+          call = message3.node;
       }
       if (call) {
-        if (Array.isArray(message.args))
-          return this.run(call, ...message.args);
+        if (Array.isArray(message3.args))
+          return this.run(call, ...message3.args);
         else
-          return this.run(call, message.args);
+          return this.run(call, message3.args);
       } else
-        return message;
+        return message3;
     }
     handleGraphNodeCall(route, args) {
       if (!route)
@@ -11205,8 +9237,8 @@
   }, transferClass: (classObj, className) => {
     if (typeof classObj === "object") {
       let str4 = classObj.toString();
-      let message = { route: "receiveClass", args: [str4, className] };
-      return message;
+      let message3 = { route: "receiveClass", args: [str4, className] };
+      return message3;
     }
     return false;
   }, receiveClass: function(stringified, className) {
@@ -12207,14 +10239,14 @@
           } });
         }).catch(console.error);
       };
-      this.POST = (message, url5 = "http://localhost:8080/echo", type = "", mimeType) => {
-        if (typeof message === "object" && (type === "json" || type === "text" || !type)) {
-          message = JSON.stringify(message);
+      this.POST = (message3, url5 = "http://localhost:8080/echo", type = "", mimeType) => {
+        if (typeof message3 === "object" && (type === "json" || type === "text" || !type)) {
+          message3 = JSON.stringify(message3);
         }
         if (type === "json")
           mimeType = "application/json";
         return new Promise((resolve, reject) => {
-          let xhr = _HTTPfrontend2.request({ method: "POST", url: url5, data: message, responseType: type, mimeType, onload: (ev2) => {
+          let xhr = _HTTPfrontend2.request({ method: "POST", url: url5, data: message3, responseType: type, mimeType, onload: (ev2) => {
             let data;
             if (xhr.responseType === "" || xhr.responseType === "text")
               data = xhr.responseText;
@@ -12229,27 +10261,27 @@
           } });
         }).catch(console.error);
       };
-      this.transmit = (message, url5) => {
-        let obj = message;
+      this.transmit = (message3, url5) => {
+        let obj = message3;
         if (typeof obj === "object") {
-          message = JSON.stringify(obj);
+          message3 = JSON.stringify(obj);
         }
-        if (obj?.method?.toLowerCase() == "get" || message?.toLowerCase() === "get")
+        if (obj?.method?.toLowerCase() == "get" || message3?.toLowerCase() === "get")
           return this.GET(url5);
-        return this.POST(message, url5);
+        return this.POST(message3, url5);
       };
-      this.transponder = (url5, message, type = "", mimeType) => {
-        if (typeof message === "object")
-          message = JSON.stringify(message);
+      this.transponder = (url5, message3, type = "", mimeType) => {
+        if (typeof message3 === "object")
+          message3 = JSON.stringify(message3);
         let method = "GET";
-        if (message) {
+        if (message3) {
           method = "POST";
         }
         if (type === "json")
           mimeType = "application/json";
         else
           return new Promise((resolve, reject) => {
-            let xhr = _HTTPfrontend2.request({ method, url: url5, data: message, responseType: type, onload: (ev2) => {
+            let xhr = _HTTPfrontend2.request({ method, url: url5, data: message3, responseType: type, onload: (ev2) => {
               let body = xhr.response;
               if (typeof body === "string") {
                 let substr = body.substring(0, 8);
@@ -12615,41 +10647,41 @@
       options.width = options.canvas.clientWidth;
     if (!options.height)
       options.height = options.canvas.clientHeight;
-    let message = { route: route ? route : "setupCanvas", args: { ...options, canvas: offscreen } };
+    let message3 = { route: route ? route : "setupCanvas", args: { ...options, canvas: offscreen } };
     if (this?.__node?.graph)
       this.__node.graph.run("initProxyElement", options.canvas, worker, options._id);
     else
       initProxyElement2(options.canvas, worker, options._id);
     if (options.draw) {
       if (typeof options.draw === "function")
-        message.args.draw = options.draw.toString();
+        message3.args.draw = options.draw.toString();
       else
-        message.args.draw = options.draw;
+        message3.args.draw = options.draw;
     }
     if (options.update) {
       if (typeof options.update === "function")
-        message.args.update = options.update.toString();
+        message3.args.update = options.update.toString();
       else
-        message.args.update = options.update;
+        message3.args.update = options.update;
     }
     if (options.init) {
       if (typeof options.init === "function")
-        message.args.init = options.init.toString();
+        message3.args.init = options.init.toString();
       else
-        message.args.init = options.init;
+        message3.args.init = options.init;
     }
     if (options.clear) {
       if (typeof options.clear === "function")
-        message.args.clear = options.clear.toString();
+        message3.args.clear = options.clear.toString();
       else
-        message.args.clear = options.clear;
+        message3.args.clear = options.clear;
     }
     let transfer = [offscreen];
     if (options.transfer) {
       transfer.push(...options.transfer);
       delete options.transfer;
     }
-    worker.postMessage(message, transfer);
+    worker.postMessage(message3, transfer);
     const canvascontrols = { _id: options._id, width: options.width, height: options.height, worker, draw: (props) => {
       worker.postMessage({ route: "drawFrame", args: [props, options._id] });
     }, update: (props) => {
@@ -15341,8 +13373,8 @@
   }, transferClass: (classObj, className) => {
     if (typeof classObj === "object") {
       let str22 = classObj.toString();
-      let message = { route: "receiveClass", args: [str22, className] };
-      return message;
+      let message3 = { route: "receiveClass", args: [str22, className] };
+      return message3;
     }
     return false;
   }, receiveClass: function(stringified, className) {
@@ -15670,8 +13702,8 @@
       }
     }
   } };
-  var __defProp23 = Object.defineProperty;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp23(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __defProp22 = Object.defineProperty;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp22(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __publicField = (obj, key, value) => {
     __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
     return value;
@@ -15701,9 +13733,9 @@
     static mode(arr) {
       return arr.sort((a, b2) => arr.filter((v2) => v2 === a).length - arr.filter((v2) => v2 === b2).length).pop();
     }
-    static std(arr, mean = void 0) {
-      let avg = mean;
-      if (!mean)
+    static std(arr, mean2 = void 0) {
+      let avg = mean2;
+      if (!mean2)
         avg = this.mean(arr);
       let summed = 0;
       for (let i = 0; i < arr.length; i++) {
@@ -15737,17 +13769,17 @@
       return entropy;
     }
     static zscore(arr) {
-      let mean = this.mean(arr);
-      let std = this.std(arr, mean);
+      let mean2 = this.mean(arr);
+      let std = this.std(arr, mean2);
       let z3 = new Array().length(arr.length);
       for (let i = 0; i < arr.length; i++) {
-        z3[i] = (arr[i] - mean) / std;
+        z3[i] = (arr[i] - mean2) / std;
       }
       return z3;
     }
     static variance(arr) {
-      var mean = this.mean(arr);
-      return arr.reduce((a, b2) => a + (b2 - mean) ** 2, 0) / arr.length;
+      var mean2 = this.mean(arr);
+      return arr.reduce((a, b2) => a + (b2 - mean2) ** 2, 0) / arr.length;
     }
     static dot(vec1, vec2) {
       var dot = 0;
@@ -16134,13 +14166,13 @@
       return samples.reduce((sum, item, idx) => sum + Math.pow(item - m, order) * probabilities[idx] / samples.length);
     }
     static linearDiscriminantAnalysis(samples = [], classifier = []) {
-      let mean = this.mean(samples);
+      let mean2 = this.mean(samples);
       let meank = this.mean(classifier);
       let covariance = this.cov1d(samples, classifier);
       let probs = this.normalDistribution(samples);
       let dk = [];
       for (let i = 0; i < samples.length; i++) {
-        dk.push(x[i] * covariance * meank - 0.5 * mean * covariance * meank + Math.log10(probs[i]));
+        dk.push(x[i] * covariance * meank - 0.5 * mean2 * covariance * meank + Math.log10(probs[i]));
       }
       return dk;
     }
@@ -16249,10 +14281,10 @@
     }
     static eigens2x2(mat = [[1, 2], [3, 4]]) {
       let det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-      let mean = (mat[0][0] + mat[1][1]) * 0.5;
-      let sqrt = Math.sqrt(mean * mean - det);
-      let eig1 = mean + sqrt;
-      let eig2 = mean - sqrt;
+      let mean2 = (mat[0][0] + mat[1][1]) * 0.5;
+      let sqrt = Math.sqrt(mean2 * mean2 - det);
+      let eig1 = mean2 + sqrt;
+      let eig2 = mean2 - sqrt;
       return [eig1, eig2];
     }
     static eigenvectors2x2(mat = [[1, 2], [3, 4]], eigens = [1, 2]) {
@@ -16751,8 +14783,8 @@
       let smoothingstep = Math.floor(sps11 / 10);
       let smoothed = this.sma(raw_signal, smoothingstep);
       let peaks = this.peakDetect(smoothed, "peak", smoothingstep);
-      let mean = this.mean(smoothed);
-      let std = this.std(smoothed, mean);
+      let mean2 = this.mean(smoothed);
+      let std = this.std(smoothed, mean2);
       let p_idx = 0;
       let candidates = [];
       if (peaks.length > 0) {
@@ -16777,9 +14809,9 @@
             });
             let max = Math.max(...peakvals);
             let maxi = tempcandidates[peakvals.indexOf(max)];
-            candidates.push({ event_timestamp: t3, event_index: j, peak_timestamp: signal_timestamps[[peaks[maxi]]], signal_index: [peaks[maxi]], signal_amplitude: raw_signal[[peaks[maxi]]], zscore: (smoothed[peaks[maxi]] - mean) / std });
+            candidates.push({ event_timestamp: t3, event_index: j, peak_timestamp: signal_timestamps[[peaks[maxi]]], signal_index: [peaks[maxi]], signal_amplitude: raw_signal[[peaks[maxi]]], zscore: (smoothed[peaks[maxi]] - mean2) / std });
           } else if (tempcandidates.length === 1)
-            candidates.push({ event_timestamp: t3, event_index: j, peak_timestamp: signal_timestamps[peaks[tempcandidates[0]]], signal_index: peaks[tempcandidates[0]], signal_amplitude: raw_signal[[peaks[tempcandidates[0]]]], zscore: (smoothed[peaks[tempcandidates[0]]] - mean) / std });
+            candidates.push({ event_timestamp: t3, event_index: j, peak_timestamp: signal_timestamps[peaks[tempcandidates[0]]], signal_index: peaks[tempcandidates[0]], signal_amplitude: raw_signal[[peaks[tempcandidates[0]]]], zscore: (smoothed[peaks[tempcandidates[0]]] - mean2) / std });
         });
       }
       return candidates;
@@ -17277,8 +15309,8 @@
       if (ctx.intervals[key].filtered.length > checkCt) {
         if (ctx.intervals[key].averaged.length > averageCt) {
           ctx.intervals[key].averaged.splice(0, checkCt);
-          let mean = Math2.mean(ctx.intervals[key].averaged);
-          if (Math.abs(Math.min(...ctx.intervals[key].filtered)) > Math.abs(mean) + ctx.tolerance) {
+          let mean2 = Math2.mean(ctx.intervals[key].averaged);
+          if (Math.abs(Math.min(...ctx.intervals[key].filtered)) > Math.abs(mean2) + ctx.tolerance) {
             ctx.intervals[key].filtered.length = 0;
             passed = true;
             found[key] = true;
@@ -18224,7 +16256,7 @@
       options.width = options.canvas.clientWidth;
     if (!options.height)
       options.height = options.canvas.clientHeight;
-    let message = { route: route ? route : "setupCanvas", args: {
+    let message3 = { route: route ? route : "setupCanvas", args: {
       ...options,
       canvas: offscreen
     } };
@@ -18234,34 +16266,34 @@
       initProxyElement3(options.canvas, worker, options._id);
     if (options.draw) {
       if (typeof options.draw === "function")
-        message.args.draw = options.draw.toString();
+        message3.args.draw = options.draw.toString();
       else
-        message.args.draw = options.draw;
+        message3.args.draw = options.draw;
     }
     if (options.update) {
       if (typeof options.update === "function")
-        message.args.update = options.update.toString();
+        message3.args.update = options.update.toString();
       else
-        message.args.update = options.update;
+        message3.args.update = options.update;
     }
     if (options.init) {
       if (typeof options.init === "function")
-        message.args.init = options.init.toString();
+        message3.args.init = options.init.toString();
       else
-        message.args.init = options.init;
+        message3.args.init = options.init;
     }
     if (options.clear) {
       if (typeof options.clear === "function")
-        message.args.clear = options.clear.toString();
+        message3.args.clear = options.clear.toString();
       else
-        message.args.clear = options.clear;
+        message3.args.clear = options.clear;
     }
     let transfer = [offscreen];
     if (options.transfer) {
       transfer.push(...options.transfer);
       delete options.transfer;
     }
-    worker.postMessage(message, transfer);
+    worker.postMessage(message3, transfer);
     const canvascontrols = {
       _id: options._id,
       width: options.width,
@@ -18752,16 +16784,16 @@
           ErrorStrings[ErrorCode.ENOTEMPTY] = "Directory is not empty.";
           ErrorStrings[ErrorCode.ENOTSUP] = "Operation is not supported.";
           var ApiError = function(Error2) {
-            function ApiError2(type, message, path$$1) {
-              if (message === void 0)
-                message = ErrorStrings[type];
-              Error2.call(this, message);
+            function ApiError2(type, message3, path$$1) {
+              if (message3 === void 0)
+                message3 = ErrorStrings[type];
+              Error2.call(this, message3);
               this.syscall = "";
               this.errno = type;
               this.code = ErrorCode[type];
               this.path = path$$1;
               this.stack = new Error2().stack;
-              this.message = "Error: " + this.code + ": " + message + (this.path ? ", '" + this.path + "'" : "");
+              this.message = "Error: " + this.code + ": " + message3 + (this.path ? ", '" + this.path + "'" : "");
             }
             if (Error2)
               ApiError2.__proto__ = Error2;
@@ -23936,26 +21968,26 @@
           InMemoryFileSystem.Name = "InMemory";
           InMemoryFileSystem.Options = {};
           var indexedDB = global$1.indexedDB || global$1.mozIndexedDB || global$1.webkitIndexedDB || global$1.msIndexedDB;
-          function convertError$2(e, message) {
-            if (message === void 0)
-              message = e.toString();
+          function convertError$2(e, message3) {
+            if (message3 === void 0)
+              message3 = e.toString();
             switch (e.name) {
               case "NotFoundError":
-                return new ApiError(ErrorCode.ENOENT, message);
+                return new ApiError(ErrorCode.ENOENT, message3);
               case "QuotaExceededError":
-                return new ApiError(ErrorCode.ENOSPC, message);
+                return new ApiError(ErrorCode.ENOSPC, message3);
               default:
-                return new ApiError(ErrorCode.EIO, message);
+                return new ApiError(ErrorCode.EIO, message3);
             }
           }
-          function onErrorHandler(cb, code, message) {
+          function onErrorHandler(cb, code, message3) {
             if (code === void 0)
               code = ErrorCode.EIO;
-            if (message === void 0)
-              message = null;
+            if (message3 === void 0)
+              message3 = null;
             return function(e) {
               e.preventDefault();
-              cb(new ApiError(code, message !== null ? message : void 0));
+              cb(new ApiError(code, message3 !== null ? message3 : void 0));
             };
           }
           var IndexedDBROTransaction = function IndexedDBROTransaction2(tx, store) {
@@ -25975,12 +24007,12 @@
                             var arguments$1 = arguments;
                             var i2;
                             var fixedArgs = new Array(arguments.length);
-                            var message, countdown = arguments.length;
+                            var message3, countdown = arguments.length;
                             function abortAndSendError(err) {
                               if (countdown > 0) {
                                 countdown = -1;
-                                message = { browserfsMessage: true, cbId, args: [apiErrorLocal2Remote(err)] };
-                                worker.postMessage(message);
+                                message3 = { browserfsMessage: true, cbId, args: [apiErrorLocal2Remote(err)] };
+                                worker.postMessage(message3);
                               }
                             }
                             for (i2 = 0; i2 < arguments.length; i2++) {
@@ -25990,15 +24022,15 @@
                                   if (err) {
                                     abortAndSendError(err);
                                   } else if (--countdown === 0) {
-                                    message = { browserfsMessage: true, cbId, args: fixedArgs };
-                                    worker.postMessage(message);
+                                    message3 = { browserfsMessage: true, cbId, args: fixedArgs };
+                                    worker.postMessage(message3);
                                   }
                                 });
                               })(i2, arguments$1[i2]);
                             }
                             if (arguments.length === 0) {
-                              message = { browserfsMessage: true, cbId, args: fixedArgs };
-                              worker.postMessage(message);
+                              message3 = { browserfsMessage: true, cbId, args: fixedArgs };
+                              worker.postMessage(message3);
                             }
                           };
                         case SpecialArgType.API_ERROR:
@@ -26059,14 +24091,14 @@
             WorkerFS2.prototype.initialize = function initialize3(cb) {
               var this$1 = this;
               if (!this._isInitialized) {
-                var message = { browserfsMessage: true, method: "probe", args: [this._argLocal2Remote(emptyBuffer()), this._callbackConverter.toRemoteArg(function(probeResponse) {
+                var message3 = { browserfsMessage: true, method: "probe", args: [this._argLocal2Remote(emptyBuffer()), this._callbackConverter.toRemoteArg(function(probeResponse) {
                   this$1._isInitialized = true;
                   this$1._isReadOnly = probeResponse.isReadOnly;
                   this$1._supportLinks = probeResponse.supportsLinks;
                   this$1._supportProps = probeResponse.supportsProps;
                   cb();
                 })] };
-                this._worker.postMessage(message);
+                this._worker.postMessage(message3);
               } else {
                 cb();
               }
@@ -26181,8 +24213,8 @@
               for (var i2 = 0; i2 < args.length; i2++) {
                 fixedArgs[i2] = this$1._argLocal2Remote(args[i2]);
               }
-              var message = { browserfsMessage: true, method: methodName, args: fixedArgs };
-              this._worker.postMessage(message);
+              var message3 = { browserfsMessage: true, method: methodName, args: fixedArgs };
+              this._worker.postMessage(message3);
             };
             WorkerFS2.prototype._argLocal2Remote = function _argLocal2Remote(arg) {
               if (!arg) {
@@ -35596,1344 +33628,12 @@
   };
   var csvRoutes = { appendCSV, updateCSVHeader, createCSV, visualizeDirectory, openCSV: CSV.openCSV, saveCSV: CSV.saveCSV, openCSVRaw: CSV.openCSVRaw, parseCSVData, getCSVHeader, writeToCSVFromDB, readCSVChunkFromDB, toISOLocal };
 
-  // node_modules/brainsatplay-math/dist/index.esm.js
-  var __defProp6 = Object.defineProperty;
-  var __defNormalProp2 = (obj, key, value) => key in obj ? __defProp6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField2 = (obj, key, value) => {
-    __defNormalProp2(obj, typeof key !== "symbol" ? key + "" : key, value);
-    return value;
-  };
-  var _Math22 = class {
-    constructor() {
-    }
-    static genSineWave(freq = 20, peakAmp = 1, nSec = 1, fs3 = 512, freq2 = 0, peakAmp2 = 1) {
-      var sineWave = [];
-      var t3 = [];
-      var increment = 1 / fs3;
-      for (var ti = 0; ti < nSec; ti += increment) {
-        var amplitude = Math.sin(2 * Math.PI * freq * ti) * peakAmp;
-        amplitude += Math.sin(2 * Math.PI * freq2 * ti) * peakAmp2;
-        sineWave.push(amplitude);
-        t3.push(ti);
-      }
-      return [t3, sineWave];
-    }
-    static getSineAmplitude(frequency = 20, peakAmplitude = 1, ti = 0, tOffset = 0) {
-      return Math.sin(this.TWO_PI * frequency * ti + tOffset) * peakAmplitude;
-    }
-    static mean(arr) {
-      var sum = arr.reduce((prev, curr) => curr += prev);
-      return sum / arr.length;
-    }
-    static mode(arr) {
-      return arr.sort((a, b2) => arr.filter((v2) => v2 === a).length - arr.filter((v2) => v2 === b2).length).pop();
-    }
-    static std(arr, mean = void 0) {
-      let avg = mean;
-      if (!mean)
-        avg = this.mean(arr);
-      let summed = 0;
-      for (let i = 0; i < arr.length; i++) {
-        let subbed = arr[i] - avg;
-        summed += subbed * subbed;
-      }
-      return Math.sqrt(summed / arr.length);
-    }
-    static relError(actual = [], forecast = [], abs = true) {
-      if (actual.length !== forecast.length)
-        throw new Error("Input arrays of same length!");
-      let i = actual.length;
-      let d2 = new Array(actual.length);
-      for (let j = 0; j < i; j++) {
-        let dd = (actual[j] - forecast[j]) / actual[j];
-        if (abs)
-          dd = Math.abs(dd);
-        d2[j] = dd;
-      }
-      return d2;
-    }
-    static informationEntropy(probabilities = []) {
-      let len = probabilities.length;
-      let entropy = new Array(len);
-      for (let i = 0; i < len; i++) {
-        let ent = probabilities[i] * Math.log(probabilities[i]);
-        if (isNaN(ent))
-          ent = 0;
-        entropy[i] = ent;
-      }
-      return entropy;
-    }
-    static zscore(arr) {
-      let mean = this.mean(arr);
-      let std = this.std(arr, mean);
-      let z3 = new Array().length(arr.length);
-      for (let i = 0; i < arr.length; i++) {
-        z3[i] = (arr[i] - mean) / std;
-      }
-      return z3;
-    }
-    static variance(arr) {
-      var mean = this.mean(arr);
-      return arr.reduce((a, b2) => a + (b2 - mean) ** 2, 0) / arr.length;
-    }
-    static dot(vec1, vec2) {
-      var dot = 0;
-      for (var i = 0; i < vec1.length; i++) {
-        dot += vec1[i] * vec2[i];
-      }
-      return dot;
-    }
-    static cross3D(vec1, vec2) {
-      return [
-        vec1[1] * vec2[2] - vec1[2] * vec2[1],
-        vec1[2] * vec2[0] - vec1[0] * vec2[2],
-        vec1[0] * vec2[1] - vec1[1] * vec2[0]
-      ];
-    }
-    static magnitude(vec) {
-      var sqrd = 0;
-      vec.forEach((c) => {
-        sqrd += c * c;
-      });
-      return Math.sqrt(sqrd);
-    }
-    static distance(point1, point2) {
-      var dsqrd = 0;
-      point1.forEach((c, i) => {
-        dsqrd += (point2[i] - c) * (point2[i] - c);
-      });
-      return Math.sqrt(dsqrd);
-    }
-    static midpoint(point1 = [1, 2, 3], point2 = [3, 4, 5]) {
-      return point1.map((c, i) => {
-        return (c + point2[i]) * 0.5;
-      });
-    }
-    static normalize(vec) {
-      var norm = 0;
-      norm = this.magnitude(vec);
-      var vecn = new Array(vec.length);
-      vec.forEach((c, i) => {
-        vecn[i] = c * norm;
-      });
-      return vecn;
-    }
-    static normalizeSeries(arr = [], fromZero = true) {
-      let max = Math.max(...arr);
-      let min = Math.min(...arr);
-      if (fromZero == false) {
-        max = Math.max(max, Math.abs(min));
-        min = 0;
-      }
-      if (max - min === 0) {
-        min = 0;
-        if (max === 0)
-          max = 1e-13;
-      }
-      return arr.map((v2) => (v2 - min) / (max - min));
-    }
-    static quadraticFormula(a, b2, c) {
-      let bbmac4 = Math.sqrt(b2 * b2 - 4 * a * c);
-      if (!isNaN(bbmac4))
-        return ["complex", "complex"];
-      let _a2 = 1 / (2 * a);
-      if (bbmac4 === 0)
-        return [b2 * _a2];
-      let nb = -b2;
-      return [(nb + bbmac4) * _a2, (nb - bbmac4) * _a2];
-    }
-    static newtonsMethod(foo = (x22) => {
-      return Math.pow(x22, 5) + x22 * x22 - x22 - 0.2;
-    }, start = 0, end = 1, precision = 0.01, attempts = 10) {
-      let roots = [];
-      for (let i = 0; i < attempts; i++) {
-        let seedx = Math.random() * (end - start);
-        let guess = foo(seedx);
-        let guess2 = foo(seedx + precision);
-        let slope = (guess2 - guess) / precision;
-        let xn = seedx + precision;
-        while (Math.abs(slope) > precision) {
-          let step = -guess / slope2;
-          let xn12 = xn + step;
-          guess = guess2;
-          guess2 = foo(xn12);
-          let slope2 = (guess2 - guess) / (xn12 - xn);
-        }
-        let idx;
-        let f = roots.find((root, i2) => {
-          if (Math.abs(xn1 - root) < precision) {
-            idx = i2;
-            return true;
-          }
-        });
-        if (f)
-          roots[idx] = (xn1 + f) * 0.5;
-        else
-          roots.push(xn1);
-      }
-      return roots;
-    }
-    static makeVec(point1, point2) {
-      var vec = [];
-      point1.forEach((c, i) => {
-        vec.push(point2[i] - c);
-      });
-      return vec;
-    }
-    static getBufferedValueByCoordinates(vb = new Array(300).fill(1), dims = [10, 10, 2], coordinate = [1, 2, 1], cardinal = void 0) {
-      let getIdx = (foundIdx = 0, dimIdx = 0) => {
-        if (dimIdx === dims.length)
-          return foundIdx;
-        if (dimIdx == 0)
-          foundIdx += coordinate[dimIdx];
-        else if (dims[dimIdx] == 0)
-          dimsAt0++;
-        else {
-          let reMul = (val = coordinate[dimIdx], di = dimIdx - 1) => {
-            val *= dims[di];
-            di--;
-            if (di == 0)
-              return val;
-            else
-              return reMul(val, di);
-          };
-          foundIdx += reMul(coordinate[dimIdx] + 1, dimIdx - 1);
-        }
-        dimIdx++;
-        return getIdx(foundIdx, dimIdx);
-      };
-      let found = getIdx();
-      if (cardinal) {
-        if (coordinate[coordinate.length - 1] === 0) {
-          let lastnonzero = 0;
-          let idx = 0;
-          while (idx !== coordinate.length - 1) {
-            if (coordinate[idx] !== 0)
-              lastnonzero = idx;
-            idx++;
-          }
-          return vb[found - lastnonzero + cardinal];
-        }
-        return vb[found - dims.length + cardinal];
-      } else {
-        if (coordinate[coordinate.length - 1] === 0) {
-          let lastnonzero = 0;
-          let idx = 0;
-          while (idx !== coordinate.length - 1) {
-            if (coordinate[idx] !== 0)
-              lastnonzero = idx;
-            idx++;
-          }
-          return vb.slice(found - lastnonzero, found + 1);
-        }
-        return vb.slice(found - dims.length, found + 1);
-      }
-    }
-    static forBufferedMat(vb = new Array(100).fill(1), dims = [10, 10], asIndex = (v2, i, x22, y4) => {
-      return v2 + x22 + y4;
-    }) {
-      let coordinate = [];
-      let idx = 0;
-      let recurseFor = (depth = 0, nextDepth = depth + 1) => {
-        let result = new Array(vb.length);
-        for (let di = 0; di < dims[depth]; di++) {
-          coordinate[depth] = di;
-          if (dims[nextDepth])
-            recurseFor(nextDepth);
-          else {
-            result[idx] = asIndex(vb[idx], idx, ...coordinate);
-            idx++;
-          }
-        }
-        return result;
-      };
-      let recurseForArrFuncs = (depth, nextDepth = depth + 1) => {
-        let result = new Array(vb.length);
-        for (let di = 0; di < dims[depth]; di++) {
-          coordinate[depth] = di;
-          if (dims[nextDepth])
-            recurseFor(nextDepth);
-          else {
-            for (let dj = 0; dj < dims.length; dj++) {
-              result[idx] = asIndex[dj](vb[idx], idx, ...coordinate);
-              idx++;
-            }
-          }
-        }
-        return result;
-      };
-      if (typeof asIndex === "function") {
-        return recurseFor();
-      } else if (Array.isArray(asIndex)) {
-        return recurseForArrFuncs();
-      }
-    }
-    static mapBufferedMat(buffer = new Array(100).fill(1), dimensions = [10, 10], asIndex = (v2, idx, i, j) => {
-      console.log(`value:${v2}, idx:${idx}, x:${i},y:${j}`);
-      return v2 + i + j;
-    }) {
-      let coordinate = new Array(dimensions.length).fill(0);
-      const iterateCoordinate = (coord, idx = 0) => {
-        if (coord[idx] >= dimensions[idx]) {
-          coord[idx] = 0;
-          idx++;
-          if (idx === dimensions.length)
-            return;
-          iterateCoordinate(coord, idx);
-        } else
-          coord[idx]++;
-      };
-      let result = new Array(buffer.length);
-      let i = 0;
-      if (typeof asIndex === "function") {
-        while (i < buffer.length) {
-          result[i] = asIndex(buffer[i], i, ...coordinate);
-          i += dimensions.length;
-          iterateCoordinate(coordinate);
-        }
-      } else if (Array.isArray(asIndex)) {
-        while (i < buffer.length) {
-          asIndex.forEach((func) => {
-            result[i] = func(buffer[i], i, ...coordinate);
-            i++;
-            iterateCoordinate(coordinate);
-          });
-        }
-      }
-      return result;
-    }
-    static combinations(choices = ["a", "b", "c"], vecsize = 3) {
-      var result = [];
-      if (vecsize <= 0) {
-        result.push([]);
-      } else {
-        _Math22.combinations(choices, vecsize - 1).forEach(function(previousComb) {
-          choices.forEach(function(element) {
-            result.push([element].concat(previousComb));
-          });
-        });
-      }
-      return result;
-    }
-    static generateCoordinateSpace(upperBounds = [10, 10, 10], lowerBounds = [-10, -10, -10], steps = [1, 1, 1], mutater = void 0) {
-      for (let i = 0; i < upperBounds.length; i++) {
-        if (lowerBounds[i] > upperBounds[i]) {
-          let temp = upperBounds[i];
-          upperBounds[i] = lowerBounds[i];
-          lowerBounds[i] = temp;
-        }
-      }
-      let result = [];
-      let copy = [...upperBounds];
-      let lastindex = copy.length - 1;
-      result.push([...copy]);
-      while (copy[0] >= lowerBounds[0]) {
-        let checkNextIndex = (decrIdx2) => {
-          if (copy[decrIdx2] <= lowerBounds[decrIdx2]) {
-            if (decrIdx2 === 0)
-              return;
-            copy[decrIdx2] = upperBounds[decrIdx2];
-            decrIdx2--;
-            if (decrIdx2 < 0)
-              return;
-            if (typeof steps[decrIdx2] == "function")
-              copy[decrIdx2] -= steps[decrIdx2](copy[decrIdx2]);
-            else
-              copy[decrIdx2] -= steps[decrIdx2];
-            checkNextIndex(decrIdx2);
-          }
-        };
-        let decrIdx = lastindex;
-        if (typeof steps[decrIdx] == "function")
-          copy[decrIdx] -= steps[decrIdx](copy[decrIdx]);
-        else
-          copy[decrIdx] -= steps[decrIdx];
-        result.push([...copy]);
-        checkNextIndex(decrIdx);
-        if (mutater)
-          result[result.length - 1] = mutater(result[result.length - 1]);
-      }
-      return result;
-    }
-    static calcVectorField(coordinates = [[0, 0], [0, 1], [1, 0], [1, 1]], formula = (x22, y4) => {
-      return [x22 * 10, y4 * 10];
-    }) {
-      return coordinates.map((vec) => formula(...vec));
-    }
-    static transpose(mat) {
-      return mat[0].map((_2, colIndex) => mat.map((row) => row[colIndex]));
-    }
-    static matmul(a, b2) {
-      var aNumRows = a.length, aNumCols = a[0].length, bNumRows = b2.length, bNumCols = b2[0].length, m = new Array(aNumRows);
-      for (var r = 0; r < aNumRows; ++r) {
-        m[r] = new Array(bNumCols);
-        for (var c = 0; c < bNumCols; ++c) {
-          m[r][c] = 0;
-          for (var i = 0; i < aNumCols; ++i) {
-            m[r][c] += a[r][i] * b2[i][c];
-          }
-        }
-      }
-      return m;
-    }
-    static matscale(mat, scalar) {
-      let m = [];
-      for (var i = 0; i < mat.length; i++) {
-        m[i] = [];
-        for (let j = 0; j < mat[0].length; j++) {
-          m[i][j] = mat[i][j] * scalar;
-        }
-      }
-      return m;
-    }
-    static matadd(a, b2) {
-      let m = [];
-      for (let i = 0; i < a.length; i++) {
-        m[i] = [];
-        for (var j = 0; j < a[0].length; j++) {
-          m[i][j] = a[i][j] + b2[i][j];
-        }
-      }
-      return m;
-    }
-    static matsub(a, b2) {
-      let m = [];
-      for (let i = 0; i < a.length; i++) {
-        m[i] = [];
-        for (var j = 0; j < a[0].length; j++) {
-          m[i][j] = a[i][j] - b2[i][j];
-        }
-      }
-      return m;
-    }
-    static histogram(arr = [], binSize = 1, nBins = void 0) {
-      let copy = [...arr];
-      copy.sort(function(a, b2) {
-        return a - b2;
-      });
-      let binStart = Math.min(...copy);
-      if (typeof nBins === "number") {
-        let binEnd = Math.max(...copy);
-        binSize = Math.abs((binEnd - binStart) / (nBins - 1));
-      }
-      let j = binStart;
-      let binx = [];
-      let biny = [];
-      for (let i = 0; i < copy.length; i++) {
-        let binidx = binSize * j;
-        if (copy[i] > binStart + binidx) {
-          j++;
-          binidx += binSize;
-          let binmin = binStart + binidx;
-          let binmid = binmin + binidx * 0.5;
-          binx.push(binmid);
-          biny.push(0);
-        }
-        biny[biny.length - 1]++;
-      }
-      return [binx, biny];
-    }
-    static normalDistribution(samples = [], normalize = true, cutoff = 1e-4) {
-      let m = this.mean(samples);
-      let vari = this.variance(samples);
-      let nSamples = samples.length;
-      let probabilities = [];
-      let denom3 = 1 / (this.TWO_PI * vari);
-      let _variance = 1 / vari;
-      let sum = 0;
-      for (let i = 0; i < nSamples; i++) {
-        let px = Math.exp(-0.5 * Math.pow((samples[i] - m) * _variance, 2)) * denom3;
-        if (px < cutoff)
-          px = 0;
-        probabilities.push(px);
-        sum += px;
-      }
-      if (normalize) {
-        let _sum = 1 / sum;
-        probabilities = probabilities.map((x22) => x22 * _sum);
-      }
-      return probabilities;
-    }
-    static expectedValue(samples = [], probabilities = this.normalDistribution(samples)) {
-      return samples.reduce((sum, item, idx) => sum + item * probabilities[idx]);
-    }
-    static originMoment(samples = [], probabilities = this.normalDistribution(samples), order = 1) {
-      return samples.reduce((sum, item, idx) => sum + Math.pow(item, order) * probabilities[idx]);
-    }
-    static centralMoment(samples = [], probabilities = this.normalDistribution(samples), order = 1) {
-      let m = this.mean(samples);
-      return samples.reduce((sum, item, idx) => sum + Math.pow(item - m, order) * probabilities[idx] / samples.length);
-    }
-    static linearDiscriminantAnalysis(samples = [], classifier = []) {
-      let mean = this.mean(samples);
-      let meank = this.mean(classifier);
-      let covariance = this.cov1d(samples, classifier);
-      let probs = this.normalDistribution(samples);
-      let dk = [];
-      for (let i = 0; i < samples.length; i++) {
-        dk.push(x[i] * covariance * meank - 0.5 * mean * covariance * meank + Math.log10(probs[i]));
-      }
-      return dk;
-    }
-    static conv1D(arr = [], kern = [1 / 3, 1 / 3, 1 / 3], pad = Math.floor(kern.length * 0.5)) {
-      let result = [];
-      let _n = 1 / kern.length;
-      if (pad > 0) {
-        let pads = new Array(pad).fill(0);
-        arr = [...pads, ...arr, ...pads];
-      }
-      let start = Math.floor(kern.length * 0.5);
-      let end = arr.length - kern.length + start;
-      for (let i = start; i < end; i++) {
-        let acc = 0;
-        for (let j = 0; j < kern.length; j++) {
-          acc += arr[i - start] * kern[j];
-        }
-        result.push(acc * _n);
-      }
-      return result;
-    }
-    static conv2D(mat = [[], [], []], kern = [[], [], []], pad = 0) {
-      let result = new Array(mat.length - Math.ceil(kern.length * 0.5)).fill([]);
-      let mat_t;
-      let kern_t = _Math22.transpose(kern_t);
-      if (pad > 0) {
-        let pads = new Array(pad).fill(0);
-        mat_t = _Math22.transpose(mat);
-        for (let i2 = 0; i2 < mat_t.length; i2++) {
-          mat_t[i2] = [...pads, ...mat_t[i2], ...pads];
-        }
-        mat = _Math22.transpose(mat_t);
-        for (let j = 0; j < mat.length; j++) {
-          mat[j] = [...pads, ...mat[j], ...pads];
-        }
-      }
-      let startr = Math.floor(kern[0].length * 0.5);
-      let startl = Math.floor(kern_t[0].length * 0.5);
-      let endr = mat[0].length - kern[0].length + startr;
-      let endl = mat_t[0].length - kern_t[0].length + startl;
-      let _n = 1 / (kern[0].length * kern_t[0].length);
-      let iters = endr * endl;
-      let i = startr;
-      let x22;
-      let y4 = startl;
-      while (i < iters) {
-        let acc = 0;
-        x22 = i % mat[0].length;
-        if (x22 === 0) {
-          y4++;
-        }
-        for (let j = 0; j < kern[0].length; j++) {
-          for (let k = 0; k < kern_t[0].length; j++) {
-            acc += mat[y4 - startl + k][x22 - startr + j] * kern[k][j];
-          }
-          result[y4].push(acc * _n);
-        }
-        i++;
-      }
-      return result;
-    }
-    static cov2d(mat) {
-      var mattransposed = this.transpose(mat);
-      var matproducts = [];
-      var rowmeans = [];
-      var colmeans = [];
-      mat.forEach((row, idx) => {
-        rowmeans.push(this.mean(row));
-      });
-      mattransposed.forEach((col, idx) => {
-        colmeans.push(this.mean(col));
-      });
-      mat.forEach((row, idx) => {
-        matproducts.push([]);
-        for (var col = 0; col < row.length; col++) {
-          matproducts[idx].push((mat[idx][col] - rowmeans[idx]) * (mat[idx][col] - colmeans[col]) / (row.length - 1));
-        }
-      });
-      var matproductstransposed = this.transpose(matproducts);
-      var aNumRows = matproducts.length, aNumCols = matproducts[0].length, bNumRows = matproductstransposed.length, bNumCols = matproductstransposed[0].length, m = new Array(aNumRows);
-      for (var r = 0; r < aNumRows; ++r) {
-        m[r] = new Array(bNumCols);
-        for (var c = 0; c < bNumCols; ++c) {
-          m[r][c] = 0;
-          for (var i = 0; i < aNumCols; ++i) {
-            m[r][c] += matproducts[r][i] * matproductstransposed[i][c] / (mat[0].length - 1);
-          }
-        }
-      }
-      return m;
-    }
-    static cov1d(arr1 = [], arr2 = []) {
-      return this.cov2d([arr1, arr2]);
-    }
-    static cov3d(x22 = [], y4 = [], z3 = []) {
-      return [
-        [this.cov1d(x22, x22), this.cov1d(x22, y4), this.cov1d(x22, z3)],
-        [this.cov1d(y4, x22), this.cov1d(y4, y4), this.cov1d(y4, z3)],
-        [this.cov1d(z3, x22), this.cov1d(z3, y4), this.cov1d(z3, z3)]
-      ];
-    }
-    static covNd(dimensionalData = []) {
-      let covariance = [];
-      dimensionalData.forEach((arr, i) => {
-        covariance.push([]);
-        dimensionalData.forEach((arr2, j) => {
-          covariance[i].push(this.cov1d(arr, arr2));
-        });
-      });
-    }
-    static eigens2x2(mat = [[1, 2], [3, 4]]) {
-      let det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-      let mean = (mat[0][0] + mat[1][1]) * 0.5;
-      let sqrt = Math.sqrt(mean * mean - det);
-      let eig1 = mean + sqrt;
-      let eig2 = mean - sqrt;
-      return [eig1, eig2];
-    }
-    static eigenvectors2x2(mat = [[1, 2], [3, 4]], eigens = [1, 2]) {
-      let v1 = [-mat[0][1], mat[0][0] - eigens[0]];
-      if (v1[0] === 0 && v1[1] === 0) {
-        v1[0] = mat[1][1] - eigens[0];
-        v1[1] = -mat[1][0];
-      }
-      let v2 = [-mat[0][1], mat[0][0] - eigens[1]];
-      if (v2[0] === 0 && v2[1] === 0) {
-        v2[0] = mat[1][1] - eigens[1];
-        v2[1] = -mat[1][0];
-      }
-      return [v1, v2];
-    }
-    static fastpca2d(xarr, yarr) {
-      let cov1d = this.cov1d(xarr, yarr);
-      let eigs = this.eigens2x2(cov1d);
-      if (eigs[1] > eigs[0])
-        eigs.reverse();
-      let evs = this.eigenvectors2x2(cov1d, eigs);
-      console.log(eigs, evs);
-      return [eigs, evs];
-    }
-    static crosscorrelation(arr1, arr2) {
-      var arr2buf = [...arr2, ...Array(arr2.length).fill(0)];
-      var mean1 = this.mean(arr1);
-      var mean2 = this.mean(arr2);
-      var arr1Est = arr1.reduce((sum, item) => sum += Math.pow(item - mean1, 2));
-      arr1Est = Math.sqrt(Math.abs(arr1Est));
-      var arr2Est2 = arr2.reduce((sum, item) => sum += Math.pow(item - mean1, 2));
-      arr2Est2 = Math.sqrt(Math.abs(arr2Est2));
-      let denom3 = arr1Est * arr2Est2;
-      if (denom3 === 0)
-        denom3 = 1e-26;
-      var _arrEstsMul = 1 / denom3;
-      var correlations = new Array(arr1.length).fill(0);
-      for (var delay = 0; delay < arr1.length; delay++) {
-        var r = arr1.reduce((sum, item, i) => sum += (item - mean1) * (arr2buf[delay + i] - mean2));
-        correlations[delay] = r * _arrEstsMul;
-      }
-      return correlations;
-    }
-    static autocorrelation(arr1) {
-      var delaybuf = [...arr1, ...Array(arr1.length).fill(0)];
-      var mean1 = this.mean(arr1);
-      var arr1Est = arr1.reduce((sum, item) => sum += Math.pow(item - mean1, 2));
-      arr1Est = Math.sqrt(Math.abs(arr1Est));
-      let denom3 = arr1Est * arr2Est;
-      if (denom3 === 0)
-        denom3 = 1e-26;
-      var _arr1estsqrd = 1 / denom3;
-      var correlations = new Array(arr1.length).fill(0);
-      for (var delay = 0; delay < arr1.length; delay++) {
-        var r = arr1.reduce((sum, item, i) => sum += (item - mean1) * (delaybuf[delay + i] - mean1));
-        correlations[delay] = r * _arr1estsqrd;
-      }
-      return correlations;
-    }
-    static autocorrelation2dNormalized(mat2d2) {
-      let result = [];
-      for (let y4 = 0; y4 < mat2d2.length; y4++) {
-        result.push([]);
-        for (let x22 = 0; x22 < mat2d2[y4].length; x22++) {
-          let G3 = 0;
-          let _G = 0;
-          for (let b2 = 0; b2 < mat2d2.length; b2++) {
-            for (let a = 0; a < mat2d2[b2].length; a++) {
-              G3 += mat2d2[y4][x22] * mat2d2[mat2d2.length - 1 - b2][mat2d2[y4].length - 1 - a];
-              _G += mat2d2[y4][x22] * mat2d2[mat2d2.length - 1][mat2d2[y4].length - 1];
-            }
-          }
-          result[y4][x22] = G3 / _G - 1;
-        }
-      }
-      return result;
-    }
-    static crosscorrelation2d(mat2d1, mat2d2) {
-      let result = [];
-      for (let y4 = 0; y4 < mat2d1.length; y4++) {
-        result.push([]);
-        for (let x22 = 0; x22 < mat2d1[y4].length; x22++) {
-          let G3 = 0;
-          for (let b2 = 0; b2 < mat2d2.length; b2++) {
-            for (let a = 0; a < mat2d2[b2].length; a++) {
-              G3 += mat2d1[y4][x22] * mat2d2[mat2d2.length - 1 - b2][mat2d2[y4].length - 1 - a];
-            }
-          }
-          result[y4][x22] = G3;
-        }
-      }
-      return result;
-    }
-    static crosscorrelation2dNormalized(mat2d1, mat2d2) {
-      let result = [];
-      for (let y4 = 0; y4 < mat2d1.length; y4++) {
-        result.push([]);
-        for (let x22 = 0; x22 < mat2d1[y4].length; x22++) {
-          let G3 = 0;
-          let _G = 0;
-          for (let b2 = 0; b2 < mat2d2.length; b2++) {
-            for (let a = 0; a < mat2d2[b2].length; a++) {
-              G3 += mat2d1[y4][x22] * mat2d2[mat2d.length - 1 - b2][mat2d2[y4].length - 1 - a];
-              _G += mat2d1[y4][x22] * mat2d2[mat2d2.length - 1][mat2d2[y4].length - 1];
-            }
-          }
-          result[y4][x22] = G3 / _G - 1;
-        }
-      }
-      return result;
-    }
-    static correlograms(dat = [[], []]) {
-      var correlograms = [];
-      dat.forEach((row1, i) => {
-        dat.forEach((row2, j) => {
-          if (j >= i) {
-            correlograms.push(_Math22.crosscorrelation(row1, row2));
-          }
-        });
-      });
-      return correlograms;
-    }
-    static dft(sineWave = []) {
-      var TWOPI = 2 * 3.141592653589793;
-      var real = [];
-      var imag = [];
-      var mags = [];
-      for (var k = 0; k < sineWave.length; k++) {
-        real.push(0);
-        imag.push(0);
-        for (var j = 0; j < sineWave.length; j++) {
-          var shared = TWOPI * k * j / sineWave.length;
-          real[k] = real[k] + sineWave[j] * Math.cos(shared);
-          imag[k] = imag[k] - sineWave[j] * Math.sin(shared);
-        }
-        mags.push(Math.sqrt(real[k] * real[k] + imag[k] * imag[k]));
-      }
-      function orderMagnitudes(unorderedMags) {
-        return [...unorderedMags.slice(Math.ceil(unorderedMags.length * 0.5), unorderedMags.length), ...unorderedMags.slice(0, Math.ceil(unorderedMags.length * 0.5))];
-      }
-      mags = orderMagnitudes(mags);
-      let halflen = mags.length * 0.5;
-      let freqs = mags.map((m, i) => {
-        return i - halflen;
-      });
-      return {
-        real,
-        imag,
-        freqs,
-        mags
-      };
-    }
-    static sma(arr = [], window2) {
-      var smaArr = [];
-      for (var i = 0; i < arr.length; i++) {
-        if (i == 0) {
-          smaArr.push(arr[0]);
-        } else if (i < window2) {
-          var arrslice = arr.slice(0, i + 1);
-          smaArr.push(arrslice.reduce((previous, current) => current += previous) / (i + 1));
-        } else {
-          var arrslice = arr.slice(i - window2, i);
-          smaArr.push(arrslice.reduce((previous, current) => current += previous) / window2);
-        }
-      }
-      return smaArr;
-    }
-    static sum(arr = []) {
-      if (arr.length > 0) {
-        var sum = arr.reduce((prev, curr) => curr += prev);
-        return sum;
-      } else {
-        return 0;
-      }
-    }
-    static reduceArrByFactor(arr, factor = 2) {
-      let x22 = arr.filter((element, index) => {
-        return index % factor === 0;
-      });
-      return x22;
-    }
-    static makeArr(startValue, stopValue, nSteps) {
-      var arr = [];
-      var step = (stopValue - startValue) / (nSteps - 1);
-      for (var i = 0; i < nSteps; i++) {
-        arr.push(startValue + step * i);
-      }
-      return arr;
-    }
-    static autoscale(array, stackedLines = 1, stackPosition = 0, centerZero = false) {
-      if (array?.length === 0)
-        return array;
-      let max = Math.max(...array);
-      let min = Math.min(...array);
-      let _lines = 1 / stackedLines;
-      let scalar;
-      if (centerZero) {
-        let absmax = Math.max(Math.abs(min), Math.abs(max));
-        scalar = _lines / absmax;
-        return array.map((y4) => y4 * scalar + (_lines * (stackPosition + 1) * 2 - 1 - _lines));
-      } else {
-        scalar = _lines / (max - min);
-        return array.map((y4) => 2 * ((y4 - min) * scalar - 1 / (2 * stackedLines)) + (_lines * (stackPosition + 1) * 2 - 1 - _lines));
-      }
-    }
-    static absmax(array) {
-      return Math.max(Math.abs(Math.min(...array)), Math.max(...array));
-    }
-    static downsample(array, fitCount, scalar = 1) {
-      if (array.length > fitCount) {
-        let output = new Array(fitCount);
-        let incr = array.length / fitCount;
-        let lastIdx = array.length - 1;
-        let last = 0;
-        let counter = 0;
-        for (let i = incr; i < array.length; i += incr) {
-          let rounded = Math.round(i);
-          if (rounded > lastIdx)
-            rounded = lastIdx;
-          for (let j = last; j < rounded; j++) {
-            output[counter] += array[j];
-          }
-          output[counter] /= (rounded - last) * scalar;
-          counter++;
-          last = rounded;
-        }
-        return output;
-      } else
-        return array;
-    }
-    static interpolateArray(data, fitCount, scalar = 1) {
-      var linearInterpolate = function(before2, after2, atPoint2) {
-        return (before2 + (after2 - before2) * atPoint2) * scalar;
-      };
-      var newData = new Array();
-      var springFactor = (data.length - 1) / (fitCount - 1);
-      newData[0] = data[0];
-      for (var i = 1; i < fitCount - 1; i++) {
-        var tmp = i * springFactor;
-        var before = Math.floor(tmp);
-        var after = Math.ceil(tmp);
-        var atPoint = tmp - before;
-        newData[i] = linearInterpolate(data[before], data[after], atPoint);
-      }
-      newData[fitCount - 1] = data[data.length - 1];
-      return newData;
-    }
-    static isExtrema(arr, critical = "peak") {
-      let ref = [...arr];
-      if (ref.length % 2 === 0)
-        ref.pop();
-      if (arr.length > 1) {
-        let pass = true;
-        for (let i = 0; i < ref.length; i++) {
-          let val = ref[i];
-          if (critical === "peak") {
-            if (i < Math.floor(ref.length * 0.5) && val >= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            } else if (i > Math.floor(ref.length * 0.5) && val >= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            }
-          } else if (critical === "valley") {
-            if (i < Math.floor(ref.length * 0.5) && val <= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            } else if (i > Math.floor(ref.length * 0.5) && val <= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            }
-          } else {
-            if (i < Math.floor(ref.length * 0.5) && val <= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            } else if (i > Math.floor(ref.length * 0.5) && val <= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            }
-          }
-        }
-        if (critical !== "peak" && critical !== "valley" && pass === false) {
-          pass = true;
-          for (let i = 0; i < ref.length; i++) {
-            let val = ref[i];
-            if (i < Math.floor(ref.length * 0.5) && val >= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            } else if (i > Math.floor(ref.length * 0.5) && val >= ref[Math.floor(ref.length * 0.5)]) {
-              pass = false;
-              break;
-            }
-          }
-        }
-        return pass;
-      } else
-        return void 0;
-    }
-    static isCriticalPoint(arr, critical = "peak") {
-      let ref = [...arr];
-      if (ref.length % 2 === 0)
-        ref.pop();
-      if (arr.length > 1) {
-        let pass = true;
-        for (let i = 0; i < ref.length; i++) {
-          let val = ref[i];
-          if (critical === "peak") {
-            if (i < ref.length * 0.5 && val <= 0) {
-              pass = false;
-              break;
-            } else if (i > ref.length * 0.5 && val > 0) {
-              pass = false;
-              break;
-            }
-          } else if (critical === "valley") {
-            if (i < ref.length * 0.5 && val >= 0) {
-              pass = false;
-              break;
-            } else if (i > ref.length * 0.5 && val < 0) {
-              pass = false;
-              break;
-            }
-          } else {
-            if (i < ref.length * 0.5 && val >= 0) {
-              pass = false;
-              break;
-            } else if (i > ref.length * 0.5 && val < 0) {
-              pass = false;
-              break;
-            }
-          }
-        }
-        if (critical !== "peak" && critical !== "valley" && pass === false) {
-          pass = true;
-          for (let i = 0; i < ref.length; i++) {
-            let val = ref[i];
-            if (i < ref.length * 0.5 && val <= 0) {
-              pass = false;
-              break;
-            } else if (i > ref.length * 0.5 && val > 0) {
-              pass = false;
-              break;
-            }
-          }
-        }
-        return pass;
-      } else
-        return void 0;
-    }
-    static getPeakThreshold(arr, peakIndices, thresholdVar) {
-      let threshold;
-      let filtered = arr.filter((o, i) => {
-        if (peakIndices.indexOf(i) > -1)
-          return true;
-      });
-      if (thresholdVar === 0) {
-        threshold = this.mean(filtered);
-      } else
-        threshold = (thresholdVar + this.mean(filtered)) * 0.5;
-      return threshold;
-    }
-    static column(mat, x22) {
-      let col = new Array(mat.length).fill(0).map(() => new Array(1).fill(0));
-      for (let i = 0; i < mat.length; i++) {
-        col[i][0] = mat[i][x22];
-      }
-      return col;
-    }
-    static flatten_vector(v2) {
-      let v_new = [];
-      for (let i = 0; i < v2.length; i++) {
-        v_new[i] = v2[i][0];
-      }
-      return v_new;
-    }
-    static squared_difference(v1, v2) {
-      let sum = 0;
-      for (let i = 0; i < v1.length; i++) {
-        sum = sum + Math.pow(v1[i] - v2[i], 2);
-      }
-      return sum;
-    }
-    static shift_deflate(mat, eigenvalue, eigenvector) {
-      let len = Math.sqrt(this.matmul(this.transpose(eigenvector), eigenvector));
-      let U = this.matscale(eigenvector, 1 / len);
-      let delta = this.matscale(this.matmul(U, this.transpose(U)), eigenvalue);
-      let M_new = this.matsub(mat, delta);
-      return M_new;
-    }
-    static eigenvalue_of_vector(mat, eigenvector) {
-      ev = this.matmul(this.matmul(this.transpose(eigenvector), mat), eigenvector);
-      return ev;
-    }
-    static power_iteration(mat, tolerance = 1e-5, max_iterations = 1e3) {
-      let rank = mat.length;
-      let eigenvector = new Array(rank).fill(0).map(() => new Array(1).fill(Math.sqrt(rank)));
-      let eigenvalue = this.eigenvalue_of_vector(mat, eigenvector);
-      let epsilon = 1;
-      let iter = 0;
-      while (epsilon > tolerance && iter < max_iterations) {
-        let old_eigenvalue = JSON.parse(JSON.stringify(eigenvalue));
-        let Mv = this.matmul(mat, eigenvector);
-        eigenvector = this.normalize(Mv);
-        eigenvalue = this.eigenvalue_of_vector(mat, eigenvector);
-        epsilon = Math.abs(eigenvalue - old_eigenvalue);
-        iter++;
-      }
-      ;
-      return [eigenvalue, eigenvector];
-    }
-    static eigens(mat, tolerance = 1e-4, max_iterations = 1e3) {
-      let eigenvalues = [];
-      let eigenvectors = [];
-      for (let i = 0; i < mat.length; i++) {
-        let result = this.power_iteration(mat, tolerance, max_iterations);
-        let eigenvalue = result[0];
-        let eigenvector = result[1];
-        eigenvalues[i] = eigenvalue;
-        eigenvectors[i] = this.flatten_vector(eigenvector);
-        mat = this.shift_deflate(mat, eigenvalue, eigenvector);
-      }
-      return [eigenvalues, eigenvectors];
-    }
-    static pca(mat, tolerance = 1e-5) {
-      let dims = mat.length;
-      let t3 = new Array(dims);
-      let p = new Array(dims);
-      let mat_t = this.transpose(mat);
-      t3[0] = this.column(mat, 0);
-      let epsilon = 1;
-      let iter = 0;
-      while (espilon > tolerance) {
-        iter++;
-        p[0] = this.matmul(mat_t, t3[0]);
-        let tp = this.matmul(this.transpose(t3[0]), t3[0]);
-        p[0] = this.matscale(p[0], 1 / tp);
-        let p_length = Math.sqrt(this.matmul(this.transpose(p[0]), p[0]));
-        p[0] = this.matscale(p[0], 1 / p_length);
-        let t_new = this.matmul(mat, p[0]);
-        let pp = this.matmul(this.transpose(p[0]), p[0]);
-        t_new = this.matscale(t_new, 1 / pp);
-        epsilon = this.squared_difference(t3[0], t_new);
-        t3[0] = JSON.parse(JSON.stringify(t_new));
-      }
-      let components = this.matmul(this.transpose(t3[0]), t3[0]);
-      return components;
-    }
-    static circularBuffer(arr, newEntries) {
-      if (Array.isArray(newEntries)) {
-        if (newEntries.length < arr.length) {
-          let slice = arr.slice(newEntries.length);
-          let len = arr.length;
-          arr.splice(0, len, ...slice, ...newEntries);
-        } else if (newEntries.length > arr.length) {
-          let len = arr.length;
-          arr.splice(0, len, newEntries.slice(len - newEntries.length));
-        } else {
-          arr.splice(0, arr.length, ...newEntries);
-        }
-      } else {
-        arr.push(newEntries);
-        arr.shift();
-      }
-      return arr;
-    }
-    static HSLToRGB(h, s, l, scalar = 255) {
-      s /= 100;
-      l /= 100;
-      let c = (1 - Math.abs(2 * l - 1)) * s, x22 = c * (1 - Math.abs(h / 60 % 2 - 1)), m = l - c / 2, r = 0, g = 0, b2 = 0;
-      if (0 <= h && h < 60) {
-        r = c;
-        g = x22;
-        b2 = 0;
-      } else if (60 <= h && h < 120) {
-        r = x22;
-        g = c;
-        b2 = 0;
-      } else if (120 <= h && h < 180) {
-        r = 0;
-        g = c;
-        b2 = x22;
-      } else if (180 <= h && h < 240) {
-        r = 0;
-        g = x22;
-        b2 = c;
-      } else if (240 <= h && h < 300) {
-        r = x22;
-        g = 0;
-        b2 = c;
-      } else if (300 <= h && h < 360) {
-        r = c;
-        g = 0;
-        b2 = x22;
-      }
-      r = (r + m) * scalar;
-      g = (g + m) * scalar;
-      b2 = (b2 + m) * scalar;
-      return [r, g, b2];
-    }
-    static p300(event_timestamps = [], raw_signal = [], signal_timestamps = [], sps11 = 256) {
-      let smoothingstep = Math.floor(sps11 / 10);
-      let smoothed = this.sma(raw_signal, smoothingstep);
-      let peaks = this.peakDetect(smoothed, "peak", smoothingstep);
-      let mean = this.mean(smoothed);
-      let std = this.std(smoothed, mean);
-      let p_idx = 0;
-      let candidates = [];
-      if (peaks.length > 0) {
-        event_timestamps.forEach((t3, j) => {
-          while (signal_timestamps[peaks[p_idx]] < t3 + 200) {
-            p_idx++;
-            if (!peaks[p_idx])
-              break;
-          }
-          let tempi = 0;
-          let tempcandidates = [];
-          while (signal_timestamps[peaks[p_idx + tempi]] < t3 + 600) {
-            tempcandidates.push(p_idx + tempi);
-            tempi++;
-            if (!peaks[p_idx + tempi])
-              break;
-          }
-          if (tempcandidates.length > 1) {
-            let peakvals = [];
-            tempcandidates.forEach((tc) => {
-              peakvals.push(smoothed[peaks[tc]]);
-            });
-            let max = Math.max(...peakvals);
-            let maxi = tempcandidates[peakvals.indexOf(max)];
-            candidates.push({
-              event_timestamp: t3,
-              event_index: j,
-              peak_timestamp: signal_timestamps[[peaks[maxi]]],
-              signal_index: [peaks[maxi]],
-              signal_amplitude: raw_signal[[peaks[maxi]]],
-              zscore: (smoothed[peaks[maxi]] - mean) / std
-            });
-          } else if (tempcandidates.length === 1)
-            candidates.push({
-              event_timestamp: t3,
-              event_index: j,
-              peak_timestamp: signal_timestamps[peaks[tempcandidates[0]]],
-              signal_index: peaks[tempcandidates[0]],
-              signal_amplitude: raw_signal[[peaks[tempcandidates[0]]]],
-              zscore: (smoothed[peaks[tempcandidates[0]]] - mean) / std
-            });
-        });
-      }
-      return candidates;
-    }
-  };
-  var Math22 = _Math22;
-  __publicField2(Math22, "TWO_PI", Math.PI * 2);
-  __publicField2(Math22, "C", 299792458);
-  __publicField2(Math22, "G", 66743e-15);
-  __publicField2(Math22, "h", 662607015e-42);
-  __publicField2(Math22, "R", 8314.32);
-  __publicField2(Math22, "Ra", 287);
-  __publicField2(Math22, "H", 69.3);
-  __publicField2(Math22, "kbar", 1054571817e-43);
-  __publicField2(Math22, "kB", 1380649e-29);
-  __publicField2(Math22, "ke", 89875517923e-1);
-  __publicField2(Math22, "me", 91093837015e-41);
-  __publicField2(Math22, "mp", 167262192369e-38);
-  __publicField2(Math22, "mn", 167492749804e-38);
-  __publicField2(Math22, "P0", 101325);
-  __publicField2(Math22, "T0", 288.15);
-  __publicField2(Math22, "p0", 1.225);
-  __publicField2(Math22, "Na", 60220978e16);
-  __publicField2(Math22, "y", 1.405);
-  __publicField2(Math22, "M0", 28.96643);
-  __publicField2(Math22, "g0", 9.80665);
-  __publicField2(Math22, "Re", 6378100);
-  __publicField2(Math22, "B", 1458e-9);
-  __publicField2(Math22, "S", 110.4);
-  __publicField2(Math22, "Sigma", 365e-12);
-  __publicField2(Math22, "imgkernels", {
-    edgeDetection: [
-      [-1, -1, -1],
-      [-1, 8, -1],
-      [-1, -1, -1]
-    ],
-    boxBlur: [
-      [1 / 9, 1 / 9, 1 / 9],
-      [1 / 9, 1 / 9, 1 / 9],
-      [1 / 9, 1 / 9, 1 / 9]
-    ],
-    sobelLeft: [
-      [1, 0, -1],
-      [2, 0, -2],
-      [1, 0, -1]
-    ],
-    sobelRight: [
-      [-1, 0, 1],
-      [-2, 0, 2],
-      [-1, 0, 1]
-    ],
-    sobelTop: [
-      [1, 2, 1],
-      [0, 0, 0],
-      [-1, -2, -1]
-    ],
-    sobelBottom: [
-      [-1, 2, 1],
-      [0, 0, 0],
-      [1, 2, 1]
-    ],
-    identity: [
-      [0, 0, 0],
-      [0, 1, 0],
-      [0, 0, 0]
-    ],
-    gaussian3x3: [
-      [1, 2, 1],
-      [2, 4, 2],
-      [1, 2, 1]
-    ],
-    guassian7x7: [
-      [0, 0, 0, 5, 0, 0, 0],
-      [0, 5, 18, 32, 18, 5, 0],
-      [0, 18, 64, 100, 64, 18, 0],
-      [5, 32, 100, 100, 100, 32, 5],
-      [0, 18, 64, 100, 64, 18, 0],
-      [0, 5, 18, 32, 18, 5, 0],
-      [0, 0, 0, 5, 0, 0, 0]
-    ],
-    emboss: [
-      [-2, -1, 0],
-      [-1, 1, 1],
-      [0, 1, 2]
-    ],
-    sharpen: [
-      [0, -1, 0],
-      [-1, 5, -1],
-      [0, -1, 0]
-    ]
-  });
-  __publicField2(Math22, "integral", (func = (x22) => {
-    let y4 = x22;
-    return y4;
-  }, range = [], stepx = 0.01) => {
-    let area = 0;
-    for (let i = range[0]; i < range[1]; i += stepx) {
-      let y4 = func(i);
-      area += y4 * stepx;
-    }
-    return area;
-  });
-  __publicField2(Math22, "dintegral", (func = (x22, y4) => {
-    let z3 = x22 + y4;
-    return z3;
-  }, range = [[], []], stepx = 0.01, stepy = stepx) => {
-    let volume = 0;
-    for (let i = range[0][0] + stepx; i < range[0][1]; i += stepx) {
-      for (let j = range[1][0] + stepy; j < range[1][1]; j += stepy) {
-        let z3 = func(i, j);
-        volume += z3 * stepx * stepy;
-      }
-    }
-    return volume;
-  });
-  __publicField2(Math22, "tintegral", (func = (x22, y4, z3) => {
-    let w2 = x22 + y4 + z3;
-    return w2;
-  }, range = [[], [], []], stepx = 0.01, stepy = stepx, stepz = stepx) => {
-    let volume = 0;
-    for (let i = range[0][0] + stepx; i < range[0][1]; i += stepx) {
-      for (let j = range[1][0] + stepy; j < range[1][1]; j += stepy) {
-        for (let k = range[2][0] + stepz; k < range[2][1]; k += stepz) {
-          let w2 = func(i, j, k);
-          volume += w2 * stepx * stepy * stepz;
-        }
-      }
-    }
-    return volume;
-  });
-  __publicField2(Math22, "pintegral", (func = (x22) => {
-    let y4 = x22;
-    return y4;
-  }, range = [], stepx = 0.01) => {
-    let length = 0;
-    let y0 = void 0;
-    let yi = void 0;
-    for (let i = range[0]; i < range[1]; i += stepx) {
-      y0 = yi;
-      yi = func(i);
-      if (y0)
-        length += _Math22.distance([0, y0], [stepx, yi]);
-    }
-    return length;
-  });
-  __publicField2(Math22, "meshgrid", _Math22.generateCoordinateSpace);
-  __publicField2(Math22, "autocorrelation2d", (mat2d2) => {
-    let result = [];
-    for (let y4 = 0; y4 < mat2d2.length; y4++) {
-      result.push([]);
-      for (let x22 = 0; x22 < mat2d2[y4].length; x22++) {
-        let G3 = 0;
-        for (let b2 = 0; b2 < mat2d2.length; b2++) {
-          for (let a = 0; a < mat2d2[b2].length; a++) {
-            G3 += mat2d2[y4][x22] * mat2d2[mat2d2.length - 1 - b2][mat2d2[y4].length - 1 - a];
-          }
-        }
-        result[y4][x22] = G3;
-      }
-    }
-    return result;
-  });
-  __publicField2(Math22, "lerp", _Math22.makeArr);
-  __publicField2(Math22, "upsample", _Math22.interpolateArray);
-  __publicField2(Math22, "lerp", (v0, v1, fit, floor = true) => {
-    function lerp2(v02, v12, t3) {
-      return (1 - t3) * v02 + t3 * v12;
-    }
-    function interpolerp2(v02, v12, fit2, floor2 = true) {
-      if (fit2 <= 2)
-        return [v02, v12];
-      let a = 1 / fit2;
-      let result = new Array(fit2);
-      result[0] = v02;
-      for (let i = 1; i <= fit2; i++) {
-        result[i] = lerp2(v02, v12, a * i);
-        if (floor2)
-          result[i] = Math.floor(result[i]);
-      }
-      return result;
-    }
-  });
-  __publicField2(Math22, "peakDetect", (smoothedArray, type = "peak", window2 = 49) => {
-    let mid = Math.floor(window2 * 0.5);
-    let peaks = [];
-    for (let i = 0; i < smoothedArray.length - window2; i++) {
-      let isPeak = _Math22.isExtrema(smoothedArray.slice(i, i + window2), type);
-      if (isPeak) {
-        peaks.push(i + mid - 1);
-      }
-    }
-    return peaks;
-  });
-  Object.assign(Math, Math22);
-
-  // Alert.ts
-  var import_howler = __toESM(require_howler(), 1);
+  // alerts/Alert.ts
   var Alert = class {
     constructor(settings) {
       this.errored = false;
+      this.buffer = [];
+      this.history = [];
       this.set(settings);
     }
     set(settings) {
@@ -36943,27 +33643,107 @@
         console.log("No configuration object provided to Alert.set()");
       this.errored = false;
     }
+    add(value) {
+      const bufferLen = this.settings.bufferLength;
+      if (!Array.isArray(value))
+        value = [value];
+      if (bufferLen) {
+        this.buffer.push(...value);
+        const diff = this.buffer.length - bufferLen;
+        if (diff > 0)
+          this.buffer = this.buffer.slice(diff);
+      }
+      this.latest = value;
+    }
     check(value) {
-      if (this.settings) {
-        if (this.settings.condition(value))
-          this.throw(value);
-      } else {
-        if (!this.errored) {
-          this.errored = true;
-          console.log("Invalid configuration object has been set for Alert");
+      if (value)
+        this.add(value);
+      const bufferLen = this.settings.bufferLength;
+      if (!bufferLen || bufferLen === this.settings.bufferLength) {
+        const value2 = !bufferLen ? mean(this.latest) : mean(this.buffer);
+        if (this.settings) {
+          const toThrow = this.settings.condition(value2);
+          if (toThrow)
+            return this.throw(value2);
+        } else {
+          if (!this.errored) {
+            this.errored = true;
+            console.log("Invalid configuration object has been set for Alert");
+          }
         }
       }
     }
     throw(value) {
-      const message = typeof this.settings.message === "string" ? this.settings.message : this.settings.message(value);
-      new import_howler.Howl({ src: "./sounds/alarm.wav" }).play();
+      const message3 = typeof this.settings.message === "string" ? this.settings.message : this.settings.message(value);
       let elm = document.getElementById("alertbar");
-      elm.style.backgroundColor = "red";
-      elm.style.color = "white";
-      elm.innerHTML = message;
+      elm.innerHTML = message3;
+      elm.style.opacity = "1";
+      const reaction = () => elm.style.opacity = "0";
+      const position = this.history.length;
+      this.history.push(reaction);
+      setTimeout(() => {
+        if (this.history.length === position + 1)
+          reaction();
+      }, 3e3);
+      return true;
     }
   };
   var Alert_default = Alert;
+  function mean(arr) {
+    return arr.reduce((a, b2) => a + b2, 0) / arr.length;
+  }
+
+  // alerts/heartrate.ts
+  var upperBound = 150;
+  var lowerBound = 25;
+  var condition = (value) => value < lowerBound || value > upperBound;
+  var message = (value) => {
+    const relativeString = value < lowerBound ? "too low" : "too high";
+    return `<h2>Heart Rate Alert</h2><p>Average heart rate${value !== void 0 ? ` (${value})` : ""} is ${relativeString} | <span>${new Date().toISOString()}</span></p>`;
+  };
+  var heartRateAlert = {
+    condition,
+    message,
+    bufferLength: 5
+  };
+  var heartrate_default = heartRateAlert;
+
+  // alerts/gyro.ts
+  var upperBound2 = 2e3;
+  var lowerBound2 = -upperBound2;
+  var condition2 = (value) => value < lowerBound2 || value > upperBound2;
+  var message2 = (value) => `<h2>Gyroscope Alert</h2><p>Latest gyro value ${value !== void 0 ? ` (${value})` : ""} is too high | <span>${new Date().toISOString()}</span></p>`;
+  var gyroAlert = {
+    condition: condition2,
+    message: message2,
+    bufferLength: 0
+  };
+  var gyro_default = gyroAlert;
+
+  // algorithms/Algorithm.ts
+  var Algorithm = class {
+    constructor(settings) {
+      this.errored = false;
+      this.apply = (data) => {
+        const value = this.settings.function(data);
+        if (this.alert)
+          this.alert.check(value);
+        return value;
+      };
+      this.set(settings);
+    }
+    set(settings) {
+      if (settings) {
+        this.settings = settings;
+        if (this.settings.alert) {
+          this.alert = new Alert_default(this.settings.alert);
+        }
+      } else
+        console.log("No configuration object provided to Algorithm.set()");
+      this.errored = false;
+    }
+  };
+  var Algorithm_default = Algorithm;
 
   // index.ts
   var state4 = {
@@ -36982,24 +33762,32 @@
     env: false,
     emg2: false
   };
-  var heartrateAvgCt = 5;
-  var heartrateUpperBound = 150;
-  var heartrateLowerBound = 25;
-  var heartRateAlert = {
-    condition: (value) => value < heartrateLowerBound || value > heartrateUpperBound,
-    message: (value) => {
-      const relativeString = value < heartrateLowerBound ? "too low" : "too high";
-      return `!!! Average Heart Rate is ${relativeString}: ${value} at ${new Date().toISOString()} !!!`;
-    }
-  };
-  console.log("workers", workers);
   workers.__node.loaders.html = htmlloader;
   function genTimestamps(ct, sps11, from) {
     let now = from ? from : Date.now();
     let toInterp = [now - ct * 1e3 / sps11, now];
     return ByteParser2.upsample(toInterp, ct);
   }
-  var hrAlert = new Alert_default(heartRateAlert);
+  var hrAlert = new Alert_default(heartrate_default);
+  var gyroAlert2 = new Alert_default(gyro_default);
+  var arbitraryAlertSettings = {
+    message: `<h2>Arbitrary Alert</h2><p>This alert has been thrown</p>`,
+    condition: (value) => {
+      return value === 1;
+    }
+  };
+  var arbitraryAlgorithm = new Algorithm_default({
+    function: (value) => {
+      console.log("Processing with arbitrary algorithm", value);
+      return value;
+    },
+    alert: arbitraryAlertSettings
+  });
+  window.onkeydown = (ev2) => {
+    if (ev2.key === "a") {
+      arbitraryAlgorithm.alert.throw();
+    }
+  };
   workers.load({
     state: state4,
     detected,
@@ -37019,7 +33807,6 @@
             hr: workers.addWorker({ url: stream_big_worker_default }),
             breath: workers.addWorker({ url: stream_big_worker_default })
           };
-          let lasthr = [];
           algoworkers.hr?.run("createSubprocess", ["heartrate", { sps: 100 }]).then((id) => {
             algoworkers.hr?.subscribe(id, (heartbeat) => {
               const data = {
@@ -37031,13 +33818,6 @@
                 csvworkers.ppg?.run("appendCSV", data);
               }
               state4.ppg = data;
-              lasthr.push(heartbeat.bpm);
-              if (lasthr.length > heartrateAvgCt)
-                lasthr.shift();
-              if (lasthr.length === heartrateAvgCt) {
-                let average = Math22.mean(lasthr);
-                hrAlert.check(average);
-              }
             });
           });
           algoworkers.breath?.run("createSubprocess", ["breath", { sps: 100 }]).then((id) => {
@@ -37264,6 +34044,7 @@
             });
             plotter.__listeners = {
               "state.ppg": function(data) {
+                hrAlert.check(data.bpm);
                 this.__operator(data);
               }
             };
@@ -37317,6 +34098,7 @@
             });
             plotter.__listeners = {
               "state.imu": function(data) {
+                gyroAlert2.check(data.gz);
                 this.__operator(data);
               }
             };
@@ -37462,12 +34244,6 @@
       }
     }
   });
-  var arbitraryAlert = new Alert_default({
-    message: "Arbitrary!",
-    condition: (value) => {
-      return value === 1;
-    }
-  });
   var arbitraryWorker = workers.addWorker({ url: stream_big_worker_default });
   var subprocessTemplate = {
     name: "arbitrary",
@@ -37500,30 +34276,10 @@
     const id = args[0];
     arbitraryWorker.subscribe(id, (info) => {
       console.log("Got", id, info);
-      arbitraryAlert.check(info.value);
+      arbitraryAlgorithm.apply(info.value);
     });
   });
 })();
-/*!
- *  Spatial Plugin - Adds support for stereo and 3D audio where Web Audio is supported.
- *  
- *  howler.js v2.2.3
- *  howlerjs.com
- *
- *  (c) 2013-2020, James Simpson of GoldFire Studios
- *  goldfirestudios.com
- *
- *  MIT License
- */
-/*!
- *  howler.js v2.2.3
- *  howlerjs.com
- *
- *  (c) 2013-2020, James Simpson of GoldFire Studios
- *  goldfirestudios.com
- *
- *  MIT License
- */
 /*!
 * The buffer module from node.js, for the browser.
 *
