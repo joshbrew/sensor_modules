@@ -65,7 +65,7 @@ class Alert {
 
     throw(value?: number) {
         const message = (typeof this.settings.message === 'string') ? this.settings.message : this.settings.message(value) ;
-        // if (value !== undefined) new Howl({src:'./sounds/alarm.wav'}).play(); // Only play the sound if a value has been provided
+        if (value !== undefined) new Howl({src:'./sounds/alarm.wav'}).play(); // Only play the sound if a value has been provided
         let elm = document.getElementById('alertbar') as HTMLElement;
         elm.innerHTML = message;
         elm.style.opacity = '1';
