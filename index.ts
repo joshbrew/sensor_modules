@@ -609,7 +609,7 @@ arbitraryWorker.run('addSubprocessTemplate', [
     console.log('Set!', ...args)
 }) 
 
-arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: ((...args) => Math.sin(...args)).toString() }]).then((...args) => {
+arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: ((inp) => Math.sin(inp)).toString() }]).then((...args) => {
     console.log("Created!", ...args)
     const id = args[0] // WHY IS THIS UNDEFINED...
     arbitraryWorker.subscribe(id, (info) => {
