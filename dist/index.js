@@ -30316,7 +30316,7 @@
       const message3 = typeof this.settings.message === "string" ? this.settings.message : this.settings.message(value);
       if (value !== void 0)
         new import_howler.Howl({ src: "./sounds/alarm.wav" }).play();
-      let elm = document.getElementById("alertbar");
+      let elm = document.getElementById("alerts");
       elm.innerHTML = message3;
       elm.style.opacity = "1";
       const reaction = () => elm.style.opacity = "0";
@@ -35849,70 +35849,83 @@
     }
   };
 
-  // components/plot/Plot.ts
-  var Plot = class {
+  // components/Display.ts
+  var Container = class {
     constructor(info) {
-      this.workers = workers;
       this.__element = "div";
+      this.style = {
+        border: "1px solid white",
+        borderRadius: "10px",
+        padding: "10px",
+        margin: "10px",
+        flex: "1 1 250px"
+      };
       this.__children = {
         header: {
-          __element: "div",
-          innerHTML: "Graph Visualization"
-        },
-        chartarea: {
-          workers: this.workers,
-          state: this.state,
-          __element: "div",
-          style: { height: "200px" },
-          __onrender: function(div, node) {
-            let canvas = div.querySelector("#chart");
-            let overlay = div.querySelector("#overlay");
-            const lines = this.getLines();
-            let plotter = new WGLPlotter({
-              canvas,
-              overlay,
-              lines,
-              worker: canvas_worker_default,
-              generateNewLines: false
-            });
-            if (this.state) {
-              plotter.__listeners = {
-                [`state.${this.state}`]: function(data) {
-                  this.__operator(data);
-                }
-              };
-            }
-            this.workers.add(plotter);
-          },
-          __children: {
-            chart: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", backgroundColor: "black" }
-            },
-            overlay: {
-              __element: "canvas",
-              style: { height: "100%", width: "100%", transform: "translateY(-102%)" }
-            }
+          __element: "h3",
+          innerHTML: "Graph Visualization",
+          style: {
+            fontSize: "1.0em",
+            margin: "0px",
+            paddingBottom: "10px"
           }
         },
-        readout: {
+        body: {
           __element: "div",
-          innerText: "Latest::",
-          __listeners: {}
+          style: { height: "200px" }
+        }
+      };
+      Object.assign(this, info);
+      if (info.header)
+        this.__children.header.innerHTML = info.header;
+    }
+  };
+  var Display_default = Container;
+
+  // components/plot/Plot.ts
+  var Plot = class extends Display_default {
+    constructor(info) {
+      super(info);
+      this.workers = workers;
+      this.__children.body.workers = this.workers;
+      this.__children.body.state = this.state;
+      this.__children.body.__onrender = function(div) {
+        let canvas = div.querySelector("#chart");
+        let overlay = div.querySelector("#overlay");
+        const lines = this.getLines();
+        let plotter = new WGLPlotter({
+          canvas,
+          overlay,
+          lines,
+          worker: canvas_worker_default,
+          generateNewLines: false
+        });
+        if (this.state) {
+          plotter.__listeners = {
+            [`state.${this.state}`]: function(data) {
+              this.__operator(data);
+            }
+          };
+        }
+        this.workers.add(plotter);
+      };
+      this.__children.body.__children = {
+        chart: {
+          __element: "canvas",
+          style: { height: "100%", width: "100%", backgroundColor: "black" }
         },
-        ln: {
-          __element: "hr"
+        overlay: {
+          __element: "canvas",
+          style: { height: "100%", width: "100%", transform: "translateY(-102%)" }
         }
       };
       this.state = info.state;
-      this.__children.header.innerHTML = info.header;
-      this.__children.readout.__listeners = info.readoutListeners;
       this.getLines = info.getLines;
       if (info.workers)
         this.workers = info.workers;
-      Object.defineProperty(this.__children.chartarea, "workers", { get: () => this.workers, enumerable: true });
-      Object.defineProperty(this.__children.chartarea, "state", { get: () => this.state, enumerable: true });
-      Object.defineProperty(this.__children.chartarea, "getLines", { get: () => this.getLines, enumerable: true });
+      Object.defineProperty(this.__children.body, "workers", { get: () => this.workers, enumerable: true });
+      Object.defineProperty(this.__children.body, "state", { get: () => this.state, enumerable: true });
+      Object.defineProperty(this.__children.body, "getLines", { get: () => this.getLines, enumerable: true });
     }
   };
   var Plot_default = Plot;
@@ -35940,6 +35953,16 @@
     let toInterp = [now - ct * 1e3 / sps11, now];
     return ByteParser2.upsample(toInterp, ct);
   }
+  function setReadoutText(data) {
+    console.log("SETTING");
+    let html = ``;
+    for (let key in data) {
+      const cap = key.charAt(0).toUpperCase() + key.slice(1);
+      const val = data[key][data[key].length - 1] ?? data[key][0];
+      html += `<p><b>${cap}:</b> ${val ? val % 1 !== 0 ? val.toFixed(5) : val : val}</p>`;
+    }
+    this.innerHTML = html;
+  }
   var hrAlert = new Alert_default(heartrate_default);
   var gyroAlert2 = new Alert_default(gyro_default);
   var arbitraryAlertSettings = {
@@ -35963,296 +35986,411 @@
   workers.load({
     state: state4,
     detected,
-    "connect": {
-      __element: "button",
-      innerHTML: "Connect Device",
-      onclick: (ev2) => {
-        let connect = () => {
-          let csvworkers = {
-            emg: workers.addWorker({ url: stream_big_worker_default }),
-            ppg: workers.addWorker({ url: stream_big_worker_default }),
-            imu: workers.addWorker({ url: stream_big_worker_default }),
-            env: workers.addWorker({ url: stream_big_worker_default }),
-            emg2: workers.addWorker({ url: stream_big_worker_default })
-          };
-          let algoworkers = {
-            hr: workers.addWorker({ url: stream_big_worker_default }),
-            breath: workers.addWorker({ url: stream_big_worker_default })
-          };
-          algoworkers.hr?.run("createSubprocess", ["heartrate", { sps: 100 }]).then((id) => {
-            algoworkers.hr?.subscribe(id, (heartbeat) => {
-              const data = {
-                hr: heartbeat.bpm,
-                hrv: heartbeat.change,
-                timestamp: heartbeat.timestamp
-              };
-              if (state4.recording) {
-                csvworkers.ppg?.run("appendCSV", data);
-              }
-              state4.ppg = data;
-            });
-          });
-          algoworkers.breath?.run("createSubprocess", ["breath", { sps: 100 }]).then((id) => {
-            algoworkers.breath?.subscribe(id, (breath) => {
-              const data = {
-                breath: breath.bpm,
-                brv: breath.change,
-                timestamp: breath.timestamp
-              };
-              if (state4.recording) {
-                csvworkers.ppg?.run("appendCSV", data);
-              }
-              state4.ppg = data;
-            });
-          });
-          let clearworkers = () => {
-            for (const key in csvworkers) {
-              csvworkers[key].terminate();
-            }
-            for (const key in algoworkers) {
-              algoworkers[key].terminate();
-            }
-            workers.unsubscribe("state", sub, "recording");
-          };
-          let disconnect = (controls) => {
-            if (!controls) {
-              clearworkers();
-            } else {
-              ev2.target.innerHTML = "Disconnect";
-              ev2.target.onclick = () => {
-                document.getElementById("record").style.display = "none";
-                clearworkers();
-                controls?.disconnect();
-                ev2.target.innerHTML = "Connect Device";
-                ev2.target.onclick = () => {
-                  connect();
-                };
-              };
-            }
-          };
-          let sub = workers.subscribe("state", (recording) => {
-            if (recording) {
-              if (detected.emg)
-                csvworkers.emg?.run("createCSV", [
-                  `data/EMG_${new Date().toISOString()}.csv`,
-                  [
-                    "timestamp",
-                    "0",
-                    "1"
-                  ],
-                  5,
-                  250
-                ]);
-              if (detected.imu)
-                csvworkers.imu?.run("createCSV", [
-                  `data/IMU_${new Date().toISOString()}.csv`,
-                  [
-                    "timestamp",
-                    "ax",
-                    "ay",
-                    "az",
-                    "gx",
-                    "gy",
-                    "gz",
-                    "mpu_dietemp"
-                  ],
-                  0,
-                  100
-                ]);
-              if (detected.ppg)
-                csvworkers.ppg?.run("createCSV", [
-                  `data/PPG_${new Date().toISOString()}.csv`,
-                  [
-                    "timestamp",
-                    "red",
-                    "ir",
-                    "hr",
-                    "spo2",
-                    "breath",
-                    "max_dietemp"
-                  ],
-                  0,
-                  100
-                ]);
-              if (detected.env)
-                csvworkers.env?.run("createCSV", [
-                  `data/ENV_${new Date().toISOString()}.csv`,
-                  [
-                    "timestamp",
-                    "temperature",
-                    "pressure",
-                    "humidity",
-                    "altitude"
-                  ],
-                  4
-                ]);
-            } else {
-              visualizeDirectory("data", document.getElementById("csvs"));
-            }
-          }, void 0, "recording");
-          const device = initDevice("BLE", "nrf5x", {
-            ondecoded: {
-              "0002cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                state4.emg = data;
-                if (!detected.emg)
-                  detected.emg = true;
-                if (state4.recording) {
-                  csvworkers.emg?.run("appendCSV", data);
-                }
-              },
-              "0003cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                state4.ppg = data;
-                if (!detected.ppg)
-                  detected.ppg = true;
-                let d2 = Object.assign({}, data);
-                d2.timestamp = genTimestamps(32, 100, data.timestamp);
-                algoworkers.hr?.post("runSubprocess", d2);
-                algoworkers.breath?.post("runSubprocess", d2);
-                if (state4.recording) {
-                  csvworkers.ppg?.run("appendCSV", data);
-                }
-              },
-              "0004cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                state4.imu = data;
-                if (!detected.imu)
-                  detected.imu = true;
-                if (state4.recording) {
-                  csvworkers.imu?.run("appendCSV", data);
-                }
-              },
-              "0005cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                state4.emg2 = data;
-              },
-              "0006cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
-                state4.env = data;
-                if (!detected.env)
-                  detected.env = true;
-                if (state4.recording) {
-                  csvworkers.env?.run("appendCSV", data);
-                }
-              }
-            },
-            onconnect: () => {
-              console.log("onconnect");
-              document.getElementById("record").style.display = "";
-              const sps11 = 250;
-              const gain4 = 32;
-              const nbits4 = 24;
-              const vref4 = 1.2;
-              let defaultsetting6 = {
-                sps: sps11,
-                useDCBlock: false,
-                useBandpass: false,
-                useLowpass: true,
-                lowpassHz: 30,
-                useScaling: true,
-                scalar: 0.96 * 1e3 * vref4 / (gain4 * (Math.pow(2, nbits4) - 1))
-              };
-              const ads131m08FilterSettings3 = {
-                "0": JSON.parse(JSON.stringify(defaultsetting6)),
-                "1": JSON.parse(JSON.stringify(defaultsetting6)),
-                "2": JSON.parse(JSON.stringify(defaultsetting6)),
-                "3": JSON.parse(JSON.stringify(defaultsetting6)),
-                "4": JSON.parse(JSON.stringify(defaultsetting6)),
-                "5": JSON.parse(JSON.stringify(defaultsetting6)),
-                "6": JSON.parse(JSON.stringify(defaultsetting6)),
-                "7": JSON.parse(JSON.stringify(defaultsetting6))
-              };
-              device?.then((res) => {
-                res.workers.streamworker.run("setFilters", ads131m08FilterSettings3);
-              });
-            },
-            ondisconnect: () => {
-              disconnect();
-            }
-          });
-          device?.then(disconnect).catch((err) => {
-            disconnect();
-          });
-        };
-        connect();
-      }
-    },
-    "record": {
-      __element: "button",
-      innerHTML: "Record",
-      onclick: function(ev2) {
-        this.innerHTML = "Stop Recording";
-        state4.recording = true;
-        this.onclick = function(ev3) {
-          this.innerHTML = "Record";
-          state4.recording = false;
-        };
-      }
-    },
-    "ln": {
-      __element: "hr"
-    },
-    "alertbar": {
-      __element: "div"
-    },
-    "PPG": new Plot_default({
-      header: "PPG Readings",
-      state: "ppg",
-      readoutListeners: {
-        "state.ppg": function(data) {
-          hrAlert.check(data.bpm);
-          this.innerText = `Latest:: Red: ${data.red[data.red.length - 1]}; IR: ${data.ir[data.ir.length - 1]}; Die Temp: ${data.max_dietemp};`;
-        }
-      },
-      getLines: () => {
-        const lines = { ...max3010xChartSettings.lines };
-        lines.hr = { sps: 1, nSec: 100, units: "bpm" };
-        lines.hrv = { sps: 1, nSec: 100, units: "bpm" };
-        lines.breath = { sps: 1, nSec: 100, units: "bpm" };
-        return lines;
-      }
-    }),
-    "IMU": new Plot_default({
-      header: "IMU Readings",
-      state: "imu",
-      readoutListeners: {
-        "state.imu": function(data) {
-          gyroAlert2.check(data.gz);
-          this.innerText = `Latest:: AX: ${data.ax[data.ax.length - 1]}; AY: ${data.ay[data.ay.length - 1]}; AZ: ${data.ay[data.ay.length - 1]}; GX: ${data.ay[data.ay.length - 1]}; GY: ${data.ay[data.ay.length - 1]}; GZ: ${data.ay[data.ay.length - 1]}; DIE_TEMP: ${data.mpu_dietemp}`;
-        }
-      },
-      getLines: () => {
-        return mpu6050ChartSettings.lines;
-      }
-    }),
-    "EMG": new Plot_default({
-      header: "EMG Readings",
-      state: "emg",
-      readoutListeners: {
-        "state.emg": function(data) {
-          this.innerText = this.innerText = `Latest:: 0:${data["0"][data["0"].length - 1]}; 1:${data["1"][data["1"].length - 1]}; 2:${data["2"][data["2"].length - 1]}; 3:${data["3"][data["3"].length - 1]}; 4:${data["4"][data["4"].length - 1]}; 5:${data["5"][data["5"].length - 1]}; 6:${data["6"][data["6"].length - 1]}; 7:${data["7"][data["7"].length - 1]};`;
-        }
-      },
-      getLines: () => {
-        return {
-          0: ads131m08ChartSettings2.lines?.["0"],
-          1: ads131m08ChartSettings2.lines?.["1"]
-        };
-      }
-    }),
-    "ENV": new Plot_default({
-      header: "ENV Readings",
-      state: "env",
-      readoutListeners: {
-        "state.env": function(data) {
-          this.innerText = this.innerText = `Latest:: Temp: ${data.temp[data.temp.length - 1]}; Pressure: ${data.pressure[data.pressure.length - 1]}; Altitude: ${data.altitude[data.altitude.length - 1]}; Humidity: ${data.humidity?.[data.humidity?.length - 1]};`;
-        }
-      },
-      getLines: () => {
-        return bme280ChartSettings.lines;
-      }
-    }),
-    "csvs": {
+    alerts: {
       __element: "div",
-      style: { height: "200px", overflowY: "scroll", font: "Arial, Helvetica, sans-serif", fontSize: "10px" },
-      __onrender: function(elm) {
-        visualizeDirectory("data", this.__props);
+      __listeners: {
+        "state.ppg": (data) => hrAlert.check(data.bpm),
+        "state.imu": (data) => gyroAlert2.check(data.gz)
+      }
+    },
+    readout: {
+      __element: "div",
+      style: {
+        position: "fixed",
+        top: "0px",
+        right: "0px",
+        width: "200px",
+        height: "100vh",
+        background: "rgba(0,0,0, 0.5)",
+        padding: "10px",
+        overflowY: "scroll",
+        fontSize: "80%"
+      },
+      __children: {
+        PPG: {
+          __element: "div",
+          __children: {
+            header: {
+              __element: "h3",
+              innerText: "PPG"
+            },
+            output: {
+              __element: "div"
+            }
+          }
+        },
+        IMU: {
+          __element: "div",
+          __children: {
+            header: {
+              __element: "h3",
+              innerText: "IMU"
+            },
+            output: {
+              __element: "div"
+            }
+          }
+        },
+        EMG: {
+          __element: "div",
+          __children: {
+            header: {
+              __element: "h3",
+              innerText: "EMG"
+            },
+            output: {
+              __element: "div"
+            }
+          }
+        },
+        ENV: {
+          __element: "div",
+          __children: {
+            header: {
+              __element: "h3",
+              innerText: "ENV"
+            },
+            output: {
+              __element: "div"
+            }
+          }
+        }
+      },
+      __listeners: {
+        "state.ppg": function(data) {
+          if (this.state !== "hidden")
+            setReadoutText.call(this.__children.PPG.__children.output, data);
+        },
+        "state.imu": function(data) {
+          if (this.state !== "hidden")
+            setReadoutText.call(this.__children.IMU.__children.output, data);
+        },
+        "state.emg": function(data) {
+          if (this.state !== "hidden")
+            setReadoutText.call(this.__children.EMG.__children.output, data);
+        },
+        "state.env": function(data) {
+          if (this.state !== "hidden")
+            setReadoutText.call(this.__children.ENV.__children.output, data);
+        }
+      }
+    },
+    readoutToggle: {
+      __element: "button",
+      innerText: "Toggle Readout",
+      style: {
+        position: "fixed",
+        bottom: "0px",
+        right: "0px",
+        margin: "25px",
+        zIndex: 99
+      },
+      toggle: function(state5) {
+        const readout = document.getElementById("readout");
+        if (readout) {
+          if (state5 === "visible" || readout.style.display === "none") {
+            state5 = "visible";
+            readout.style.display = "block";
+          } else {
+            state5 = "hidden";
+            readout.style.display = "none";
+          }
+          localStorage.setItem("sensormodules-readout-state", state5);
+          readout.node.state = state5;
+        }
+      },
+      __onconnected: function() {
+        const state5 = localStorage.getItem("sensormodules-readout-state");
+        this.toggle(state5);
+      },
+      onclick: function() {
+        this.toggle();
+      }
+    },
+    main: {
+      __element: "div",
+      style: {
+        width: "100vw",
+        height: "100vh",
+        overflow: "scroll"
+      },
+      __children: {
+        connect: {
+          __element: "button",
+          innerHTML: "Connect Device",
+          onclick: (ev2) => {
+            let connect = () => {
+              let csvworkers = {
+                emg: workers.addWorker({ url: stream_big_worker_default }),
+                ppg: workers.addWorker({ url: stream_big_worker_default }),
+                imu: workers.addWorker({ url: stream_big_worker_default }),
+                env: workers.addWorker({ url: stream_big_worker_default }),
+                emg2: workers.addWorker({ url: stream_big_worker_default })
+              };
+              let algoworkers = {
+                hr: workers.addWorker({ url: stream_big_worker_default }),
+                breath: workers.addWorker({ url: stream_big_worker_default })
+              };
+              algoworkers.hr?.run("createSubprocess", ["heartrate", { sps: 100 }]).then((id) => {
+                algoworkers.hr?.subscribe(id, (heartbeat) => {
+                  const data = {
+                    hr: heartbeat.bpm,
+                    hrv: heartbeat.change,
+                    timestamp: heartbeat.timestamp
+                  };
+                  if (state4.recording) {
+                    csvworkers.ppg?.run("appendCSV", data);
+                  }
+                  state4.ppg = data;
+                });
+              });
+              algoworkers.breath?.run("createSubprocess", ["breath", { sps: 100 }]).then((id) => {
+                algoworkers.breath?.subscribe(id, (breath) => {
+                  const data = {
+                    breath: breath.bpm,
+                    brv: breath.change,
+                    timestamp: breath.timestamp
+                  };
+                  if (state4.recording) {
+                    csvworkers.ppg?.run("appendCSV", data);
+                  }
+                  state4.ppg = data;
+                });
+              });
+              let clearworkers = () => {
+                for (const key in csvworkers) {
+                  csvworkers[key].terminate();
+                }
+                for (const key in algoworkers) {
+                  algoworkers[key].terminate();
+                }
+                workers.unsubscribe("state", sub, "recording");
+              };
+              let disconnect = (controls) => {
+                if (!controls) {
+                  clearworkers();
+                } else {
+                  ev2.target.innerHTML = "Disconnect";
+                  ev2.target.onclick = () => {
+                    document.getElementById("record").style.display = "none";
+                    clearworkers();
+                    controls?.disconnect();
+                    ev2.target.innerHTML = "Connect Device";
+                    ev2.target.onclick = () => {
+                      connect();
+                    };
+                  };
+                }
+              };
+              let sub = workers.subscribe("state", (recording) => {
+                if (recording) {
+                  if (detected.emg)
+                    csvworkers.emg?.run("createCSV", [
+                      `data/EMG_${new Date().toISOString()}.csv`,
+                      [
+                        "timestamp",
+                        "0",
+                        "1"
+                      ],
+                      5,
+                      250
+                    ]);
+                  if (detected.imu)
+                    csvworkers.imu?.run("createCSV", [
+                      `data/IMU_${new Date().toISOString()}.csv`,
+                      [
+                        "timestamp",
+                        "ax",
+                        "ay",
+                        "az",
+                        "gx",
+                        "gy",
+                        "gz",
+                        "mpu_dietemp"
+                      ],
+                      0,
+                      100
+                    ]);
+                  if (detected.ppg)
+                    csvworkers.ppg?.run("createCSV", [
+                      `data/PPG_${new Date().toISOString()}.csv`,
+                      [
+                        "timestamp",
+                        "red",
+                        "ir",
+                        "hr",
+                        "spo2",
+                        "breath",
+                        "max_dietemp"
+                      ],
+                      0,
+                      100
+                    ]);
+                  if (detected.env)
+                    csvworkers.env?.run("createCSV", [
+                      `data/ENV_${new Date().toISOString()}.csv`,
+                      [
+                        "timestamp",
+                        "temperature",
+                        "pressure",
+                        "humidity",
+                        "altitude"
+                      ],
+                      4
+                    ]);
+                } else {
+                  visualizeDirectory("data", document.getElementById("csvs"));
+                }
+              }, void 0, "recording");
+              const device = initDevice("BLE", "nrf5x", {
+                ondecoded: {
+                  "0002cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                    state4.emg = data;
+                    if (!detected.emg)
+                      detected.emg = true;
+                    if (state4.recording) {
+                      csvworkers.emg?.run("appendCSV", data);
+                    }
+                  },
+                  "0003cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                    state4.ppg = data;
+                    if (!detected.ppg)
+                      detected.ppg = true;
+                    let d2 = Object.assign({}, data);
+                    d2.timestamp = genTimestamps(32, 100, data.timestamp);
+                    algoworkers.hr?.post("runSubprocess", d2);
+                    algoworkers.breath?.post("runSubprocess", d2);
+                    if (state4.recording) {
+                      csvworkers.ppg?.run("appendCSV", data);
+                    }
+                  },
+                  "0004cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                    state4.imu = data;
+                    if (!detected.imu)
+                      detected.imu = true;
+                    if (state4.recording) {
+                      csvworkers.imu?.run("appendCSV", data);
+                    }
+                  },
+                  "0005cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                    state4.emg2 = data;
+                  },
+                  "0006cafe-b0ba-8bad-f00d-deadbeef0000": (data) => {
+                    state4.env = data;
+                    if (!detected.env)
+                      detected.env = true;
+                    if (state4.recording) {
+                      csvworkers.env?.run("appendCSV", data);
+                    }
+                  }
+                },
+                onconnect: () => {
+                  console.log("onconnect");
+                  document.getElementById("record").style.display = "";
+                  const sps11 = 250;
+                  const gain4 = 32;
+                  const nbits4 = 24;
+                  const vref4 = 1.2;
+                  let defaultsetting6 = {
+                    sps: sps11,
+                    useDCBlock: false,
+                    useBandpass: false,
+                    useLowpass: true,
+                    lowpassHz: 30,
+                    useScaling: true,
+                    scalar: 0.96 * 1e3 * vref4 / (gain4 * (Math.pow(2, nbits4) - 1))
+                  };
+                  const ads131m08FilterSettings3 = {
+                    "0": JSON.parse(JSON.stringify(defaultsetting6)),
+                    "1": JSON.parse(JSON.stringify(defaultsetting6)),
+                    "2": JSON.parse(JSON.stringify(defaultsetting6)),
+                    "3": JSON.parse(JSON.stringify(defaultsetting6)),
+                    "4": JSON.parse(JSON.stringify(defaultsetting6)),
+                    "5": JSON.parse(JSON.stringify(defaultsetting6)),
+                    "6": JSON.parse(JSON.stringify(defaultsetting6)),
+                    "7": JSON.parse(JSON.stringify(defaultsetting6))
+                  };
+                  device?.then((res) => {
+                    res.workers.streamworker.run("setFilters", ads131m08FilterSettings3);
+                  });
+                },
+                ondisconnect: () => {
+                  disconnect();
+                }
+              });
+              device?.then(disconnect).catch((err) => {
+                disconnect();
+              });
+            };
+            connect();
+          }
+        },
+        record: {
+          __element: "button",
+          innerHTML: "Record",
+          onclick: function(ev2) {
+            this.innerHTML = "Stop Recording";
+            state4.recording = true;
+            this.onclick = function(ev3) {
+              this.innerHTML = "Record";
+              state4.recording = false;
+            };
+          }
+        },
+        displays: {
+          __element: "div",
+          style: {
+            display: "flex",
+            flexWrap: "wrap"
+          },
+          __children: {
+            PPG: new Plot_default({
+              header: "PPG Readings",
+              state: "ppg",
+              getLines: () => {
+                const lines = { ...max3010xChartSettings.lines };
+                lines.hr = { sps: 1, nSec: 100, units: "bpm" };
+                lines.hrv = { sps: 1, nSec: 100, units: "bpm" };
+                lines.breath = { sps: 1, nSec: 100, units: "bpm" };
+                return lines;
+              }
+            }),
+            IMU: new Plot_default({
+              header: "IMU Readings",
+              state: "imu",
+              getLines: () => {
+                return mpu6050ChartSettings.lines;
+              }
+            }),
+            EMG: new Plot_default({
+              header: "EMG Readings",
+              state: "emg",
+              getLines: () => {
+                return {
+                  0: ads131m08ChartSettings2.lines?.["0"],
+                  1: ads131m08ChartSettings2.lines?.["1"]
+                };
+              }
+            }),
+            ENV: new Plot_default({
+              header: "ENV Readings",
+              state: "env",
+              getLines: () => {
+                return bme280ChartSettings.lines;
+              }
+            }),
+            csvs: new Display_default({
+              header: "CSVs",
+              __onconnected: function() {
+                this.__children.body.style.overflowY = "scroll";
+                this.__children.body.style.fontSize = "10px";
+              },
+              __onrender: function(elm) {
+                visualizeDirectory("data", this.__children.body.__props);
+              }
+            })
+          }
+        }
       }
     }
   });

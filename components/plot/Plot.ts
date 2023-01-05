@@ -1,31 +1,29 @@
 import plotworker from './webglplot/canvas.worker'
 import {WGLPlotter} from "./webglplot/plotter.js";
 import { workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
+import Container, { ContainerInfo } from '../Display';
 
 type PlotInfo = {
-    workers: Plot['workers'],
+    workers?: Plot['workers'],
     state: Plot['state'],
-    header: string,
-    readoutListeners: {[key:string]:Function},
     getLines: Plot['getLines']
-}
+} & ContainerInfo
 
-class Plot { 
+class Plot extends Container{ 
+
     workers = workers // NOTE: This isn't shared if used directly
+    
     state?: string 
+
     getLines?: () => {[key:string]:any} | undefined
-    __element = 'div'
-    __children = {
-        header:{
-            __element: 'div',
-            innerHTML: 'Graph Visualization'
-        },
-        chartarea:{
-            workers: this.workers,
-            state: this.state,
-            __element:'div',
-            style:{ height:'200px' },
-            __onrender:function(div:HTMLElement, node){    
+
+    constructor (info: PlotInfo) {
+        super(info)
+
+        this.__children.body.workers = this.workers
+        this.__children.body.state = this.state
+
+        this.__children.body.__onrender = function(div:HTMLElement){    
                 let canvas = div.querySelector('#chart') as HTMLCanvasElement;
                 let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
             
@@ -48,8 +46,9 @@ class Plot {
                 }
 
                 this.workers.add(plotter);
-            },
-            __children:{
+            }
+
+            this.__children.body.__children = {
                 chart:{
                     __element:'canvas',
                     style:{height:'100%', width:'100%', backgroundColor:'black'}
@@ -59,27 +58,13 @@ class Plot {
                     style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
                 }
             }
-        },
-        readout:{
-            __element:'div',
-            innerText:'Latest::',
-            __listeners: {}
-        },
-        ln:{
-            __element:'hr'
-        }
-    }
 
-    constructor (info: PlotInfo) {
         this.state = info.state;
-        this.__children.header.innerHTML = info.header;
-        this.__children.readout.__listeners = info.readoutListeners
         this.getLines = info.getLines;
-
         if (info.workers) this.workers = info.workers;
-        Object.defineProperty(this.__children.chartarea, 'workers', { get: () => this.workers, enumerable: true })
-        Object.defineProperty(this.__children.chartarea, 'state', { get: () => this.state, enumerable: true })
-        Object.defineProperty(this.__children.chartarea, 'getLines', { get: () => this.getLines, enumerable: true })
+        Object.defineProperty(this.__children.body, 'workers', { get: () => this.workers, enumerable: true })
+        Object.defineProperty(this.__children.body, 'state', { get: () => this.state, enumerable: true })
+        Object.defineProperty(this.__children.body, 'getLines', { get: () => this.getLines, enumerable: true })
 
     }
 

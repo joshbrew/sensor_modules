@@ -4,7 +4,10 @@
 html, body { 
     margin: 0;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
 }
 
 body {
@@ -12,17 +15,19 @@ body {
     color:white;
 }
 
-#alertbar {
+#alerts {
     background: red;
     color: white;
     max-width: 500px;
+    pointer-events: none;
+    /* width: calc(100% - 50px); */
     padding: 10px 25px;
     margin: 25px;
     border-radius: 10px;
     opacity: 0;
     transition: opacity 0.5s;
     position: fixed;
-    top: 0;
+    bottom: 0;
     right: 0;
     z-index: 100;
     font-size: 80%;
