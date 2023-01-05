@@ -23,6 +23,68 @@ import Algorithm from "./algorithms/Algorithm";
 
 // import { gyro_gyro } from 'graphscript-services.storage/algorithms/gyro_gyro'
 
+class GraphVisualization { 
+    state?: string 
+    __element = 'div'
+    __children = {
+        header:{
+            __element: 'div',
+            innerHTML: 'Graph Visualization'
+        },
+        chartarea:{
+            getLines:() => {return {} as any},
+            __element:'div',
+            style:{ height:'200px' },
+            __onrender:function(div:HTMLElement){    
+                let canvas = div.querySelector('#chart') as HTMLCanvasElement;
+                let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
+            
+                const lines = this.getLines();
+
+                let plotter = new WGLPlotter({
+                    canvas,
+                    overlay,
+                    lines,
+                    worker:plotworker
+                });
+
+                if (this.state) {
+                    (plotter as any).__listeners = {
+                        [`state.${this.state}`]:function(data) { this.__operator(data); }
+                    }
+                }
+
+                workers.add(plotter);
+            },
+            __children:{
+                chart:{
+                    __element:'canvas',
+                    style:{height:'100%', width:'100%', backgroundColor:'black'}
+                },
+                overlay:{
+                    __element:'canvas',
+                    style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
+                }
+            }
+        },
+        readout:{
+            __element:'div',
+            innerText:'Latest::',
+            __listeners: {}
+        },
+        ln:{
+            __element:'hr'
+        }
+    }
+
+    constructor (info) {
+        this.__children.header.innerHTML = info.header;
+        this.__children.readout.__listeners = info.readoutListeners
+        this.__children.chartarea.getLines = info.getLines;
+    }
+
+}
+
 //TODO: twilio sms backend
 
 const state = {
@@ -376,234 +438,60 @@ workers.load({
     },
 
     //spaghetti in my pockets
-    'PPG':{
-        __element:'div',
-        __children:{
-            header:{
-                __element:'div',
-                innerHTML:`PPG Readings`
-            },
-            chartarea:{
-                __element:'div',
-                style:{height:'300px'},
-                __onrender:function(div:HTMLElement){    
-                    let canvas = div.querySelector('#chart') as HTMLCanvasElement;
-                    let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
-                
-                    (max3010xChartSettings.lines as any).hr = {sps:1, nSec:100, units:'bpm'};
-                    (max3010xChartSettings.lines as any).hrv = {sps:1, nSec:100, units:'bpm'};
-                    (max3010xChartSettings.lines as any).breath = {sps:1, nSec:100, units:'bpm'};
-
-                    let plotter = new WGLPlotter({
-                        canvas,
-                        overlay,
-                        lines:max3010xChartSettings.lines as any,
-                        worker:plotworker,
-                        generateNewLines:false
-                    });
-
-                    (plotter as any).__listeners = {
-                        'state.ppg':function(data) { 
-                            hrAlert.check(data.bpm) //also e.g. erratic readings mean it's likely a bad signal since it would be picking up random noise
-                            this.__operator(data); 
-                        }
-                    }
-
-                    workers.add(plotter);
-                },
-                __children:{
-                    chart:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', backgroundColor:'black'}
-                    },
-                    overlay:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
-                    }
-                }
-            },
-            readout:{
-                __element:'div',
-                innerText:'Latest::',
-                __listeners:{
-                    'state.ppg':function(data) {
-                        if(data?.red) this.innerText = `Latest:: Red: ${data.red[data.red.length-1]}; IR: ${data.ir[data.ir.length-1]}; Die Temp: ${data.max_dietemp};`
-                    }
-                }
-            },
-            ln:{
-                __element:'hr'
+    'PPG': new GraphVisualization({
+        header: 'PPG Readings',
+        state: 'ppg',
+        readoutListeners: {
+            'state.ppg':function(data) {
+                gyroAlert.check(data.heartrate)
+                this.innerText = `Latest:: Red: ${data.red[data.red.length-1]}; IR: ${data.ir[data.ir.length-1]}; Die Temp: ${data.max_dietemp};`
             }
+        },
+        getLines: () => {
+            const lines = { ...max3010xChartSettings.lines} ;
+            lines.hr = {sps:1, nSec:100, units:'bpm'};
+            lines.hrv = {sps:1, nSec:100, units:'bpm'};
+            lines.breath = {sps:1, nSec:100, units:'bpm'};
+            return lines
         }
-    },
-
-    'IMU':{
-        __element:'div',
-        __children:{
-            header:{
-                __element:'div',
-                innerHTML:`IMU Readings`
-            },
-            chartarea:{
-                __element:'div',
-                style:{height:'300px'},
-                __onrender:function(div:HTMLElement){    
-                    let canvas = div.querySelector('#chart') as HTMLCanvasElement;
-                    let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
-                
-                    let plotter = new WGLPlotter({
-                        canvas,
-                        overlay,
-                        lines:mpu6050ChartSettings.lines as any,
-                        worker:plotworker,
-                        generateNewLines:false
-                    });
-
-                    (plotter as any).__listeners = {
-                        'state.imu':function(data) { 
-                            gyroAlert.check(data.gz)
-                            this.__operator(data); 
-                        }
-                    }
-
-                    workers.add(plotter);
-                },
-                __children:{
-                    chart:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', backgroundColor:'black'}
-                    },
-                    overlay:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
-                    }
-                }
-            },
-            readout:{
-                __element:'div',
-                innerText:'Latest::',
-                __listeners:{
-                    'state.imu':function(data) {
-                        this.innerText = `Latest:: AX: ${data.ax[data.ax.length-1]}; AY: ${data.ay[data.ay.length-1]}; AZ: ${data.ay[data.ay.length-1]}; GX: ${data.ay[data.ay.length-1]}; GY: ${data.ay[data.ay.length-1]}; GZ: ${data.ay[data.ay.length-1]}; DIE_TEMP: ${data.mpu_dietemp}`
-                    }
-                }
-            },
-            ln:{
-                __element:'hr'
+    }),
+    'IMU':new GraphVisualization({
+        header: 'IMU Readings',
+        state: 'imu',
+        readoutListeners: {
+            'state.imu':function(data) {
+                gyroAlert.check(data.gz)
+                this.innerText = `Latest:: AX: ${data.ax[data.ax.length-1]}; AY: ${data.ay[data.ay.length-1]}; AZ: ${data.ay[data.ay.length-1]}; GX: ${data.ay[data.ay.length-1]}; GY: ${data.ay[data.ay.length-1]}; GZ: ${data.ay[data.ay.length-1]}; DIE_TEMP: ${data.mpu_dietemp}`
             }
+        },
+        getLines: () => {
+            return mpu6050ChartSettings.lines
         }
-    },
-
-    'EMG':{
-        __element:'div',
-        __children:{
-            header:{
-                __element:'div',
-                innerHTML:`EMG Readings`
-            },
-            chartarea:{
-                __element:'div',
-                style:{height:'300px'},
-                __onrender:function(div:HTMLElement){    
-                    let canvas = div.querySelector('#chart') as HTMLCanvasElement;
-                    let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
-                
-                    let plotter = new WGLPlotter({
-                        canvas,
-                        overlay,
-                        lines:{
-                            0:ads131m08ChartSettings.lines?.['0'] as any,
-                            1:ads131m08ChartSettings.lines?.['1'] as any
-                        },
-                        worker:plotworker,
-                        generateNewLines:false
-                    });
-
-                    (plotter as any).__listeners = {
-                        'state.emg':function(data) { this.__operator(data); }
-                    }
-
-                    workers.add(plotter);
-                },
-                __children:{
-                    chart:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', backgroundColor:'black'}
-                    },
-                    overlay:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
-                    }
-                }
-            },
-            readout:{
-                __element:'div',
-                innerText:'Latest::',
-                __listeners:{
-                    'state.emg':function(data) {
-                        this.innerText = `Latest:: 0:${data['0'][data['0'].length-1]}; 1:${data['1'][data['1'].length-1]}; 2:${data['2'][data['2'].length-1]}; 3:${data['3'][data['3'].length-1]}; 4:${data['4'][data['4'].length-1]}; 5:${data['5'][data['5'].length-1]}; 6:${data['6'][data['6'].length-1]}; 7:${data['7'][data['7'].length-1]};`;
-                    }
-                }
-            },
-            ln:{
-                __element:'hr'
+    }),
+    'ENV':new GraphVisualization({
+        header: 'ENV Readings',
+        state: 'env',
+        readoutListeners: {
+            'state.env':function(data) {
+                this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity[data.humidity.length-1]};`
             }
+        },
+        getLines: () => {
+            return bme280ChartSettings.lines
         }
-    },
-
-    'ENV':{
-        __element:'div',
-        __children:{
-            header:{
-                __element:'div',
-                innerHTML:`ENV Readings`
-            },
-            chartarea:{
-                __element:'div',
-                style:{height:'300px'},
-                __onrender:function(div:HTMLElement){    
-                    let canvas = div.querySelector('#chart') as HTMLCanvasElement;
-                    let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
-                
-                    let plotter = new WGLPlotter({
-                        canvas,
-                        overlay,
-                        lines:bme280ChartSettings.lines as any,
-                        worker:plotworker,
-                        generateNewLines:false
-                    });
-
-                    (plotter as any).__listeners = {
-                        'state.env':function(data) { this.__operator(data); }
-                    }
-
-                    workers.add(plotter);
-                },
-                __children:{
-                    chart:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', backgroundColor:'black'}
-                    },
-                    overlay:{
-                        __element:'canvas',
-                        style:{height:'100%', width:'100%', transform:'translateY(-102%)'}
-                    }
-                }
-            },
-            readout:{
-                __element:'div',
-                innerText:'Latest::',
-                __listeners:{
-                    'state.env':function(data) {
-                        this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity?.[data.humidity?.length-1]};`
-                    }
-                }
-            },
-            ln:{
-                __element:'hr'
+    }),
+    'EMG': new GraphVisualization({
+        header: 'EMG Readings',
+        state: 'emg',
+        readoutListeners: {
+            'state.emg':function(data) {
+                this.innerText = `Latest:: Temp: ${data.temp[data.temp.length-1]}; Pressure: ${data.pressure[data.pressure.length-1]}; Altitude: ${data.altitude[data.altitude.length-1]}; Humidity: ${data.humidity[data.humidity.length-1]};`
             }
+        },
+        getLines: () => {
+            return ads131m08ChartSettings.lines
         }
-    },
+    }),
     
     'csvs':{
         __element:'div',
