@@ -11,8 +11,9 @@ class Container {
     __element = 'div'
 
     style = {
+        position: 'relative',
         border: '1px solid white',
-        borderRadius: '10px',
+        // borderRadius: '10px',
         padding: '10px',
         margin: '10px',
         flex: '1 1 250px'
