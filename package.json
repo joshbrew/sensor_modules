@@ -23,7 +23,7 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "brainsatplay-math": "^0.0.25",
-    "device-decoder": "^0.3.10",
+    "device-decoder": "^0.3.11",
     "graphscript": "~0.2.38",
     "graphscript-services": "^0.2.36",
     "graphscript-services.storage": "^0.2.36",
