@@ -1,6 +1,6 @@
 import { FilterSettings, initDevice, workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
 
-import gsworker from '../device_debugger/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
+import gsworker from 'device-decoder/src/stream.big.worker'
 
 import { mpu6050ChartSettings } from "device-decoder/src/devices/mpu6050.js";
 import { max3010xChartSettings } from "device-decoder/src/devices/max30102.js";
