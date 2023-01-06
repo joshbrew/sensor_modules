@@ -3,161 +3,149 @@
 
 
 "@capacitor-community/bluetooth-le@~2.0.1":
-  "integrity" "sha512-K8NOAvzHKdwy+Ql9Y8hvtZh5gj5pnleAD8Q89HM9FDMbTsZmyBID0FcPGJxAZVRAb9VuaID3YykluRM7Up27ew=="
-  "resolved" "https://registry.npmjs.org/@capacitor-community/bluetooth-le/-/bluetooth-le-2.0.1.tgz"
-  "version" "2.0.1"
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor-community/bluetooth-le/-/bluetooth-le-2.0.1.tgz#0b40f1c7a8bf83738b670e146e33656a9d602f36"
+  integrity sha512-K8NOAvzHKdwy+Ql9Y8hvtZh5gj5pnleAD8Q89HM9FDMbTsZmyBID0FcPGJxAZVRAb9VuaID3YykluRM7Up27ew==
   dependencies:
     "@types/web-bluetooth" "^0.0.15"
-    "throat" "^6.0.1"
-
-"@capacitor/core@^4.0.0":
-  "integrity" "sha512-zb225feaiHYcttHqw7SnKVj9gjOh3yoM2ol0Efky4kd80qZvqPHt7nRI1XZmGUKid5j3AVggULd5rRke5OEOXQ=="
-  "resolved" "https://registry.npmjs.org/@capacitor/core/-/core-4.3.0.tgz"
-  "version" "4.3.0"
-  dependencies:
-    "tslib" "^2.1.0"
+    throat "^6.0.1"
 
 "@types/web-bluetooth@^0.0.15":
-  "integrity" "sha512-w7hEHXnPMEZ+4nGKl/KDRVpxkwYxYExuHOYXyzIzCDzEZ9ZCGMAewulr9IqJu2LR4N37fcnb1XVeuZ09qgOxhA=="
-  "resolved" "https://registry.npmjs.org/@types/web-bluetooth/-/web-bluetooth-0.0.15.tgz"
-  "version" "0.0.15"
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.15.tgz#d60330046a6ed8a13b4a53df3813c44942ebdf72"
+  integrity sha512-w7hEHXnPMEZ+4nGKl/KDRVpxkwYxYExuHOYXyzIzCDzEZ9ZCGMAewulr9IqJu2LR4N37fcnb1XVeuZ09qgOxhA==
 
-"async@^2.1.4":
-  "integrity" "sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA=="
-  "resolved" "https://registry.npmjs.org/async/-/async-2.6.4.tgz"
-  "version" "2.6.4"
+async@^2.1.4:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
   dependencies:
-    "lodash" "^4.17.14"
+    lodash "^4.17.14"
 
-"better-sse@~0.8.0":
-  "integrity" "sha512-ymOse8R0L+R2S1W85yOGkkc+yTzAmo52S4erjxPyBVwpqjpS+X228BG7hDwgKsGV/D51YhCYd+eaDwJ+sL5JhA=="
-  "resolved" "https://registry.npmjs.org/better-sse/-/better-sse-0.8.0.tgz"
-  "version" "0.8.0"
+better-sse@~0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/better-sse/-/better-sse-0.8.0.tgz#2939fae49209f3e00d16da3edfe039a09a941177"
+  integrity sha512-ymOse8R0L+R2S1W85yOGkkc+yTzAmo52S4erjxPyBVwpqjpS+X228BG7hDwgKsGV/D51YhCYd+eaDwJ+sL5JhA==
 
-"brainsatplay-math@^0.0.25", "brainsatplay-math@~0.0.25":
-  "integrity" "sha512-J2s+/4osnjVVqqKVwuCuYbr9eGhXF4eFsGq/ImPIHICx0+1hJHoUN1XVCyiC8rOM7Nf0/8mmtVknzEeayVc7sQ=="
-  "resolved" "https://registry.npmjs.org/brainsatplay-math/-/brainsatplay-math-0.0.25.tgz"
-  "version" "0.0.25"
+brainsatplay-math@^0.0.25, brainsatplay-math@~0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/brainsatplay-math/-/brainsatplay-math-0.0.25.tgz#190d54fffed8270c9482273313f8f09420f63137"
+  integrity sha512-J2s+/4osnjVVqqKVwuCuYbr9eGhXF4eFsGq/ImPIHICx0+1hJHoUN1XVCyiC8rOM7Nf0/8mmtVknzEeayVc7sQ==
 
-"browserfs@^1.4.3":
-  "integrity" "sha512-tz8HClVrzTJshcyIu8frE15cjqjcBIu15Bezxsvl/i+6f59iNCN3kznlWjz0FEb3DlnDx3gW5szxeT6D1x0s0w=="
-  "resolved" "https://registry.npmjs.org/browserfs/-/browserfs-1.4.3.tgz"
-  "version" "1.4.3"
+browserfs@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/browserfs/-/browserfs-1.4.3.tgz#92ffc6063967612daccdb8566d3fc03f521205fb"
+  integrity sha512-tz8HClVrzTJshcyIu8frE15cjqjcBIu15Bezxsvl/i+6f59iNCN3kznlWjz0FEb3DlnDx3gW5szxeT6D1x0s0w==
   dependencies:
-    "async" "^2.1.4"
-    "pako" "^1.0.4"
+    async "^2.1.4"
+    pako "^1.0.4"
 
-"bson-objectid@~2.0.3", "bson-objectid@~2.0.4":
-  "integrity" "sha512-vgnKAUzcDoa+AeyYwXCoHyF2q6u/8H46dxu5JN+4/TZeq/Dlinn0K6GvxsCLb3LHUJl0m/TLiEK31kUwtgocMQ=="
-  "resolved" "https://registry.npmjs.org/bson-objectid/-/bson-objectid-2.0.4.tgz"
-  "version" "2.0.4"
+bson-objectid@~2.0.3, bson-objectid@~2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/bson-objectid/-/bson-objectid-2.0.4.tgz#339211572ef97dc98f2d68eaee7b99b7be59a089"
+  integrity sha512-vgnKAUzcDoa+AeyYwXCoHyF2q6u/8H46dxu5JN+4/TZeq/Dlinn0K6GvxsCLb3LHUJl0m/TLiEK31kUwtgocMQ==
 
-"device-decoder@^0.3.10":
-  "integrity" "sha512-kwltLDSf1yy7/nrpl09uY6+27urfT9YSjE2GrWx9OvUPtjdOwYDkQWKyNTqeAaLrFn/CVkyROPLJOi9Akg/Jvw=="
-  "resolved" "https://registry.npmjs.org/device-decoder/-/device-decoder-0.3.10.tgz"
-  "version" "0.3.10"
+device-decoder@^0.3.10:
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/device-decoder/-/device-decoder-0.3.10.tgz#9f6e76173853c0ac4b162bd598d4a8a6376487c0"
+  integrity sha512-kwltLDSf1yy7/nrpl09uY6+27urfT9YSjE2GrWx9OvUPtjdOwYDkQWKyNTqeAaLrFn/CVkyROPLJOi9Akg/Jvw==
   dependencies:
     "@capacitor-community/bluetooth-le" "~2.0.1"
-    "brainsatplay-math" "~0.0.25"
-    "graphscript" "~0.2.36"
-    "graphscript-services" "~0.2.36"
-    "graphscript-services.gpu" "~0.2.36"
-    "graphscript-services.storage" "~0.2.36"
-    "webgl-plot-utils" "~0.3.15"
+    brainsatplay-math "~0.0.25"
+    graphscript "~0.2.36"
+    graphscript-services "~0.2.36"
+    graphscript-services.gpu "~0.2.36"
+    graphscript-services.storage "~0.2.36"
+    webgl-plot-utils "~0.3.15"
 
-"gpujsutils@~1.0.12":
-  "integrity" "sha512-Zu6k59yavNqprmGGlrZT7fEVVex1Y5MWH/Eq7N5Mx8FrYRotmhtf2H4lAtlX9kR+TxffW51JUruJXnFOEvUg4Q=="
-  "resolved" "https://registry.npmjs.org/gpujsutils/-/gpujsutils-1.0.12.tgz"
-  "version" "1.0.12"
+gpujsutils@~1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/gpujsutils/-/gpujsutils-1.0.12.tgz#390874df5e6d0fdae8b674c22edc6f198a411bc0"
+  integrity sha512-Zu6k59yavNqprmGGlrZT7fEVVex1Y5MWH/Eq7N5Mx8FrYRotmhtf2H4lAtlX9kR+TxffW51JUruJXnFOEvUg4Q==
 
-"graphscript-services.gpu@~0.2.36":
-  "integrity" "sha512-wBWZk7SRAzWmMNOQh3aSan4TXHJRNfA5cDGEUithcxQaxTNIj79PlmRGiNa6XFXuBO5VOMgE5n/cQlg45K7aig=="
-  "resolved" "https://registry.npmjs.org/graphscript-services.gpu/-/graphscript-services.gpu-0.2.36.tgz"
-  "version" "0.2.36"
+graphscript-services.gpu@~0.2.36:
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/graphscript-services.gpu/-/graphscript-services.gpu-0.2.36.tgz#1d74a55a2c005e6cdaba5f86e86dd58a82212474"
+  integrity sha512-wBWZk7SRAzWmMNOQh3aSan4TXHJRNfA5cDGEUithcxQaxTNIj79PlmRGiNa6XFXuBO5VOMgE5n/cQlg45K7aig==
   dependencies:
-    "brainsatplay-math" "~0.0.25"
-    "browserfs" "^1.4.3"
-    "bson-objectid" "~2.0.3"
-    "gpujsutils" "~1.0.12"
-    "webgl-plot-utils" "~0.3.15"
+    brainsatplay-math "~0.0.25"
+    browserfs "^1.4.3"
+    bson-objectid "~2.0.3"
+    gpujsutils "~1.0.12"
+    webgl-plot-utils "~0.3.15"
 
-"graphscript-services.storage@^0.2.36", "graphscript-services.storage@~0.2.36":
-  "integrity" "sha512-QXh8JEhTHaqVJzy2x1W80Gmm9eLLYIFte/tLzUK+sWh1w1Fgt6Xxgp8bKD6O8AAwYHfw7b54uaHBkVvmRnMw8g=="
-  "resolved" "https://registry.npmjs.org/graphscript-services.storage/-/graphscript-services.storage-0.2.36.tgz"
-  "version" "0.2.36"
+graphscript-services.storage@^0.2.36, graphscript-services.storage@~0.2.36:
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/graphscript-services.storage/-/graphscript-services.storage-0.2.36.tgz#aa79f9fa2cffeb15513ff7a1c94cfd741f1b4535"
+  integrity sha512-QXh8JEhTHaqVJzy2x1W80Gmm9eLLYIFte/tLzUK+sWh1w1Fgt6Xxgp8bKD6O8AAwYHfw7b54uaHBkVvmRnMw8g==
   dependencies:
-    "brainsatplay-math" "~0.0.25"
-    "browserfs" "^1.4.3"
-    "bson-objectid" "~2.0.4"
-    "gpujsutils" "~1.0.12"
-    "webgl-plot-utils" "~0.3.15"
+    brainsatplay-math "~0.0.25"
+    browserfs "^1.4.3"
+    bson-objectid "~2.0.4"
+    gpujsutils "~1.0.12"
+    webgl-plot-utils "~0.3.15"
 
-"graphscript-services@^0.2.36", "graphscript-services@~0.2.36":
-  "integrity" "sha512-Zr6X5TvwisHVZyK2hpJBCq0XvwWbGdJhmCqo7t9cZ+4BIsy6cbbIsmoE62HyjisuL0Twm5k3BbMHFiYPk1lS+g=="
-  "resolved" "https://registry.npmjs.org/graphscript-services/-/graphscript-services-0.2.36.tgz"
-  "version" "0.2.36"
+graphscript-services@^0.2.36, graphscript-services@~0.2.36:
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/graphscript-services/-/graphscript-services-0.2.36.tgz#859ac930f565d8d6d7a8b2c61bbd9c8dd8e1c83f"
+  integrity sha512-Zr6X5TvwisHVZyK2hpJBCq0XvwWbGdJhmCqo7t9cZ+4BIsy6cbbIsmoE62HyjisuL0Twm5k3BbMHFiYPk1lS+g==
   dependencies:
-    "brainsatplay-math" "~0.0.25"
-    "browserfs" "^1.4.3"
-    "bson-objectid" "~2.0.4"
-    "gpujsutils" "~1.0.12"
-    "web-worker" "^1.2.0"
-    "webgl-plot-utils" "~0.3.15"
+    brainsatplay-math "~0.0.25"
+    browserfs "^1.4.3"
+    bson-objectid "~2.0.4"
+    gpujsutils "~1.0.12"
+    web-worker "^1.2.0"
+    webgl-plot-utils "~0.3.15"
 
-"graphscript@~0.2.36", "graphscript@~0.2.38":
-  "integrity" "sha512-R6EahFXxm99+g+XFRfP+WN7PwGAf6JrglByS+4fKyDKkS5zAOM0GBtGR51FRV/YicIwjUzmhk/2bxzR0j4MHdw=="
-  "resolved" "https://registry.npmjs.org/graphscript/-/graphscript-0.2.38.tgz"
-  "version" "0.2.38"
+graphscript@~0.2.36, graphscript@~0.2.38:
+  version "0.2.38"
+  resolved "https://registry.yarnpkg.com/graphscript/-/graphscript-0.2.38.tgz#7c53b63e3806717b3de8e610fef1c0ba1462456d"
+  integrity sha512-R6EahFXxm99+g+XFRfP+WN7PwGAf6JrglByS+4fKyDKkS5zAOM0GBtGR51FRV/YicIwjUzmhk/2bxzR0j4MHdw==
   dependencies:
-    "better-sse" "~0.8.0"
-    "brainsatplay-math" "~0.0.25"
-    "bson-objectid" "~2.0.3"
-    "web-worker" "~1.2.0"
-    "ws" "~8.11.0"
+    better-sse "~0.8.0"
+    brainsatplay-math "~0.0.25"
+    bson-objectid "~2.0.3"
+    web-worker "~1.2.0"
+    ws "~8.11.0"
 
-"howler@^2.2.3":
-  "integrity" "sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg=="
-  "resolved" "https://registry.npmjs.org/howler/-/howler-2.2.3.tgz"
-  "version" "2.2.3"
+howler@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/howler/-/howler-2.2.3.tgz#a2eff9b08b586798e7a2ee17a602a90df28715da"
+  integrity sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg==
 
-"lodash@^4.17.14":
-  "integrity" "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
-  "resolved" "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
-  "version" "4.17.21"
+lodash@^4.17.14:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-"pako@^1.0.4":
-  "integrity" "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="
-  "resolved" "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz"
-  "version" "1.0.11"
+pako@^1.0.4:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
+  integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
 
-"throat@^6.0.1":
-  "integrity" "sha512-8hmiGIJMDlwjg7dlJ4yKGLK8EsYqKgPWbG3b4wjJddKNwc7N7Dpn08Df4szr/sZdMVeOstrdYSsqzX6BYbcB+w=="
-  "resolved" "https://registry.npmjs.org/throat/-/throat-6.0.1.tgz"
-  "version" "6.0.1"
+throat@^6.0.1:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/throat/-/throat-6.0.2.tgz#51a3fbb5e11ae72e2cf74861ed5c8020f89f29fe"
+  integrity sha512-WKexMoJj3vEuK0yFEapj8y64V0A6xcuPuK9Gt1d0R+dzCSJc0lHqQytAbSB4cDAK0dWh4T0E2ETkoLE2WZ41OQ==
 
-"tslib@^2.1.0":
-  "integrity" "sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ=="
-  "resolved" "https://registry.npmjs.org/tslib/-/tslib-2.4.0.tgz"
-  "version" "2.4.0"
+web-worker@^1.2.0, web-worker@~1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/web-worker/-/web-worker-1.2.0.tgz#5d85a04a7fbc1e7db58f66595d7a3ac7c9c180da"
+  integrity sha512-PgF341avzqyx60neE9DD+XS26MMNMoUQRz9NOZwW32nPQrF6p77f1htcnjBSEV8BGMKZ16choqUG4hyI0Hx7mA==
 
-"web-worker@^1.2.0", "web-worker@~1.2.0":
-  "integrity" "sha512-PgF341avzqyx60neE9DD+XS26MMNMoUQRz9NOZwW32nPQrF6p77f1htcnjBSEV8BGMKZ16choqUG4hyI0Hx7mA=="
-  "resolved" "https://registry.npmjs.org/web-worker/-/web-worker-1.2.0.tgz"
-  "version" "1.2.0"
-
-"webgl-plot-utils@~0.3.15":
-  "integrity" "sha512-OXPhrDATC4VVHVA4ySnxmvoSenNz/GNeX1e0vqPVyYt9l9bCSeZOou8tfOIAh5NoJ8UXZoq1yBNShLzwYAi8BA=="
-  "resolved" "https://registry.npmjs.org/webgl-plot-utils/-/webgl-plot-utils-0.3.15.tgz"
-  "version" "0.3.15"
+webgl-plot-utils@~0.3.15:
+  version "0.3.15"
+  resolved "https://registry.yarnpkg.com/webgl-plot-utils/-/webgl-plot-utils-0.3.15.tgz#ebea7f3ebf58dc521b32059dcbc8f5e0cc5af710"
+  integrity sha512-OXPhrDATC4VVHVA4ySnxmvoSenNz/GNeX1e0vqPVyYt9l9bCSeZOou8tfOIAh5NoJ8UXZoq1yBNShLzwYAi8BA==
   dependencies:
-    "webgl-plot" "~0.7.0"
+    webgl-plot "~0.7.0"
 
-"webgl-plot@~0.7.0":
-  "integrity" "sha512-/prs3XMFKlXcov3qvx3LxqMws0Dg68kmmHmO82Qm6FFGpeKME7c3nuVqSe9CG47BvG9mGVPxDMjRc0DP/jTc2A=="
-  "resolved" "https://registry.npmjs.org/webgl-plot/-/webgl-plot-0.7.0.tgz"
-  "version" "0.7.0"
+webgl-plot@~0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/webgl-plot/-/webgl-plot-0.7.0.tgz#7be002ab5069f04661fc356e7bbde82d2a444cb4"
+  integrity sha512-/prs3XMFKlXcov3qvx3LxqMws0Dg68kmmHmO82Qm6FFGpeKME7c3nuVqSe9CG47BvG9mGVPxDMjRc0DP/jTc2A==
 
-"ws@~8.11.0":
-  "integrity" "sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg=="
-  "resolved" "https://registry.npmjs.org/ws/-/ws-8.11.0.tgz"
-  "version" "8.11.0"
+ws@~8.11.0:
+  version "8.11.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.11.0.tgz#6a0d36b8edfd9f96d8b25683db2f8d7de6e8e143"
+  integrity sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==

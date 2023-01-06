@@ -1,6 +1,6 @@
 import { FilterSettings, initDevice, workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
 
-import gsworker from '../device_debugger/src/stream.big.worker'//'device-decoder/stream.big.worker.js'
+import gsworker from 'device-decoder/src/stream.big.worker' // '../device_debugger/src/stream.big.worker'//
 
 import { mpu6050ChartSettings } from "device-decoder/src/devices/mpu6050.js";
 import { max3010xChartSettings } from "device-decoder/src/devices/max30102.js";
@@ -70,12 +70,25 @@ function setReadoutText(data) {
 const hrAlert = new Alert(heartRateAlertSettings);
 const gyroAlert = new Alert(gyroAlertSettings);
 
+let refractoryPeriod = 1000
+let canTrigger = true
+
 const arbitraryAlertSettings = {
     message: `<h2>Arbitrary Alert</h2><p>This alert has been thrown</p>`,
     condition: (value) => {
-        return value === 1
+
+        if (canTrigger){
+            const triggered = (1 - value) < 0.05
+            if (triggered) {
+                canTrigger = false
+                setTimeout(() => canTrigger = true, refractoryPeriod)
+            }
+
+            return triggered
+        } else return false
     }
 }
+
 const arbitraryAlgorithm = new Algorithm({
     function: (value) => {
         console.log('Processing with arbitrary algorithm', value)
@@ -516,6 +529,39 @@ workers.load({
                                     connect();
                                     
                                 }
+                            },
+                            toggleArbitraryAlert:{
+                                subId: undefined,
+                                __element:'button',
+                                innerText:'Start Arbitrary Alert',
+                                onclick: function () {
+
+                                    if (this.subId) {
+                                        this.innerText = 'Start Arbitrary Alert'
+                                        this.subId = undefined
+                                        arbitraryWorker.run('destroySubprocess', this.subId)
+                                    } else {
+
+                                        arbitraryWorker.run('createSubprocess', ['arbitrary',{transform: (function(inp) {return Math.sin(inp)}).toString() }]).then((id) => {
+                                            console.log("Created subprocess for arbitrary worker:", id)
+                                            arbitraryWorker.subscribe(id,  arbitraryAlgorithm.apply)
+                                            this.subId = id
+                                            this.innerText = 'Stop Arbitrary Alert'
+
+
+                                            // Animate the arbitrary worker transformation
+                                            const animation = () => {
+                                                const now = Date.now() / 1000
+                                                arbitraryWorker.run('runSubprocess', now);
+                                                if (this.subId) setTimeout(animation, 1000/60)
+                                            }
+                                            
+                                            animation()
+                                            
+                                        })
+                                    
+                                    }
+                                }
                             }
                         }
                     },
@@ -664,18 +710,13 @@ const subprocessTemplate = {
             return newFunc;
         
         }
-        if(typeof ctx.animate === 'string') ctx.animate = parseFunctionFromText(ctx.animate);
-        console.log("Created!", ctx)
+        if(typeof ctx.transform === 'string') ctx.transform = parseFunctionFromText(ctx.transform);
     }).toString(),
     ondata: ((ctx:SubprocessContext, data:{[key:string]:any}|any) => {
-        console.log("Got data!", ctx, data)
-        console.log(ctx.animate);
-        if (ctx.animate) {
-            console.error('MUST ANIMATE')
-            const res = ctx.animate(data);
-            console.error('MUST ANIMATE RESULT:', res)
+        if (ctx.transform) {
+            const res = ctx.transform(data);
+            return res
         }
-        return data
     }).toString(),
     props:{}
 }
@@ -688,17 +729,6 @@ arbitraryWorker.run('addSubprocessTemplate', [
     subprocessTemplate.oncreate,
     subprocessTemplate.ondata,
     subprocessTemplate.props
-]).then((...args) => {
-    console.log('Set!', ...args)
+]).then((success) => {
+    if (success) console.log("Successfully added arbitrary worker!")
 }) 
-
-arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: (function(inp) {console.log(inp); return Math.sin(inp)}).toString() }]).then((...args) => {
-    console.log("Created!", ...args)
-    const id = args[0] 
-    arbitraryWorker.subscribe(id, (info) => {
-        console.log("Got", id, info)
-        arbitraryAlgorithm.apply(info.value)
-    })
-})
-
-arbitraryWorker.run('runSubprocess', Date.now());

@@ -65,7 +65,12 @@ class Alert {
 
     throw(value?: number) {
         const message = (typeof this.settings.message === 'string') ? this.settings.message : this.settings.message(value) ;
-        if (value !== undefined) new Howl({src:'./sounds/alarm.wav'}).play(); // Only play the sound if a value has been provided
+
+        let sound;
+        if (value !== undefined) {
+            sound = new Howl({src:'./alerts/sounds/alarm.wav'}); // Only play the sound if a value has been provided
+            sound.play()
+        }
         let elm = document.getElementById('alerts') as HTMLElement;
 
         elm.innerHTML = message;
@@ -76,7 +81,10 @@ class Alert {
         const position = this.history.length
         this.history.push(reaction)
         setTimeout(() => {
-            if (this.history.length === position + 1) reaction()
+            if (this.history.length === position + 1) {
+                reaction()
+                sound.stop()
+            }
         }, 3000)
 
         return true
