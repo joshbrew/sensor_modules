@@ -7,7 +7,7 @@ import { max3010xChartSettings } from "device-decoder/src/devices/max30102.js";
 import { ads131m08ChartSettings } from "device-decoder/src/devices/ads131m08.js";
 import { bme280ChartSettings } from "device-decoder/src/devices/bme280.js";
 
-import {htmlloader, SubprocessContext} from 'graphscript'//'../graphscript/'
+import {htmlloader, Loader, SubprocessContext} from 'graphscript'//'../graphscript/'
 
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
 import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
@@ -23,6 +23,8 @@ import Algorithm from "./algorithms/Algorithm";
 // Graph Component Imports
 import Plot from "./components/plot/Plot";
 import Container from "./components/Display";
+
+
 
 //TODO: twilio sms backend
 
@@ -45,6 +47,8 @@ const detected = {
 };
 
 workers.__node.loaders.html = htmlloader;
+
+
 
 function genTimestamps(ct,sps,from?) {
     let now = from ? from : Date.now();
