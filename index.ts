@@ -7,7 +7,7 @@ import { max3010xChartSettings } from "device-decoder/src/devices/max30102.js";
 import { ads131m08ChartSettings } from "device-decoder/src/devices/ads131m08.js";
 import { bme280ChartSettings } from "device-decoder/src/devices/bme280.js";
 
-import {htmlloader, Loader, SubprocessContext} from 'graphscript'//'../graphscript/'
+import {htmlloader, SubprocessContext} from 'graphscript'//'../graphscript/'
 
 import { visualizeDirectory } from 'graphscript-services.storage'//'../graphscript/src/extras/storage/BFS_CSV';
 import { HTMLNodeProperties } from 'graphscript'//'../graphscript';
@@ -584,15 +584,57 @@ const subprocessTemplate = {
     name:'arbitrary',
     structs:{},
     oncreate: ((ctx:SubprocessContext) => {
-        if(typeof ctx.animate === 'string') ctx.animate = (0,eval)(ctx.animate);
+
+        function parseFunctionFromText(method='') {
+            //Get the text inside of a function (regular or arrow);
+            let getFunctionBody = (methodString) => {
+                return methodString.replace(/^\W*(function[^{]+\{([\s\S]*)\}|[^=]+=>[^{]*\{([\s\S]*)\}|[^=]+=>(.+))/i, '$2$3$4');
+            }
+        
+            let getFunctionHead = (methodString) => {
+                let startindex = methodString.indexOf('=>')+1;
+                if(startindex <= 0) {
+                    startindex = methodString.indexOf('){');
+                }
+                if(startindex <= 0) {
+                    startindex = methodString.indexOf(') {');
+                }
+                return methodString.slice(0, methodString.indexOf('{',startindex) + 1);
+            }
+        
+            let newFuncHead = getFunctionHead(method);
+            let newFuncBody = getFunctionBody(method);
+        
+        
+            let newFunc;
+            if (newFuncHead.includes('function')) {
+                let varName = newFuncHead.split('(')[1].split(')')[0]
+                newFunc = new Function(varName, newFuncBody);
+            } else {
+                if(newFuncHead.substring(0,6) === newFuncBody.substring(0,6)) {
+                //newFuncBody = newFuncBody.substring(newFuncHead.length);
+                let varName = newFuncHead.split('(')[1].split(')')[0]
+                //console.log(varName, newFuncHead ,newFuncBody);
+                newFunc = new Function(varName, newFuncBody.substring(newFuncBody.indexOf('{')+1,newFuncBody.length-1));
+                }
+                else {
+                try {newFunc = (0,eval)(newFuncHead + newFuncBody + "}");} catch {}
+                }
+            }
+        
+            return newFunc;
+        
+        }
+        if(typeof ctx.animate === 'string') ctx.animate = parseFunctionFromText(ctx.animate);
         console.log("Created!", ctx)
     }).toString(),
     ondata: ((ctx:SubprocessContext, data:{[key:string]:any}|any) => {
         console.log("Got data!", ctx, data)
+        console.log(ctx.animate);
         if (ctx.animate) {
             console.error('MUST ANIMATE')
-            const res = ctx.animate()
-            console.error('MUST ANIMATE', ctx.animate, res)
+            const res = ctx.animate(data);
+            console.error('MUST ANIMATE RESULT:', res)
         }
         return data
     }).toString(),
@@ -611,7 +653,7 @@ arbitraryWorker.run('addSubprocessTemplate', [
     console.log('Set!', ...args)
 }) 
 
-arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: ((inp) => Math.sin(inp)).toString() }]).then((...args) => {
+arbitraryWorker.run('createSubprocess', ['arbitrary',{animate: (function(inp) {console.log(inp); return Math.sin(inp)}).toString() }]).then((...args) => {
     console.log("Created!", ...args)
     const id = args[0] 
     arbitraryWorker.subscribe(id, (info) => {
