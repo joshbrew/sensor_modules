@@ -24,6 +24,7 @@ import Algorithm from "./algorithms/Algorithm";
 import Plot from "./components/plot/Plot";
 import Container from "./components/Display";
 
+import "style.css"
 
 
 //TODO: twilio sms backend

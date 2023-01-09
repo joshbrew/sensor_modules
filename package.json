@@ -28,6 +28,7 @@
     "graphscript-services": "^0.2.41",
     "graphscript-services.storage": "^0.2.41",
     "howler": "^2.2.3",
+    "style.css": "^1.0.3",
     "webgl-plot-utils": "~0.3.17"
   },
   "nodemonConfig": {
