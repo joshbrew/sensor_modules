@@ -49,10 +49,10 @@ class Alert {
 
         if(!bufferLen || bufferLen === this.settings.bufferLength) {
 
-            const value = (!bufferLen) ? mean(this.latest) : mean(this.buffer);
+            value = (!bufferLen) ? mean(this.latest) : value;
             if (this.settings) {
-                const toThrow = this.settings.condition(value)
-                if (toThrow) return this.throw(value)
+                const toThrow = this.settings.condition(value as number);
+                if (toThrow) return this.throw(value as number);
             }
             else {
                 if (!this.errored) {

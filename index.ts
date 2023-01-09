@@ -17,7 +17,7 @@ import { ByteParser } from 'device-decoder/src/util/ByteParser';
 // Alert Imports
 import Alert from './alerts/Alert';
 import heartRateAlertSettings from './alerts/heartrate';
-import gyroAlertSettings from './alerts/gyro';
+import imuAlertSettings from './alerts/gyro';
 import Algorithm from "./algorithms/Algorithm";
 
 // Graph Component Imports
@@ -68,7 +68,7 @@ function setReadoutText(data) {
 
 // Create Alerts
 const hrAlert = new Alert(heartRateAlertSettings);
-const gyroAlert = new Alert(gyroAlertSettings);
+const imuAlert = new Alert(imuAlertSettings);
 
 let refractoryPeriod = 1000
 let canTrigger = true
@@ -113,8 +113,14 @@ workers.load({
     alerts:{
         __element:'div',
         __listeners: {
-            'state.ppg':(data) => hrAlert.check(data.bpm),
-            'state.imu':(data) => gyroAlert.check(data.gz),
+            'state.ppg':(data) => {if(data.bpm) {hrAlert.check(data.bpm)}},
+            'state.imu':(data) => {
+                data.ax.map((v,i) => {
+                    let mag = Math.sqrt(data.ax[i]*data.ax[i] + data.ay[i]*data.ay[i] + data.az[i]*data.az[i]);
+                    imuAlert.check(mag);
+                    return mag;
+                });
+            },
         }
     },
 
