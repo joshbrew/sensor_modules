@@ -3,7 +3,7 @@ const config = {
         entryPoints: [ //entry point file(s). These can include .js, .mjs, .ts, .jsx, .tsx, or other javascript files. Make sure your entry point is a ts file if you want to generate types
             "index.ts"
         ],
-        target:"es6",
+        target:"es2015",
         outfile: "dist/index", //exit point file, will append .js as well as indicators like .esm.js, .node.js for other build flags
         //outdir:[]               //exit point files, define for multiple bundle files
         bundleBrowser: true, //create plain js build? Can include globals and init scripts
