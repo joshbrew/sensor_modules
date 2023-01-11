@@ -1,11 +1,19 @@
-import  {Howl } from 'howler'
+import  { Howl } from 'howler'
 
 export type AlertAlgorithm = (value: number) => boolean;
 
 export type AlertSettings = {
     condition: AlertAlgorithm,
+    preprocess: (buffer: number[]) => number // Return a single value
     message: string | ((value?: number) => string)
     bufferLength?: number
+}
+
+export type AlertSettingsInput = {
+    preprocess?: AlertSettings['preprocess'],
+    message: AlertSettings['message'],
+    bufferLength?: AlertSettings['bufferLength']
+    condition: AlertSettings['condition']
 }
 
 class Alert {
@@ -16,12 +24,15 @@ class Alert {
 
     history: Function[] = []
 
-    constructor(settings?: AlertSettings) {
+    constructor(settings?: AlertSettingsInput) {
         this.set(settings)
     }
 
-    set(settings?: AlertSettings) {
-        if (settings) this.settings = settings;
+    set(settings?: AlertSettingsInput) {
+        if (settings) {
+            if (!settings.preprocess) settings.preprocess = mean // Default to mean for preprocessing
+            this.settings = settings as AlertSettings;
+        }
         else console.log('No configuration object provided to Alert.set()')
         this.errored = false;
 
@@ -49,7 +60,7 @@ class Alert {
 
         if(!bufferLen || bufferLen === this.settings.bufferLength) {
 
-            value = (!bufferLen) ? mean(this.latest) : value;
+            const value = (!bufferLen) ? this.settings.preprocess(this.latest) : this.settings.preprocess(this.buffer);
             if (this.settings) {
                 const toThrow = this.settings.condition(value as number);
                 if (toThrow) return this.throw(value as number);
@@ -83,7 +94,7 @@ class Alert {
         setTimeout(() => {
             if (this.history.length === position + 1) {
                 reaction()
-                sound.stop()
+                if (sound) sound.stop()
             }
         }, 3000)
 

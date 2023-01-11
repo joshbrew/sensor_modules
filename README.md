@@ -13,17 +13,89 @@
 2. [Gyro](./alerts/gyro.ts): Detects fast movements from gyro data.
 
 ## The Tech Stack
-This repository relies on [graphscript](https://github.com/brainsatplay/graphscript) for module development and [device-decoder](https://github.com/joshbrew/device_debugger) for acquiring biosensor data on the browser.
+This repository relies on [graphscript](https://github.com/brainsatplay/graphscript) for module development and [device-decoder](https://github.com/joshbrew/device_debugger) for acquiring biosensor data on web browsers.
 
 
 ## Contributing
-If you would like to contribute to this project, [submit an issue](https://github.com/brainsatplay/js-biosensor-modules/issues) to begin a discussion of the best course of action.
+If you would like to contribute to this project, [submit an issue](https://github.com/brainsatplay/js-biosensor-modules/issues) to begin a discussion on the best course of action.
 
-### Algorithms
-Create a new entry in the `algorithms` folder.
+### Developing a New Alert
+The process of creating a new alert is very simple. All alerts have a **condition** and a **message** that allows you to define its basic behavior.
 
-### Alerts
-Create a new entry in the `alerts` folder.
+These can be declared as an **alert configuration file** inside the `alerts` folder:
+
+```js
+let upperBound = 400;
+let lowerBound = -upperBound;
+
+export const condition = (value) => (value < lowerBound) || ( value > upperBound)
+
+export const message = (value) => `<h2>Arbitrary Alert</h2><p>The latest data is worrisome: ${value}</p>`
+    
+export const bufferLength = 0 // Optional property to maintain a buffer of values
+
+export const preprocess = (buffer) => buffer.reduce((a,b) => a + b, 0) / buffer.length // Optional property to preprocess the buffer before the condition check
+
+```
+
+After creating your configuration file, you can then load your alert into the `Alert` class:
+```js
+import * as config from './alerts/arbitrary.js'
+import Alert from './alerts/Alert.js'
+
+const alert = new Alert(config)
+```
+
+You can then either **check** whether a value meets the specified condition or **throw** the alert manually.
+```js
+alert.check(10) // Alert will not throw...
+alert.check(25) // Alert will also not throw...
+alert.check(1000) // Alert will be triggered!
+alert.throw() // Alert will be triggered!
+```
+
+### Developing a New Algorithm
+Algorithms are classes that process data and (optionally) check alerts.
+
+To declare a new algorithm, create a configuration file that extends the `Algorithm` class:
+```js
+import * as arbitraryAlert from '../alerts/arbitrary.js'
+
+export const operator = (value) => value * value // Square the incoming value
+
+export const alert = arbitraryAlert // Use the same alert as previously discussed
+```
+
+This can then be loaded into the `Algorithm` class along with an alert:
+```js
+import * as config from './algorithms/arbitrary.js'
+import Algorithm from './algorithms/Algorithm.js'
+
+const algorithm = new Algorithm(config)
+```
+
+Incoming data can then be processed using the `apply` function:
+```js
+algorithm.apply(10) // Does not pass the alert threshold (100 < 400)
+algorithm.apply(25) // Triggers the alert (625 > 400)
+```
+
+#### Hooking Algorithms into a Data Stream
+To hook an algorithm into one of the real-time data streams managed by this application, add a subscription function to the `tree.alerts.__listeners` object in `tree.ts` (or edit one of the existing subscriptions...):
+
+```js
+// ...
+    alerts: {
+        __element:'div',
+        __listeners: {
+            'state.ppg': // ...
+            'state.imu': // ...
+            'state.arbitrary': (data) => algorithm.apply(data.value)
+        }
+    },
+// ...
+
+```
 
 ## Acknowledgments
 This repository is maintained by [Garrett Flynn](https://github.com/garrettmflynn) and [Joshua Brewster](https://github.com/joshbrew), who use contract work and community contributions through [Open Collective](https://opencollective.com/brainsatplay) to support themselves.

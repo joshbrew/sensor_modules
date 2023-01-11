@@ -1,10 +1,10 @@
-import Alert, { AlertSettings } from '../alerts/Alert';
+import Alert, { AlertSettingsInput } from '../alerts/Alert';
 
 export type AlertAlgorithm = (value: number) => boolean;
 
 type AlgorithmSettings = {
-    function: Function,
-    alert: AlertSettings
+    operator: Function,
+    alert: AlertSettingsInput
 }
 
 
@@ -29,7 +29,7 @@ class Algorithm {
     }
 
     apply = (data) => {
-        const value = this.settings.function(data)
+        const value = this.settings.operator(data)
         if (this.alert) this.alert.check(value)
         return value
     }
