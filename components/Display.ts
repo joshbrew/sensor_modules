@@ -44,7 +44,7 @@ class Display extends Module {
             __element: 'div',
             style:{ 
                 height:'200px',
-                overflow: 'scroll',
+                overflowY: 'scroll',
                 fontSize: '12px',
                 background: '#1b1a1a',
             }

@@ -21,17 +21,7 @@ import * as modules from './modules/index'
 // Graph Component Imports
 import Plot from "./components/plot/Plot";
 import Container from "./components/Display";
-
-const state = {
-    ppg:{},
-    emg:{},
-    imu:{},
-    env:{},
-    emg2:{},
-    arbitrary: {},
-    recording:false,
-    test:0
-};
+import { state } from "./globals";
 
 const detected = {
     emg:false,
@@ -488,42 +478,6 @@ const tree = {
                                     
                                 }
                             },
-
-
-                            // This component is used to generate data for the arbitrary module using an arbitrary worker
-                            toggleArbitraryAlert:{
-                                subId: undefined,
-                                __element:'button',
-                                innerText:'Start Arbitrary Module',
-                                onclick: function () {
-
-                                    if (this.subId) {
-                                        this.innerText = 'Start Arbitrary Module'
-                                        workers.arbitrary.run('destroySubprocess', this.subId)
-                                        this.subId = undefined
-                                    } else {
-
-                                        
-                                        workers.arbitrary.run('createSubprocess', ['arbitrary',{transform: (function(inp) {return Math.sin(inp)}).toString() }]).then((id) => {
-                                            console.log("Created subprocess for arbitrary worker:", id)
-                                            workers.arbitrary.subscribe(id,  (value) => state.arbitrary = { value })
-                                            this.subId = id
-                                            this.innerText = 'Stop Arbitrary Module'
-
-                                            // Animate the arbitrary worker transformation
-                                            const animation = () => {
-                                                const now = Date.now() / 1000
-                                                workers.arbitrary.run('runSubprocess', now); // Generating data for arbitrary worker
-                                                if (this.subId) setTimeout(animation, 1000/60)
-                                            }
-                                            
-                                            animation()
-                                            
-                                        })
-                                    
-                                    }
-                                }
-                            }
                         }
                     },
                 }

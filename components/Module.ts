@@ -29,6 +29,8 @@ export default class Module {
     get ui() { return this.#ui }
     set ui(value: any) {
         this.__children.ui = value
+        if (!value.style) value.style = {}
+        if (!value.style.position) value.style.position = 'relative' // Ensure absolutely-position elements are bounded
     }
 
     // User Interface
