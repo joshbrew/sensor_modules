@@ -72,7 +72,6 @@ export class WGLPlotter {
         }
     
         this.plot = workerCanvasRoutes.Renderer(options as CanvasProps) as CanvasControls;
-        console.log(this.plot);
         return this.plot;
     }
 

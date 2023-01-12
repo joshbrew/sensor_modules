@@ -59,11 +59,7 @@ Algorithms are classes that process data and (optionally) check alerts.
 
 To declare a new algorithm, create a configuration file that extends the `Algorithm` class:
 ```js
-import * as arbitraryAlert from '../alerts/arbitrary.js'
-
 export const operator = (value) => value * value // Square the incoming value
-
-export const alert = arbitraryAlert // Use the same alert as previously discussed
 ```
 
 This can then be loaded into the `Algorithm` class along with an alert:
@@ -76,8 +72,38 @@ const algorithm = new Algorithm(config)
 
 Incoming data can then be processed using the `apply` function:
 ```js
-algorithm.apply(10) // Does not pass the alert threshold (100 < 400)
-algorithm.apply(25) // Triggers the alert (625 > 400)
+const under = algorithm.apply(10) 
+alert.check(under) // Does not pass the alert threshold (100 < 400)
+
+const over = algorithm.apply(25)
+alert.check(over) // Triggers the alert (625 > 400)
+
+```
+
+### Publishing a Module
+Modules may have both an alert and an algorithm. This integrates their behavior to automate the process of alerting the user when a condition is met after processing the data:
+
+```js
+import Module from './components/Module'
+const module = new Module({
+    alert,
+    algorithm
+})
+
+module.__operator(25) // Triggers the alert
+
+```
+
+You many also add a UI to the module in standard GraphScript format: 
+```js
+const module = new Module({
+    alert,
+    algorithm,
+    ui: {
+        __element: 'h1',
+        innerText: 'Arbitrary Module'
+    }
+})
 ```
 
 #### Hooking Algorithms into a Data Stream

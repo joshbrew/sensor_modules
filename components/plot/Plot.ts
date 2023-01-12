@@ -1,14 +1,14 @@
 import plotworker from './webglplot/canvas.worker'
 import {WGLPlotter} from "./webglplot/plotter.js";
 import { workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
-import Container, { ContainerInfo } from '../Display';
+import Container, { DisplayInfo } from '../Display';
 import {WebglLineProps} from 'graphscript-services'
 
 type PlotInfo = {
     workers?: Plot['workers'],
     state: Plot['state'],
     lines: WebglLineProps
-} & ContainerInfo
+} & DisplayInfo
 
 class Plot extends Container { 
 
@@ -21,10 +21,10 @@ class Plot extends Container {
     constructor (info: PlotInfo) {
         super(info)
 
-        this.__children.body.workers = this.workers
-        this.__children.body.state = this.state
+        this.__children.ui.workers = this.workers
+        this.__children.ui.state = this.state
 
-        this.__children.body.__onrender = function(div:HTMLElement){    
+        this.__children.ui.__onrender = function(div:HTMLElement){    
                 let canvas = div.querySelector('#chart') as HTMLCanvasElement;
                 let overlay = div.querySelector('#overlay') as HTMLCanvasElement;
             
@@ -49,7 +49,7 @@ class Plot extends Container {
                 this.workers.add(plotter);
             }
 
-            this.__children.body.__children = {
+            this.__children.ui.__children = {
                 chart:{
                     __element:'canvas',
                     style:{height:'100%', width:'100%', backgroundColor:'black'}
@@ -63,9 +63,9 @@ class Plot extends Container {
         this.state = info.state;
         this.lines = info.lines;
         if (info.workers) this.workers = info.workers;
-        Object.defineProperty(this.__children.body, 'workers', { get: () => this.workers, enumerable: true })
-        Object.defineProperty(this.__children.body, 'state', { get: () => this.state, enumerable: true })
-        Object.defineProperty(this.__children.body, 'lines', { get: () => this.lines, enumerable: true })
+        Object.defineProperty(this.__children.ui, 'workers', { get: () => this.workers, enumerable: true })
+        Object.defineProperty(this.__children.ui, 'state', { get: () => this.state, enumerable: true })
+        Object.defineProperty(this.__children.ui, 'lines', { get: () => this.lines, enumerable: true })
 
     }
 

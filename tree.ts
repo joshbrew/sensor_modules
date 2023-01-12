@@ -15,8 +15,8 @@ import { ByteParser } from 'device-decoder/src/util/ByteParser';
 
 // MyAlyce Custom Objects
 import * as alerts from './alerts/index'
-import * as algorithms from './algorithms/index'
 import * as workers from './workers/index'
+import * as modules from './modules/index'
 
 // Graph Component Imports
 import Plot from "./components/plot/Plot";
@@ -74,7 +74,7 @@ const tree = {
                     return mag;
                 });
             },
-            'state.arbitrary': (data) => algorithms.arbitrary.apply(data.value)
+            // 'state.arbitrary': (data) => modules.arbitrary.__operator(data.value)
         }
     },
 
@@ -528,7 +528,7 @@ const tree = {
                 }
             },
 
-            displays: {
+            modules: {
                 __element:'div',
                 __children: {
                     header: {
@@ -546,8 +546,11 @@ const tree = {
                             padding: '25px 0px'
                         },
                         __children: {
+
+                            arbitrary: new Container(modules.arbitrary),
+
                             PPG: new Plot({
-                                header: 'PPG Readings',
+                                name: 'PPG Readings',
                                 state: 'ppg',
                                 lines:  {
                                     ...max3010xChartSettings.lines,
@@ -558,13 +561,13 @@ const tree = {
                                 }
                             }),
                             IMU:new Plot({
-                                header: 'IMU Readings',
+                                name: 'IMU Readings',
                                 state: 'imu',
                                 lines:  mpu6050ChartSettings.lines as {[key:string]: WebglLineProps}
                                 
                             }),
                             EMG: new Plot({
-                                header: 'EMG Readings',
+                                name: 'EMG Readings',
                                 state: 'emg',
                                 lines: {
                                         0:ads131m08ChartSettings.lines?.['0'] as WebglLineProps,
@@ -573,7 +576,7 @@ const tree = {
                             }),
                         
                             ENV:new Plot({
-                                header: 'ENV Readings',
+                                name: 'ENV Readings',
                                 state: 'env',
                                 lines: bme280ChartSettings.lines as {[key:string]: WebglLineProps}
                                 
@@ -581,15 +584,12 @@ const tree = {
 
 
                             csvs: new Container({
-                                header: 'CSVs',
-                                __onconnected: function (){
-                                    const body = this.__children.body
-                                    body.style.overflowY = 'scroll';
-                                    body.style.fontSize = '10px';
-
+                                name: 'CSVs',
+                                __onconnected: function() {
+                                    this.__children.ui.style.padding = '25px'
                                 },
                                 __onrender:function(elm) {
-                                    visualizeDirectory('data', this.__children.body.__props as HTMLElement);
+                                    visualizeDirectory('data', this.__children.ui.__props as HTMLElement);
 
                                     // Create a record button
                                     const recordButton = document.createElement('button')

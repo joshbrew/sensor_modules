@@ -2,7 +2,7 @@
 
 import { workers } from "device-decoder"; // '../device_debugger/src/device.frontend'//
 import { htmlloader } from 'graphscript'//'../graphscript/'
-import { arbitrary } from "./algorithms";
+import { arbitrary } from "./modules";
 
 import "style.css"
 
@@ -16,5 +16,7 @@ workers.load(tree);
 
 // Trigger an arbitrary alert when the user presses 'a'
 window.onkeydown = (ev) => {
-    if (ev.key === 'a') arbitrary.alert.throw();
+    if (ev.key === 'a') {
+        if ( arbitrary.alert) arbitrary.alert.throw();
+    }
 }
