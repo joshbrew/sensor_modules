@@ -494,11 +494,11 @@ const tree = {
                             toggleArbitraryAlert:{
                                 subId: undefined,
                                 __element:'button',
-                                innerText:'Start Arbitrary Alert',
+                                innerText:'Start Arbitrary Module',
                                 onclick: function () {
 
                                     if (this.subId) {
-                                        this.innerText = 'Start Arbitrary Alert'
+                                        this.innerText = 'Start Arbitrary Module'
                                         workers.arbitrary.run('destroySubprocess', this.subId)
                                         this.subId = undefined
                                     } else {
@@ -508,7 +508,7 @@ const tree = {
                                             console.log("Created subprocess for arbitrary worker:", id)
                                             workers.arbitrary.subscribe(id,  (value) => state.arbitrary = { value })
                                             this.subId = id
-                                            this.innerText = 'Stop Arbitrary Alert'
+                                            this.innerText = 'Stop Arbitrary Module'
 
                                             // Animate the arbitrary worker transformation
                                             const animation = () => {
