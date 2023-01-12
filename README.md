@@ -25,18 +25,31 @@ The process of creating a new alert is very simple. All alerts have a **conditio
 These can be declared as an **alert configuration file** inside the `alerts` folder:
 
 ```js
-let upperBound = 400;
-let lowerBound = -upperBound;
+let refractoryPeriod = 1000
+let canTrigger = true
 
-export const condition = (value) => (value < lowerBound) || ( value > upperBound)
+export const message = `<h2>Arbitrary Alert</h2><p>This alert has been thrown</p>`
 
-export const message = (value) => `<h2>Arbitrary Alert</h2><p>The latest data is worrisome: ${value}</p>`
-    
+export const condition = (value) => {
+
+    if (canTrigger){
+        const triggered = (1 - value) < 0.05
+        if (triggered) {
+            canTrigger = false
+            setTimeout(() => canTrigger = true, refractoryPeriod)
+        }
+
+        return triggered
+    } else return false
+}
+
 export const bufferLength = 0 // Optional property to maintain a buffer of values
 
 export const preprocess = (buffer) => buffer.reduce((a,b) => a + b, 0) / buffer.length // Optional property to preprocess the buffer before the condition check
 
 ```
+
+This will throw an alert when the input approaches one.
 
 After creating your configuration file, you can then load your alert into the `Alert` class:
 ```js
@@ -48,18 +61,20 @@ const alert = new Alert(config)
 
 You can then either **check** whether a value meets the specified condition or **throw** the alert manually.
 ```js
-alert.check(10) // Alert will not throw...
-alert.check(25) // Alert will also not throw...
-alert.check(1000) // Alert will be triggered!
-alert.throw() // Alert will be triggered!
+alert.check(0.4) // Alert is not triggered...
+alert.check(1) // Alert is triggered!
+alert.throw() // Alert is triggered!
 ```
+
+When thrown, the alert will appear on the UI: 
+![an arbitrary alert](./assets/images/arbitraryAlert.png)
 
 ### Developing a New Algorithm
 Algorithms are classes that process data and (optionally) check alerts.
 
 To declare a new algorithm, create a configuration file that extends the `Algorithm` class:
 ```js
-export const operator = (value) => value * value // Square the incoming value
+export const operator = (info) => info.value // We assume that the incoming information has a nested value
 ```
 
 This can then be loaded into the `Algorithm` class along with an alert:
@@ -72,11 +87,11 @@ const algorithm = new Algorithm(config)
 
 Incoming data can then be processed using the `apply` function:
 ```js
-const under = algorithm.apply(10) 
-alert.check(under) // Does not pass the alert threshold (100 < 400)
+const under = algorithm.apply(0.4) 
+alert.check(under) // Alert is not triggered...
 
-const over = algorithm.apply(25)
-alert.check(over) // Triggers the alert (625 > 400)
+const over = algorithm.apply(1)
+alert.check(over) // Alert is triggered!
 
 ```
 
@@ -91,7 +106,7 @@ To hook an algorithm into one of the real-time data streams managed by this appl
             'state.ppg': // ...
             'state.imu': // ...
             'state.arbitrary': (data) => {
-                const res = algorithm.apply(data.value)
+                const res = algorithm.apply(data)
                 alert.check(res)
             }
         }
@@ -110,7 +125,7 @@ const module = new Module({
     algorithm
 })
 
-module.__operator(25) // Triggers the alert
+module.__operator(1) // Alert is triggered!
 
 ```
 
@@ -127,14 +142,49 @@ You many also add a UI to the module in standard GraphScript format. Direct chil
 ```js
 const module = new Module({
     /// ...
+    name: 'Arbitrary Module' // This will add a header to the default UI
     ui: {
-        __element: 'p',
-        __operator: function (update) {
-            this.innerText = update
-        }
+
+    __element: 'div', // What to display on the page
+
+    // How to style what's on the page
+    style: {
+        padding: '10px 25px'
+    },
+
+    
+    // Children elements on the page
+    __children: {
+        description: {
+            __element: 'p',
+            innerHTML: 'This arbitrary module will process data generated using Math.sin to throw an alert when the sine output approaches one'
+        },
+
+        readout: {
+            __element: 'div',
+            __children: {
+                header: {
+                    __element: 'h3',
+                    innerHTML: 'Current Value'
+                },
+
+                value: {
+                    __element: 'p',
+                    innerHTML: 'N/A'
+                }
+            }
+        },
+    },
+
+    // The reaction to updated data after passing through the algorithm + alert
+    __operator: function (data) {
+        this.__children.readout.__children.value.innerHTML = data.toFixed(3)
     }
+}
 })
 ```
+
+![the user interface for this module](./assets/images/arbitraryModule.png)
 
 
 ## Acknowledgments
