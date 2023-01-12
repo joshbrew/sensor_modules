@@ -23,10 +23,10 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "brainsatplay-math": "^0.0.25",
-    "device-decoder": "^0.3.13",
-    "graphscript": "~0.2.40",
-    "graphscript-services": "^0.2.41",
-    "graphscript-services.storage": "^0.2.41",
+    "device-decoder": "^0.3.14",
+    "graphscript": "~0.2.44",
+    "graphscript-services": "^0.2.44",
+    "graphscript-services.storage": "^0.2.44",
     "howler": "^2.2.3",
     "style.css": "^1.0.3",
     "webgl-plot-utils": "~0.3.17"
