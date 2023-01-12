@@ -10,7 +10,6 @@ const merge = (o, override) => {
         const val = override[key]
         if (oVal && typeof oVal === 'object' && typeof val === 'object')  merge(o[key], val)
         else {
-            console.log('Trying to override', key, oVal, val)
             try { o[key] = val } catch {}
         }
     }

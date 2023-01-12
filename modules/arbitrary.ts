@@ -14,12 +14,28 @@ export const ui = {
     },
 
     __children: {
-        paragraph: {
+        description: {
             __element: 'p',
-            innerHTML: 'This arbitrary module will process data generated using Math.sin to throw an alert when the sine output approaches one.',
-        }
+            innerHTML: 'This arbitrary module will process data generated using Math.sin to throw an alert when the sine output approaches one'
+        },
+
+        readout: {
+            __element: 'div',
+            __children: {
+                header: {
+                    __element: 'h3',
+                    innerHTML: 'Current Value'
+                },
+
+                value: {
+                    __element: 'p',
+                    innerHTML: 'N/A'
+                }
+            }
+        },
     },
-    __operator: (data) => {
-        console.log('Processed', data) // TODO: Get this to actually throw...
+
+    __operator: function (data) {
+        this.__children.readout.__children.value.innerHTML = data
     }
 }

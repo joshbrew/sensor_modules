@@ -78,8 +78,6 @@ const tree = {
         }
     },
 
-
-
     readout: {
         __element: 'div',
         style: {
