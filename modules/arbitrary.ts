@@ -1,18 +1,23 @@
-export * as alert from '../alerts/arbitrary' 
-export * as algorithm from '../algorithms/arbitrary' 
+export * as alert from '../alerts/arbitrary' // Alert declared in separate file
 
-export const name = 'Arbitrary Module'
+export * as algorithm from '../algorithms/arbitrary' // Algorithm declared in separate file
 
-export const subscriptions = [ 'state.arbitrary' ]
+export const name = 'Arbitrary Module' // The name of the module
 
+export const subscriptions = [ 'state.arbitrary' ] // Subscriptions to automatically instantiate
+
+// The user interface of the module
 export const ui = {
 
-    __element: 'div',
+    __element: 'div', // What to display on the page
 
+    // How to style what's on the page
     style: {
         padding: '10px 25px'
     },
 
+    
+    // Children elements on the page
     __children: {
         description: {
             __element: 'p',
@@ -35,7 +40,8 @@ export const ui = {
         },
     },
 
+    // The reaction to updated data after passing through the algorithm + alert
     __operator: function (data) {
-        this.__children.readout.__children.value.innerHTML = data
+        this.__children.readout.__children.value.innerHTML = data.toFixed(3)
     }
 }

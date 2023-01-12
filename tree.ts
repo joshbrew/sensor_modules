@@ -488,6 +488,9 @@ const tree = {
                                     
                                 }
                             },
+
+
+                            // This component is used to generate data for the arbitrary module using an arbitrary worker
                             toggleArbitraryAlert:{
                                 subId: undefined,
                                 __element:'button',

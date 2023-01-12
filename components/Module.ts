@@ -59,6 +59,7 @@ export default class Module {
             // Set the UI
             if (settings.ui) this.ui = settings.ui
 
+            //  Automatically set listeners that forward information to the operator
             if (settings.subscriptions) this.subscriptions = settings.subscriptions
 
         } else console.log('No configuration object provided to Module.set()')

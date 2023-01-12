@@ -100,7 +100,7 @@ To hook an algorithm into one of the real-time data streams managed by this appl
 
 ```
 
-### Developing an Official Module
+### Developing a MyAlyce Module
 Modules may have both an alert and an algorithm. This integrates their behavior to automate the process of alerting the user when a condition is met after processing the data:
 
 ```js
@@ -123,13 +123,15 @@ const module = new Module({
 })
 ```
 
-You many also add a UI to the module in standard GraphScript format: 
+You many also add a UI to the module in standard GraphScript format. Direct children may hook into the algorithm output using the `__operator` keyword: 
 ```js
 const module = new Module({
     /// ...
     ui: {
-        __element: 'h1',
-        innerText: 'Arbitrary Module'
+        __element: 'p',
+        __operator: function (update) {
+            this.innerText = update
+        }
     }
 })
 ```

@@ -13222,7 +13222,7 @@
       }
     },
     __operator: function(data) {
-      this.__children.readout.__children.value.innerHTML = data;
+      this.__children.readout.__children.value.innerHTML = data.toFixed(3);
     }
   };
 
