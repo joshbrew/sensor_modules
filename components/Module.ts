@@ -6,7 +6,7 @@ export type ModuleInput = {
     algorithm?: AlgorithmSettings | Algorithm
     alert?: AlertSettingsInput | Alert,
     ui?: any,
-    states?: any[]
+    subscriptions?: any[]
 }
 
 export default class Module {
@@ -16,10 +16,10 @@ export default class Module {
     // Data Management
     alert?: Alert
     algorithm?: Algorithm
-    #states: string[] = []
-    get states() { return this.#states }
-    set states(value: string[]) {
-        this.#states = value
+    #subscriptions: string[] = []
+    get subscriptions() { return this.#subscriptions }
+    set subscriptions(value: string[]) {
+        this.#subscriptions = value
         const listeners = {}
         value.forEach(str => listeners[str] = true)
         this.__listeners = listeners
@@ -59,7 +59,7 @@ export default class Module {
             // Set the UI
             if (settings.ui) this.ui = settings.ui
 
-            if (settings.states) this.states = settings.states
+            if (settings.subscriptions) this.subscriptions = settings.subscriptions
 
         } else console.log('No configuration object provided to Module.set()')
     }

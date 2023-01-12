@@ -80,7 +80,27 @@ alert.check(over) // Triggers the alert (625 > 400)
 
 ```
 
-### Publishing a Module
+#### Subscribing to a Data Stream
+To hook an algorithm into one of the real-time data streams managed by this application, add a subscription function to the `tree.alerts.__listeners` object in `tree.ts` (or edit one of the existing subscriptions...):
+
+```js
+// ...
+    alerts: {
+        __element:'div',
+        __listeners: {
+            'state.ppg': // ...
+            'state.imu': // ...
+            'state.arbitrary': (data) => {
+                const res = algorithm.apply(data.value)
+                alert.check(res)
+            }
+        }
+    },
+// ...
+
+```
+
+### Developing an Official Module
 Modules may have both an alert and an algorithm. This integrates their behavior to automate the process of alerting the user when a condition is met after processing the data:
 
 ```js
@@ -94,11 +114,19 @@ module.__operator(25) // Triggers the alert
 
 ```
 
+Subscriptions can be defined using shorthand notation: 
+
+```js
+const module = new Module({
+    /// ...
+    subscriptions: [ 'states.arbitrary' ]
+})
+```
+
 You many also add a UI to the module in standard GraphScript format: 
 ```js
 const module = new Module({
-    alert,
-    algorithm,
+    /// ...
     ui: {
         __element: 'h1',
         innerText: 'Arbitrary Module'
@@ -106,22 +134,6 @@ const module = new Module({
 })
 ```
 
-#### Hooking Algorithms into a Data Stream
-To hook an algorithm into one of the real-time data streams managed by this application, add a subscription function to the `tree.alerts.__listeners` object in `tree.ts` (or edit one of the existing subscriptions...):
-
-```js
-// ...
-    alerts: {
-        __element:'div',
-        __listeners: {
-            'state.ppg': // ...
-            'state.imu': // ...
-            'state.arbitrary': (data) => algorithm.apply(data.value)
-        }
-    },
-// ...
-
-```
 
 ## Acknowledgments
 This repository is maintained by [Garrett Flynn](https://github.com/garrettmflynn) and [Joshua Brewster](https://github.com/joshbrew), who use contract work and community contributions through [Open Collective](https://opencollective.com/brainsatplay) to support themselves.

@@ -3,7 +3,7 @@ export * as algorithm from '../algorithms/arbitrary'
 
 export const name = 'Arbitrary Module'
 
-export const states = [ 'state.arbitrary' ]
+export const subscriptions = [ 'state.arbitrary' ]
 
 export const ui = {
 

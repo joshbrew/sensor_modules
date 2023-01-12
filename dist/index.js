@@ -12960,11 +12960,11 @@
   var Algorithm_default = Algorithm;
 
   // components/Module.ts
-  var _states, _ui;
+  var _subscriptions, _ui;
   var Module = class {
     constructor(settings) {
       this.name = "Module";
-      __privateAdd(this, _states, []);
+      __privateAdd(this, _subscriptions, []);
       __privateAdd(this, _ui, void 0);
       this.__element = "div";
       this.__children = {};
@@ -12978,11 +12978,11 @@
       };
       this.set(settings);
     }
-    get states() {
-      return __privateGet(this, _states);
+    get subscriptions() {
+      return __privateGet(this, _subscriptions);
     }
-    set states(value) {
-      __privateSet(this, _states, value);
+    set subscriptions(value) {
+      __privateSet(this, _subscriptions, value);
       const listeners = {};
       value.forEach((str4) => listeners[str4] = true);
       this.__listeners = listeners;
@@ -13007,13 +13007,13 @@
         this.algorithm = algorithm;
         if (settings.ui)
           this.ui = settings.ui;
-        if (settings.states)
-          this.states = settings.states;
+        if (settings.subscriptions)
+          this.subscriptions = settings.subscriptions;
       } else
         console.log("No configuration object provided to Module.set()");
     }
   };
-  _states = new WeakMap();
+  _subscriptions = new WeakMap();
   _ui = new WeakMap();
 
   // modules/arbitrary.ts
@@ -13022,7 +13022,7 @@
     alert: () => arbitrary_exports,
     algorithm: () => arbitrary_exports2,
     name: () => name,
-    states: () => states,
+    subscriptions: () => subscriptions,
     ui: () => ui
   });
 
@@ -13056,7 +13056,7 @@
 
   // modules/arbitrary.ts
   var name = "Arbitrary Module";
-  var states = ["state.arbitrary"];
+  var subscriptions = ["state.arbitrary"];
   var ui = {
     __element: "div",
     style: {
