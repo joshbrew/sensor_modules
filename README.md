@@ -115,7 +115,7 @@ To hook an algorithm into one of the real-time data streams managed by this appl
 
 ```
 
-### Developing a MyAlyce Module
+### Packaging a Module
 Modules may have both an alert and an algorithm. This integrates their behavior to automate the process of alerting the user when a condition is met after processing the data:
 
 ```js
